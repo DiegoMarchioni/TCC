@@ -1,0 +1,1811 @@
+\documentclass[12pt]{article}
+\usepackage{sbc-template}
+\usepackage{graphicx,url}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}      % glifos acentuados e hifenizacao correta no pdfLaTeX
+\usepackage{lmodern}
+\usepackage[brazil]{babel}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{textcomp}         % necessario para upquote nas listagens
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{stmaryrd}        % colchetes semanticos \llbracket \rrbracket
+\sloppy
+
+%% ── Configuração de listings ────────────────────────────────────────────────
+\renewcommand{\lstlistingname}{Listagem}   % legenda em portugues
+\definecolor{codegray}{rgb}{0.96,0.96,0.96}
+\definecolor{commentcolor}{rgb}{0.40,0.40,0.40}
+\definecolor{keywordcolor}{rgb}{0.13,0.29,0.53}
+\definecolor{stringcolor}{rgb}{0.47,0.13,0.13}
+\lstdefinestyle{haskell}{
+  language=Haskell,
+  backgroundcolor=\color{codegray},
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{keywordcolor}\bfseries,
+  commentstyle=\color{commentcolor}\itshape,
+  stringstyle=\color{stringcolor},
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny\color{commentcolor},
+  xleftmargin=1.6em,
+  framexleftmargin=1.6em,
+  captionpos=b,
+  columns=flexible,            % evita espacamento artificial entre tokens
+  keepspaces=true,
+  upquote=true,                % crases e apostrofos retos (x `quot` y, modify')
+  inputencoding=utf8,
+  extendedchars=true,
+  literate={á}{{\'a}}1 {ã}{{\~a}}1 {ç}{{\c c}}1 {é}{{\'e}}1 {í}{{\'i}}1
+           {ó}{{\'o}}1 {õ}{{\~o}}1 {ú}{{\'u}}1 {â}{{\^a}}1 {ê}{{\^e}}1
+}
+\lstdefinestyle{ocaml}{
+  language=[Objective]Caml,
+  backgroundcolor=\color{codegray},
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{keywordcolor}\bfseries,
+  commentstyle=\color{commentcolor}\itshape,
+  stringstyle=\color{stringcolor},
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny\color{commentcolor},
+  xleftmargin=1.6em,
+  framexleftmargin=1.6em,
+  captionpos=b,
+  columns=flexible,
+  keepspaces=true,
+  upquote=true,
+  inputencoding=utf8,
+  extendedchars=true,
+  literate={á}{{\'a}}1 {ã}{{\~a}}1 {ç}{{\c c}}1 {é}{{\'e}}1 {í}{{\'i}}1
+           {ó}{{\'o}}1 {õ}{{\~o}}1 {ú}{{\'u}}1 {â}{{\^a}}1 {ê}{{\^e}}1,
+  morekeywords={effect,perform,match,continue,discontinue,with,fun,let,in,type,
+                val,and,begin,end,try,raise,exception,function,module,open}
+}
+%% ────────────────────────────────────────────────────────────────────────────
+
+\title{Mônadas e Efeitos Algébricos em Linguagens Funcionais:\\
+Uma Análise Comparativa em Legibilidade, Composabilidade,\\
+Poder de Abstração e Desempenho, Normalizada por\\
+Linha de Base Intralinguagem}
+
+\author{Diego Marchioni\inst{1}, Marco Rodrigo\inst{1}}
+
+\address{Instituto de Ciências Exatas e Informática\\
+  Pontifícia Universidade Católica de Minas Gerais (PUC Minas)\\
+  Caixa Postal 1.686 -- 30.535-901 -- Belo Horizonte -- MG -- Brasil
+  \email{\{diego.marchioni, marco.rodrigo\}@sga.pucminas.br}
+}
+
+\begin{document}
+\maketitle
+
+%% ============================================================
+\begin{abstract}
+Managing computational effects is a central challenge in functional language
+design. Two approaches concentrate the attention of the literature: monads,
+composed in Haskell via monad transformers, and algebraic effects with
+handlers, supported natively in OCaml~5. Both structure impure computations but
+differ in readability, composability, abstraction power, and runtime
+performance. Since the effect mechanism cannot be isolated from the host
+language runtime or syntax, the comparison is operationalized indirectly: for
+each mechanism, we measure its distance from an imperative baseline written in
+the same language, and then contrast the two distances. The work combines a
+literature-grounded conceptual analysis with four functionally equivalent
+implementations of an expression interpreter with mutable state, exceptions and
+output (two effect mechanisms and two imperative baselines) and an experimental
+protocol based on Criterion and Bechamel. This article reports the state of the
+work at the first checkpoint of the final-year research project: the four
+implementations, a semantics-derived oracle test suite, a deterministic
+cross-language workload generator, and both benchmark harnesses exist as code,
+with validation in the definitive environment under way. Counting lines of code
+over the actual implementations revealed that this metric is highly sensitive
+to formatting style and to the explicit sequencing OCaml requires, which led to
+restricting code-metric comparisons to within-language pairs, mirroring the
+normalization already adopted for performance. Empirical measurements are
+pending and belong to the next stage.
+\end{abstract}
+
+\begin{resumo}
+O gerenciamento de efeitos computacionais é um desafio central no design de
+linguagens funcionais. Duas abordagens concentram a atenção da literatura: as
+mônadas, compostas em Haskell por meio de \textit{monad transformers}, e os
+efeitos algébricos com \textit{handlers}, com suporte nativo no OCaml~5. Ambas
+estruturam computações impuras, mas diferem em legibilidade, composabilidade,
+poder de abstração e desempenho. Como o mecanismo de efeitos não pode ser
+isolado do \textit{runtime} nem da sintaxe da linguagem que o hospeda, a
+comparação é operacionalizada de forma indireta: mede-se, para cada mecanismo,
+o seu afastamento em relação a uma linha de base imperativa escrita na mesma
+linguagem, e confrontam-se em seguida os dois afastamentos. O trabalho combina
+uma análise conceitual fundamentada na literatura com quatro implementações
+funcionalmente equivalentes de um interpretador de expressões com estado
+mutável, exceções e saída (dois mecanismos de efeitos e duas linhas de base
+imperativas) e um protocolo experimental baseado em Criterion e Bechamel. Este
+artigo reporta o estado do trabalho no primeiro ponto de controle: as quatro
+implementações, uma suíte de testes de oráculo derivada da semântica formal, um
+gerador determinístico de cargas replicado nas duas linguagens e os dois
+\textit{harnesses} de \textit{benchmark} existem como código, com a validação
+no ambiente definitivo em curso. A contagem de linhas sobre as implementações
+efetivas revelou que essa métrica é fortemente sensível ao estilo de formatação
+e ao sequenciamento explícito exigido pelo OCaml, o que levou a restringir as
+comparações de métricas de código a pares intralinguagem, espelhando a
+normalização já adotada para o desempenho. As medições empíricas estão
+pendentes e constituem a etapa seguinte.
+\end{resumo}
+
+\noindent\textbf{Palavras-chave:} efeitos algébricos; \textit{handlers};
+mônadas; transformadores monádicos; OCaml; Haskell; avaliação experimental.
+
+%% ============================================================
+\section{Introdução}\label{sec:intro}
+%% ============================================================
+
+O paradigma funcional de programação tem como premissa central a transparência
+referencial: a propriedade de que expressões com o mesmo valor são
+intersubstituíveis em qualquer contexto sem alterar a denotação do programa
+\cite{strachey:67}. Essa propriedade facilita o raciocínio equacional e a
+verificação formal. A ela somam-se os mecanismos de composição que sustentam a
+modularidade do paradigma \cite{hughes:89}; o conjunto entra, porém, em tensão
+direta com a necessidade de ler arquivos, lançar exceções e manipular estado
+mutável. Essas capacidades são
+denominadas \textit{efeitos computacionais} --- também referidos como
+\textit{efeitos colaterais}, denominação que este trabalho evita por sugerir um
+caráter acidental que a tradição algébrica rejeita --- e seu gerenciamento
+constitui um dos problemas centrais do design de linguagens funcionais.
+
+Para conciliar pureza referencial e expressividade prática, dois mecanismos
+concentram a atenção da literatura e do design de linguagens contemporâneo. As
+\textit{mônadas} foram introduzidas como estrutura semântica para uniformizar
+noções de computação \cite{moggi:91}, e consolidadas como técnica de
+programação que encapsula efeitos em tipos preservando a pureza do restante do
+código \cite{wadler:92}. Em Haskell, são combinadas via \textit{monad
+transformers} em pilhas como \texttt{StateT~s~(ExceptT~e~IO)} \cite{liang:95},
+arranjo cuja ordenação estática no tipo é apontada como fonte de rigidez
+estrutural \cite{kiselyov:13}. Os \textit{efeitos algébricos}, por sua vez,
+declaram efeitos como conjuntos de operações \cite{plotkin:03} cuja semântica é
+fixada por \textit{handlers} escopados \cite{plotkin:09}, o que permite
+acrescentar ou substituir efeitos sem reestruturar código existente
+\cite{kiselyov:13,pretnar:15}. Embora a teoria seja definida algebricamente, a
+implementação prática apoia-se em alguma forma de \emph{controle delimitado}:
+tradução para continuações delimitadas em Koka \cite{leijen:17} e segmentos de
+pilha alocados dinamicamente no OCaml~5 \cite{sivaramakrishnan:21}, distinção
+retomada na Seção~\ref{sec:custo}.
+
+\medskip
+\noindent\textbf{Problema de pesquisa.} A relação teórica entre os dois
+mecanismos está bem estabelecida, incluindo caracterizações formais de quando
+efeitos algébricos modulares correspondem a transformadores monádicos
+\cite{schrijvers:19,forster:17}. O mesmo não vale para as consequências
+práticas dessa escolha. Um projetista que precise decidir entre as duas
+abordagens não encontra na literatura, \emph{até onde alcançou a revisão
+realizada}, evidência que trate \emph{simultaneamente e sobre um mesmo caso de
+uso} as dimensões que governam a decisão: legibilidade, composabilidade, poder
+de abstração e desempenho. Os estudos existentes tratam de formalização
+\cite{plotkin:03,pretnar:15}, de desempenho isolado
+\cite{sivaramakrishnan:21,leijen:17} ou de expressividade em linguagens
+específicas \cite{lindley:17,xie:20}, mas não integram essas dimensões; a
+Seção~\ref{sec:lacuna} detalha esse levantamento. O problema que este trabalho
+aborda é, portanto, a ausência de evidência comparativa integrada e mensurável
+entre mônadas e efeitos algébricos.
+
+\medskip
+\noindent\textbf{Objetivo geral.} Comparar mônadas e efeitos algébricos em
+legibilidade, composabilidade, poder de abstração e desempenho, sobre um caso
+de uso único que combine estado mutável, exceções e saída. O confundimento
+entre mecanismo e linguagem hospedeira impede a medição direta, e a comparação
+é feita por razões: cada mecanismo é medido contra uma \emph{linha de base
+imperativa} na sua própria linguagem, e as duas razões resultantes é que são
+confrontadas. Por linha de base imperativa entende-se uma implementação do
+mesmo interpretador que realiza os três efeitos pelos meios diretos da
+linguagem --- estado por célula mutável, erro por exceção nativa, saída por
+escrita direta --- mantendo idênticas todas as demais escolhas, inclusive a
+estrutura de dados do ambiente, de modo que a razão isole o custo do mecanismo.
+O cotejo entre as duas linguagens é tratado como exploratório, pelas razões de
+validade interna discutidas na Seção~\ref{sec:protocolo}.
+
+\medskip
+\noindent\textbf{Objetivos específicos.}
+\begin{itemize}
+  \item[\textbf{OE1}] Sistematizar as diferenças conceituais entre as duas
+        abordagens e estabelecer o argumento de equivalência expressiva que
+        torna a comparação justa.
+  \item[\textbf{OE2}] Especificar formalmente a semântica do caso de uso e um
+        critério verificável de equivalência funcional entre implementações.
+  \item[\textbf{OE3}] Implementar quatro versões funcionalmente equivalentes do
+        interpretador: mônadas em Haskell, efeitos algébricos em OCaml~5 e uma
+        linha de base imperativa em cada linguagem.
+  \item[\textbf{OE4}] Definir e aplicar métricas objetivas de legibilidade,
+        composabilidade e poder de abstração sobre essas implementações, em
+        pares intralinguagem.
+  \item[\textbf{OE5}] Medir o sobrecusto de desempenho de cada mecanismo em
+        relação à linha de base de sua própria linguagem, com tratamento
+        explícito das ameaças à validade.
+\end{itemize}
+OE1 a OE3 são instrumentais: estabelecem a base conceitual, a referência formal
+e os artefatos sobre os quais OE4 e OE5 operam. As questões de pesquisa
+decorrem de OE4 (QP1--QP3) e de OE5 (QP4).
+
+\medskip
+\noindent\textbf{Questões de pesquisa.}
+\begin{itemize}
+  \item[\textbf{QP1}] Qual abordagem acrescenta menos cerimônia sintática de
+        efeitos e menos profundidade de aninhamento --- indicadores estruturais
+        associados à carga de leitura --- sobre a linha de base da sua própria
+        linguagem? Caso os dois indicadores divirjam, a resposta é relatada por
+        indicador, sem agregação.
+  \item[\textbf{QP2}] Qual abordagem exige menos pontos de modificação para a
+        composição e extensão de múltiplos efeitos, em relação à linha de base
+        da sua própria linguagem (composabilidade)?
+  \item[\textbf{QP3}] Qual abordagem acrescenta menos \textit{boilerplate} e
+        obtém maior reuso de componentes sobre a linha de base da sua própria
+        linguagem (poder de abstração)?
+  \item[\textbf{QP4}] Qual é o custo em tempo de execução de cada abordagem em
+        relação a uma linha de base imperativa \emph{na mesma linguagem}
+        (desempenho)?
+\end{itemize}
+A legibilidade \emph{percebida} exigiria um estudo com participantes humanos e
+está fora do escopo, sendo indicada como trabalho futuro
+(Seção~\ref{sec:metricas}). As hipóteses associadas são enunciadas na
+Seção~\ref{sec:hipoteses} porque se formulam em termos das métricas definidas na
+Seção~\ref{sec:metricas}.
+
+\medskip
+\noindent\textbf{Contribuições.} As contribuições deste trabalho são:
+\begin{enumerate}
+  \item Uma análise conceitual estruturada das diferenças entre mônadas e
+        efeitos algébricos nas quatro dimensões propostas, incluindo o argumento
+        de equivalência expressiva que sustenta a justiça da comparação
+        (Seção~\ref{sec:fundamentacao}, em especial~\ref{sec:relacao}).
+  \item Uma especificação semântica independente de implementação para o caso de
+        uso, com critério de equivalência funcional verificável
+        (Seção~\ref{sec:semantica}).
+  \item Quatro implementações do interpretador, acompanhadas de uma suíte de
+        testes de oráculo derivada da semântica que verifica a sua equivalência
+        funcional, e de um gerador determinístico de cargas replicado nas duas
+        linguagens (Seção~\ref{sec:impl}).
+  \item Um desenho experimental que trata explicitamente o confundimento entre
+        mecanismo e \textit{runtime}, normalizando cada mecanismo contra a linha
+        de base de sua própria linguagem (Seção~\ref{sec:protocolo}).
+\end{enumerate}
+
+\medskip
+\noindent\textbf{Estado do trabalho.} Este artigo corresponde ao primeiro ponto
+de controle do TCC~II \cite{marchioni:tcc1}. As contribuições 1, 2 e 4 estão
+consolidadas; a contribuição 3 existe como código e está descrita na
+Seção~\ref{sec:impl}, com a validação no ambiente definitivo em curso. As
+medições empíricas ainda não foram realizadas: a Seção~\ref{sec:esperados}
+apresenta os instrumentos de coleta e as observações já obtidas sobre o código,
+e a Seção~\ref{sec:atividades} detalha as etapas restantes.
+
+\medskip
+O restante do artigo está organizado da seguinte forma. A
+Seção~\ref{sec:fundamentacao} apresenta a fundamentação teórica. A
+Seção~\ref{sec:relacionados} discute os trabalhos relacionados e delimita a
+lacuna. A Seção~\ref{sec:metodologia} descreve a metodologia efetivamente
+adotada. A Seção~\ref{sec:impl} descreve as implementações desenvolvidas. A
+Seção~\ref{sec:esperados} apresenta os instrumentos de coleta e as observações
+preliminares. A Seção~\ref{sec:atividades} relata as atividades e o cronograma
+restante. Por fim, a Seção~\ref{sec:consideracoes} apresenta as considerações
+parciais.
+
+\section{Fundamentação Teórica}\label{sec:fundamentacao}
+%% ============================================================
+
+Esta seção introduz os conceitos necessários para a comparação. Adota-se a
+seguinte definição de trabalho: um \emph{efeito} é um conjunto de operações
+cuja interpretação é deixada em aberto no ponto de uso e fixada em outro lugar
+do programa. As duas abordagens comparadas diferem em \emph{onde} e \emph{como}
+essa interpretação é fixada --- nas mônadas, estaticamente, pelo tipo da
+computação e pela instância que o habita; nos efeitos algébricos,
+dinamicamente, por um \textit{handler} instalado sobre um escopo. É essa
+diferença que as quatro dimensões medem. A Seção~\ref{sec:fund-monadas} trata
+das mônadas e de sua composição via transformadores; a
+Seção~\ref{sec:fund-efeitos}, dos efeitos algébricos e dos \textit{handlers}; e
+a Seção~\ref{sec:relacao} estabelece a relação formal de expressividade entre
+as duas.
+
+\subsection{Mônadas e Transformadores}\label{sec:fund-monadas}
+
+As mônadas foram introduzidas como estrutura matemática para modelar noções de
+computação de forma uniforme. Formalmente, dada uma categoria $\mathcal{C}$,
+uma mônada é uma tripla $(T,\,\eta,\,\mu)$ em que $T:\mathcal{C}\to\mathcal{C}$
+é um endofuntor e $\eta:\mathrm{Id}\Rightarrow T$ e $\mu:T^{2}\Rightarrow T$
+são transformações naturais, sujeitas às leis das mônadas
+($\mu \circ T\mu = \mu \circ \mu T$ e
+$\mu \circ T\eta = \mu \circ \eta T = \mathrm{id}_{T}$). A contribuição central
+está na separação entre \emph{valores}, de tipo $A$, e \emph{computações}, de
+tipo $T A$, tornando o efeito acrescentado por $T$ passível de tratamento
+uniforme no sistema de tipos \cite{moggi:91}.
+
+As duas apresentações da mônada são equivalentes. A formulação monoidal
+$(T,\eta,\mu)$ corresponde à \emph{tripla de Kleisli} $(T,\eta,(-)^{*})$, em
+que a extensão $f^{*}: TA \to TB$ de $f: A \to TB$ é dada por
+$f^{*} = \mu_{B} \circ Tf$. É essa segunda apresentação que o programador
+manipula: $\eta$ é o \texttt{return} e $f^{*}$ é o \texttt{>>=} com os
+argumentos trocados. As leis das mônadas traduzem-se exatamente nas três leis
+que uma instância de \texttt{Monad} em Haskell deve satisfazer, e são elas que
+garantem que o raciocínio equacional prometido na Seção~\ref{sec:intro}
+sobreviva à introdução de efeitos.
+
+A linhagem notacional das compreensões monádicas \cite{wadler:90} conduziu à
+sintaxe \texttt{do} de Haskell, que é açúcar sintático sobre cadeias de
+\texttt{>>=} \cite{wadler:92}. Cada efeito admite uma ou mais mônadas que o
+modelam --- \texttt{State} para estado mutável, \texttt{Except} para exceções,
+\texttt{IO} para entrada/saída, entre outras possíveis.
+
+O problema surge ao combinar efeitos. Os \textit{monad transformers} foram
+formalizados como mecanismo para construir mônadas compostas a partir de
+mônadas mais simples, empilhando transformadores como \texttt{StateT} e
+\texttt{ExceptT} sobre uma mônada base \cite{liang:95}. A composição, contudo,
+impõe uma \emph{ordenação explícita e estática}, visível nos isomorfismos: com
+o estado externo, $\texttt{StateT}\;s\;(\texttt{Except}\;e)\;a \cong s \to
+(e + (a \times s))$, e o estado se perde no erro; com a exceção externa,
+$\texttt{ExceptT}\;e\;(\texttt{State}\;s)\;a \cong s \to ((e + a) \times s)$, e
+o estado sobrevive. Não é diferença estilística: são funções de tipos distintos.
+A pilha \texttt{StateT~(ExceptT~IO)} é o exemplo canônico dessa dependência de
+ordem e, precisamente por descartar o estado no erro, não é a adotada neste
+trabalho (Seção~\ref{sec:impl-monadica}).
+
+Cada camada exige ainda operações de elevação (\texttt{lift}, \texttt{liftIO})
+para acessar efeitos de camadas internas, e a definição das instâncias de
+elevação cresce quadraticamente com o número de transformadores e de classes.
+Bibliotecas baseadas em classes de tipos (\textit{mtl}) eliminam grande parte
+dessas elevações no ponto de uso, ao custo de deslocá-las para a definição das
+instâncias; o custo estrutural da ordenação permanece intrínseco ao mecanismo.
+Este trabalho adota \textit{mtl} deliberadamente, por comparar o transformador
+\emph{como ele é idiomaticamente usado}; a escolha reduz de antemão a vantagem
+esperada dos \textit{handlers} em volume de \textit{boilerplate} (H3), o que
+torna mais significativa qualquer vantagem que ainda se observe.
+
+\subsection{Efeitos Algébricos e \textit{Handlers}}\label{sec:fund-efeitos}
+
+Os efeitos computacionais foram estabelecidos como operações algébricas sobre
+uma teoria equacional, com a demonstração de que efeitos de interesse prático,
+como estado, exceções, não determinismo e entrada/saída, podem ser
+axiomatizados de forma uniforme \cite{plotkin:03}. Cada operação tem uma
+assinatura e uma \emph{aridade}, isto é, o número de continuações que recebe:
+$\texttt{get}$ tem aridade indexada pelos valores possíveis, $\texttt{set}$ tem
+aridade um e $\texttt{raise}$ tem aridade \emph{zero} --- contrapartida
+algébrica exata de o \textit{handler} de exceção descartar a continuação.
+
+Nesse modelo, um efeito é declarado como um conjunto de operações, e a
+composabilidade não é ausência de ordenação, e sim mudança de onde a ordenação
+mora: ela deixa de ser fixada estaticamente no tipo da computação e passa a ser
+determinada dinamicamente pelo escopo de instalação dos \textit{handlers}. Isso
+a torna local e revisável sem alterar assinaturas, mas \textit{handlers} de
+efeitos que interagem --- estado e exceção, por exemplo --- continuam não
+comutando, do mesmo modo que as camadas de uma pilha monádica.
+
+O modelo foi posteriormente estendido com \textit{handlers}, estruturas que
+interceptam e interpretam operações de efeito dentro de um escopo delimitado
+\cite{plotkin:09}. Um \textit{handler} recebe, a cada operação, a
+\emph{continuação} da computação interrompida e decide se e como retomá-la.
+Retomá-la uma vez modela estado e entrada/saída, descartá-la modela exceções, e
+retomá-la múltiplas vezes modela não determinismo. É esse mecanismo de
+continuação que confere aos \textit{handlers} seu poder expressivo. O modelo foi
+consolidado na linguagem Eff \cite{bauer:15}, e, na linguagem Koka, um sistema
+de \textit{effect rows} passou a verificar estaticamente quais efeitos uma
+função pode realizar, garantindo que todos sejam tratados antes que a
+computação seja considerada pura \cite{leijen:14}.
+
+A ausência de um sistema de tipos para efeitos no OCaml~5, em que efeitos não
+tratados só falham em tempo de execução, é identificada neste trabalho como a
+principal desvantagem da abordagem adotada. Registre-se que a
+\emph{segurança estática de efeitos} constitui, assim, uma quinta dimensão de
+comparação: em Haskell, o tipo \texttt{ExceptT~String~(StateT~Env~IO)~Int}
+declara os três efeitos e a omissão de tratamento é erro de compilação; em
+OCaml~5, é erro de execução. Ela fica deliberadamente fora do arcabouço de
+avaliação, que se limita às quatro dimensões enunciadas, e é retomada como
+limitação na Seção~\ref{sec:protocolo}.
+
+No OCaml~5, um efeito é introduzido por uma extensão do tipo \texttt{Effect.t},
+cujo parâmetro registra o tipo de retorno da operação, e disparado por
+\texttt{Effect.perform}. Um \textit{handler} é instalado com
+\texttt{match\_with}, que recebe três cláusulas: \texttt{retc}, aplicada ao
+valor quando a computação termina sem efeito; \texttt{exnc}, para exceções
+nativas; e \texttt{effc}, a interpretação das operações, que devolve
+\texttt{Some} para as operações que trata e \texttt{None} para as que repassa
+ao \textit{handler} externo --- este último é o mecanismo de encadeamento entre
+\textit{handlers}. A continuação \texttt{k} é manipulada com \texttt{continue}
+(retoma), \texttt{discontinue} (retoma lançando exceção) ou simplesmente
+descartada. Utilizam-se aqui \textit{handlers} \emph{profundos}
+(\texttt{match\_with}), que permanecem instalados sobre a continuação retomada,
+e não \emph{rasos} (\texttt{Effect.Shallow}), que precisariam ser reinstalados
+a cada operação.
+
+As continuações do OCaml~5 são \emph{one-shot}: cada continuação pode ser
+retomada no máximo uma vez, restrição que é a contrapartida da implementação
+por segmentos de pilha (Seção~\ref{sec:custo}). Efeitos que exigem retomada
+múltipla, como o não determinismo, não são diretamente expressáveis nessa
+implementação, restrição retomada na discussão de validade externa
+(Seção~\ref{sec:protocolo}).
+
+\subsection{Relação Formal entre as Abordagens}\label{sec:relacao}
+
+A justiça da comparação proposta apoia-se em um argumento em quatro passos.
+
+\emph{Primeiro}, a inter-expressividade entre \textit{handlers} de efeito,
+reflexão monádica e controle delimitado foi estabelecida diretamente, com
+traduções formais entre os três mecanismos e ressalvas explícitas para o
+cenário tipado \cite{forster:17}. A noção relevante é a de
+\emph{macro-expressividade}: a pergunta não é se ambos computam as mesmas
+funções, o que é trivialmente verdadeiro, mas se um pode ser traduzido no outro
+por transformação local e composicional, sem reescrita global do programa. O
+resultado clássico de que qualquer mônada é representável por continuações
+delimitadas e uma única célula de estado \cite{filinski:94} é o antecedente
+histórico desse desenvolvimento.
+
+\emph{Segundo}, a correspondência foi caracterizada de forma mais fina: há uma
+classe identificável de efeitos algébricos \emph{modulares} em correspondência
+com uma classe específica de transformadores monádicos \cite{schrijvers:19}.
+Esse resultado delimita o que resta como diferença genuína: dentro dessa
+classe, a escolha entre os mecanismos não altera o que pode ser expresso,
+apenas como se expressa e a que custo. É exatamente esse resíduo, de natureza
+ergonômica e de desempenho, que o presente trabalho mede.
+
+\emph{Terceiro}, os três efeitos deste caso de uso são algébricos e de uso
+\emph{linear} da continuação. São algébricos porque cada um admite apresentação
+por assinatura e equações com modelo livre:
+\begin{itemize}
+  \item \textbf{Estado}: operações \texttt{get} e \texttt{set}, com quatro
+        equações --- duas leituras consecutivas devolvem o mesmo valor; ler após
+        escrever devolve o escrito; a última escrita prevalece; escrever de volta
+        o valor lido é inócuo. Modelo livre: $S \to (- \times S)$.
+  \item \textbf{Exceções}: operação \texttt{raise} de aridade zero, sem
+        equações; é a teoria livre sobre a assinatura. Modelo livre: $(- + E)$.
+  \item \textbf{Saída}: operação \texttt{out}, cuja teoria é o monoide livre
+        sobre os valores emitidos. Modelo livre: $(- \times V^{*})$.
+\end{itemize}
+São de uso linear porque \texttt{get}, \texttt{set} e \texttt{out} retomam a
+continuação exatamente uma vez e \texttt{raise} a descarta, de modo que nenhum
+exige retomada múltipla e todos cabem sob as continuações \emph{one-shot} do
+OCaml~5. As equações do estado são, aliás, precisamente o que a suíte de oráculo
+verifica nos casos de persistência e revinculação de \texttt{Let}
+(Seção~\ref{sec:oraculo}).
+
+\emph{Quarto}, segue-se que, \emph{para os três efeitos deste caso de uso}, os
+dois mecanismos têm o mesmo alcance expressivo, e as diferenças observáveis são
+de ergonomia (legibilidade, composabilidade, abstração) e de desempenho. A
+ressalva é necessária: sob continuações \emph{one-shot}, efeitos que exigem
+retomada múltipla não são diretamente expressáveis, de modo que a equivalência
+aqui invocada é local ao caso de uso, e não uma equivalência entre os mecanismos
+em geral.
+
+Cabe ainda qualificar o alcance da correspondência. Ela recai sobre efeitos cuja
+teoria admite apresentação \emph{algébrica} (de modelo livre) \cite{plotkin:09};
+nem toda mônada é algébrica, sendo a mônada de continuação o contraexemplo
+clássico, e os efeitos \emph{escopados} o caso limítrofe (Seção~\ref{sec:custo}).
+É por essa razão --- e não por conveniência --- que o caso de uso adota ambiente
+global sem restauração de vínculos (Seção~\ref{sec:caso-de-uso}).
+
+%% ============================================================
+\section{Trabalhos Relacionados}\label{sec:relacionados}
+%% ============================================================
+
+Enquanto a Seção~\ref{sec:fundamentacao} apresentou os mecanismos, esta seção
+posiciona o presente trabalho frente à literatura, organizando-a em torno de
+quatro eixos: abordagens alternativas de composição de efeitos, estudos de
+implementação e expressividade de efeitos algébricos, o custo de execução dos
+\textit{handlers}, e a perspectiva comparativa que motiva a lacuna preenchida
+aqui.
+
+\subsection{Abordagens Alternativas de Composição}
+
+A técnica \textit{data types à la carte}, baseada em pontos fixos de somas
+abertas (coprodutos) de funtores, permite compor tipos de dados de forma
+modular, com aplicação direta à composição de DSLs e interpretadores
+\cite{swierstra:08}. Embora voltada à estruturação de tipos, e não de efeitos de
+execução, é a precursora conceitual direta das abordagens de efeitos extensíveis
+em Haskell: estas substituem o coproduto de funtores de sintaxe por um coproduto
+de assinaturas de \emph{efeito}.
+
+Os \textit{extensible effects} foram propostos como alternativa aos
+transformadores monádicos, com base em uniões abertas de funtores que evita a
+rigidez da pilha ordenada e permite interpretar efeitos em qualquer ordem
+\cite{kiselyov:13}, técnica posteriormente refinada sobre mônadas
+\textit{freer} \cite{kiselyov:15}. Embora implementada em Haskell, a proposta
+antecipa vários aspectos da semântica de efeitos algébricos com
+\textit{handlers}. A existência desse e de outros arcabouços de efeitos em
+Haskell (por exemplo, \textit{polysemy}, \textit{fused-effects} e
+\textit{effectful}) suscita a pergunta de por que comparar efeitos no OCaml com
+mônadas em Haskell, e não as duas abordagens na mesma linguagem. A escolha,
+justificada na Seção~\ref{sec:protocolo}, é comparar cada mecanismo \emph{como
+ele é efetivamente utilizado e suportado em produção}.
+
+\subsection{Implementação e Expressividade de Efeitos Algébricos}
+
+Uma implementação prática de \textit{handlers} em Haskell, baseada em mônadas
+livres e continuações delimitadas, demonstrou a viabilidade do modelo em uma
+linguagem sem suporte nativo, com desempenho competitivo em relação a código de
+referência \cite{kammar:13}. Comparações posteriores entre \textit{handlers} e
+\textit{monad transformers} \emph{na mesma linguagem} refinam esse quadro e
+fornecem a base empírica mais próxima das hipóteses de desempenho adotadas aqui
+\cite{xie:20}.
+
+Um problema estrutural com \textit{handlers} no tratamento de efeitos escopados,
+casos em que a semântica de um efeito depende do contexto de chamada, motivou a
+proposta de \textit{scoped effects} como extensão do modelo de \textit{handlers}
+\cite{wu:14}; variantes escopadas do efeito de estado, como estado local
+restaurado ao fim de um bloco, recaem nesse regime e ficam deliberadamente fora
+do caso de uso adotado, que emprega um ambiente global
+(Seção~\ref{sec:caso-de-uso}). A linguagem Frank, por sua vez, generaliza a
+abstração funcional, dispensando um construto separado de \textit{handler}, e
+introduz \emph{multihandlers}, capazes de interpretar comandos de várias fontes
+simultaneamente; seus autores argumentam que padrões como um operador
+\texttt{pipe} ficam substancialmente mais simples em Frank do que com
+\textit{handlers} unários em bibliotecas Haskell \cite{lindley:17}.
+
+Uma introdução pragmática a efeitos algébricos e \textit{handlers}, por meio de
+exemplos progressivos, discute explicitamente as implicações de legibilidade e
+composabilidade que constituem dois dos eixos de comparação adotados aqui
+\cite{pretnar:15}. Diferentemente do presente trabalho, essa introdução não
+conduz benchmarks de desempenho nem compara as abordagens com métricas objetivas
+sobre um caso de uso concreto.
+
+\subsection{O Custo de Execução dos \textit{Handlers}}\label{sec:custo}
+
+Uma linha de pesquisa que se intensificou a partir de 2021, e cujas raízes
+remontam às primeiras implementações de \textit{handlers}, dedica-se a reduzir o
+sobrecusto de execução do mecanismo, e seus resultados são relevantes para a
+interpretação das medições deste trabalho. Um compilador otimizador da
+linguagem Eff para OCaml, dirigido por informação de tipos e efeitos, mostrou
+que boa parte desse sobrecusto pode ser eliminada por transformações
+fonte-a-fonte, aproximando o desempenho do de código escrito à mão
+\cite{karachalias:21}. Mais recentemente, avaliou-se a compilação
+\textit{just-in-time} por rastreamento aplicada especificamente a efeitos e
+\textit{handlers}, sob o argumento de que o fluxo de controle dinâmico que os
+\textit{handlers} introduzem é precisamente aquilo que compiladores de
+rastreamento otimizam bem \cite{gaissert:25}.
+
+Duas consequências metodológicas decorrem dessa literatura. A primeira é que o
+sobrecusto de \textit{handlers} é uma propriedade da \emph{implementação}, não
+do mecanismo: medições obtidas em um \textit{runtime} específico não se
+transferem para outro. A segunda é que o OCaml~5 ocupa uma posição particular
+nesse espectro, por implementar \textit{handlers} nativamente sobre segmentos de
+pilha alocados dinamicamente (\textit{fibers}), em vez de por tradução para
+continuações \cite{sivaramakrishnan:21,ocaml:manual}. Note-se que as duas
+propriedades estão ligadas: é porque as continuações são \emph{one-shot} que o
+segmento de pilha não precisa ser copiado, de modo que a restrição registrada na
+Seção~\ref{sec:fund-efeitos} é o preço, e também a razão, do baixo sobrecusto.
+Ambas reforçam a decisão, adotada na Seção~\ref{sec:protocolo}, de reportar
+razões de sobrecusto contra uma linha de base na mesma linguagem, em lugar de
+tempos absolutos comparados entre linguagens.
+
+\subsection{Perspectiva Comparativa e Lacuna Identificada}\label{sec:lacuna}
+
+Dois trabalhos são os mais diretamente relacionados. O primeiro descreve as
+decisões de design do suporte nativo a efeitos algébricos no OCaml~5, com
+microbenchmarks que mostram desempenho comparável ao de chamadas de função
+diretas para casos comuns, tornando os efeitos viáveis para código de produção
+\cite{sivaramakrishnan:21}; ele não compara, porém, efeitos algébricos com
+mônadas, nem avalia legibilidade, composabilidade ou abstração. O segundo
+compara \textit{handlers} e \textit{monad transformers} em desempenho dentro de
+uma mesma linguagem \cite{xie:20}, eliminando o confundimento com o
+\textit{runtime}, mas sem tratar as demais dimensões nem um caso de uso
+integrado. A Tabela~\ref{tab:lacuna} sintetiza a cobertura dos trabalhos
+discutidos e torna visível a lacuna que o presente trabalho busca preencher: uma
+comparação conjunta das quatro dimensões sobre um mesmo caso de uso concreto.
+
+\begin{table}[ht]
+  \centering
+  \caption{Cobertura dos trabalhos relacionados frente às quatro dimensões e ao
+           critério de caso de uso integrado. $\bullet$ indica tratamento
+           explícito; $\circ$, tratamento parcial ou incidental.}
+  \label{tab:lacuna}
+  \small
+  \begin{tabular}{lccccc}
+    \toprule
+    \textbf{Trabalho} & \textbf{Legib.} & \textbf{Compos.} & \textbf{Abstr.}
+      & \textbf{Desemp.} & \textbf{Caso integrado} \\
+    \midrule
+    \cite{plotkin:03,plotkin:09} &  & $\circ$ &  &  &  \\
+    \cite{liang:95}              & $\circ$ & $\bullet$ & $\circ$ &  & $\bullet$ \\
+    \cite{swierstra:08}          &  & $\bullet$ & $\bullet$ &  &  \\
+    \cite{kiselyov:13,kiselyov:15} & $\circ$ & $\bullet$ & $\circ$ & $\circ$ &  \\
+    \cite{kammar:13}             &  & $\circ$ &  & $\bullet$ &  \\
+    \cite{pretnar:15}            & $\bullet$ & $\bullet$ & $\circ$ &  & $\circ$ \\
+    \cite{lindley:17}            & $\circ$ & $\bullet$ & $\bullet$ &  &  \\
+    \cite{sivaramakrishnan:21}   &  &  &  & $\bullet$ &  \\
+    \cite{xie:20}                &  & $\circ$ &  & $\bullet$ &  \\
+    \cite{karachalias:21,gaissert:25} &  &  &  & $\bullet$ &  \\
+    \midrule
+    \textbf{Este trabalho} & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+%% ============================================================
+\section{Metodologia}\label{sec:metodologia}
+%% ============================================================
+
+Esta seção descreve os procedimentos efetivamente adotados no desenvolvimento e
+na avaliação do trabalho. A Seção~\ref{sec:caso-de-uso} delimita o caso de uso e
+justifica a disciplina de escopo escolhida. A Seção~\ref{sec:semantica} fixa uma
+semântica operacional independente de implementação e dela deriva o critério de
+equivalência funcional que todas as versões devem satisfazer. A
+Seção~\ref{sec:hipoteses} enuncia as hipóteses, a Seção~\ref{sec:metricas}
+define as métricas, e a Seção~\ref{sec:protocolo} descreve o protocolo
+experimental e as ameaças à validade.
+
+Os procedimentos que diferem do que fora planejado no TCC~I estão enumerados na
+Seção~\ref{sec:atividades}. Dois deles afetam diretamente a metodologia e são
+detalhados adiante: a ordem das camadas da pilha monádica foi invertida, para
+que o estado sobreviva ao erro como exige o critério de equivalência
+(Seção~\ref{sec:impl-monadica}); e as comparações de métricas de código passaram
+a ser feitas entre pares da mesma linguagem, porque a contagem sobre o código
+efetivo mostrou a métrica sensível ao estilo de formatação e ao idioma
+disponível em cada linguagem, e não ao mecanismo de efeitos
+(Seção~\ref{sec:refinamento}). A verificação da equivalência funcional, antes
+descrita apenas como intenção, é hoje operacionalizada por uma suíte de testes
+executável (Seção~\ref{sec:oraculo}).
+
+\subsection{Caso de Uso}\label{sec:caso-de-uso}
+
+O caso de uso é um interpretador para uma linguagem de expressões simples
+(Tabela~\ref{tab:syntax}) com suporte a aritmética inteira, vinculação e
+leitura de variáveis em um ambiente mutável, sequenciamento e tratamento de
+erros em tempo de execução. Esse cenário combina três efeitos que a semântica
+apresenta em conjuntos de regras disjuntos (Seção~\ref{sec:semantica}) --- estado
+mutável para o ambiente de variáveis, exceções para sinalização de erros
+semânticos e saída para exibição de resultados intermediários ---, ainda que
+interajam no comportamento observável, já que a terminação por erro delimita o
+traço de saída.
+
+Adota-se deliberadamente um ambiente único e global, sem restauração de
+vínculos ao término de \texttt{Let}: a construção vincula (ou revincula) a
+variável para todo o restante da avaliação. Além de manter o efeito de estado
+simples, essa escolha decorre da delimitação teórica da Seção~\ref{sec:relacao}:
+disciplinas de escopo com restauração correspondem a variantes \emph{escopadas}
+do efeito de estado, que saem da classe algébrica sobre a qual repousa o
+argumento de equivalência, e ficam como trabalho futuro.
+
+Registre-se ainda uma consequência da sintaxe adotada. A linguagem não possui
+condicional nem construto de captura de erro, de modo que o efeito de exceção é
+exercitado apenas no regime de \emph{abortagem total}, sem recuperação: dos três
+modos de uso da continuação identificados na Seção~\ref{sec:fund-efeitos}, o
+caso de uso exercita a retomada única e o descarte, e não a retomada múltipla.
+Conclusões sobre efeitos com captura em escopo ficam, portanto, fora do alcance
+deste estudo (Seção~\ref{sec:protocolo}).
+
+\begin{table}[ht]
+  \centering
+  \caption{Sintaxe abstrata da linguagem de expressões utilizada como caso de uso.}
+  \label{tab:syntax}
+  \small
+  \begin{tabular}{rlp{0.46\linewidth}}
+    \toprule
+    \textbf{Expressão} & \textbf{Notação} & \textbf{Semântica} \\
+    \midrule
+    Literal         & $\texttt{Num}\;n$        & Inteiro $n$ \\
+    Variável        & $\texttt{Var}\;x$        & Leitura do ambiente \\
+    Adição          & $\texttt{Add}\;e_1\;e_2$ & Soma de $e_1$ e $e_2$ \\
+    Multiplicação   & $\texttt{Mul}\;e_1\;e_2$ & Produto de $e_1$ e $e_2$ \\
+    Divisão         & $\texttt{Div}\;e_1\;e_2$ & Divisão inteira truncada, erro se divisor $=0$ \\
+    Ligação         & $\texttt{Let}\;x\;e\;b$  & Avalia $e$, vincula (ou revincula) $x$ no
+                                                 ambiente global, avalia $b$; o vínculo
+                                                 persiste após $b$ \\[2pt]
+    Sequência       & $\texttt{Seq}\;e_1\;e_2$ & Avalia $e_1$, descarta, avalia $e_2$ \\
+    Impressão       & $\texttt{Print}\;e$      & Imprime o valor de $e$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Esse cenário é recorrente na literatura de linguagens funcionais
+\cite{liang:95,pretnar:15}, o que situa o caso de uso em terreno familiar. A
+opção por um único caso de uso, em vez de múltiplos exemplos isolados, reduz a
+interferência de fatores externos às abstrações de efeitos, ao custo de tornar
+$n = 1$ toda generalização --- limitação retomada na validade externa
+(Seção~\ref{sec:protocolo}).
+
+\subsection{Semântica Operacional e Critério de Equivalência}
+\label{sec:semantica}
+
+Esta subseção fixa a semântica da linguagem da Tabela~\ref{tab:syntax} de forma
+independente da implementação, de modo que as quatro versões possam ser
+comparadas contra uma mesma referência formal --- e não umas contra as outras,
+o que deixaria passar despercebido qualquer erro comum a duas delas.
+
+\paragraph{Domínio semântico.}
+Sejam $\mathcal{E}$ o conjunto das expressões geradas pela sintaxe da
+Tabela~\ref{tab:syntax}, $\mathit{Var}$ o conjunto enumerável de identificadores
+de variáveis e $\mathbb{Z}$ os inteiros. Um \emph{estado} (ou \emph{ambiente}) é
+uma função parcial finita $\sigma : \mathit{Var} \rightharpoonup \mathbb{Z}$, e
+$\Sigma$ denota o conjunto de estados. Um \emph{traço de saída} é uma sequência
+$\omega \in \mathbb{Z}^{*}$. Seja $\mathit{Msg}$ a imagem das duas funções
+canônicas de mensagem, $\mathit{msg\_unbound} : \mathit{Var} \to \mathit{Msg}$ e
+$\mathit{msg\_div\_zero} \in \mathit{Msg}$. Identifica-se o inteiro $n$ com a
+expressão $\texttt{Num}\;n$, de modo que valores são expressões. O conjunto de
+\emph{configurações} é
+\[
+\mathcal{C} \;=\; (\mathcal{E} \times \Sigma \times \mathbb{Z}^{*})
+\;\cup\;
+(\{\bot_{\mathit{err}}\} \times \mathit{Msg} \times \Sigma \times \mathbb{Z}^{*}),
+\]
+em que $\bot_{\mathit{err}}$ marca a terminação por exceção. As configurações do
+segundo componente da união, ditas \emph{configurações de erro}, são terminais:
+nenhuma regra de transição parte delas. O conjunto dos \emph{resultados}
+$\mathcal{R} \subseteq \mathcal{C}$ é o das configurações terminais: sucessos
+$\langle v,\, \sigma',\, \omega \rangle$ com $v \in \mathbb{Z}$ e erros
+$\langle \bot_{\mathit{err}},\, m,\, \sigma',\, \omega \rangle$.
+
+Note-se que $\mathbb{Z}$ é o domínio da especificação, ao passo que as
+implementações operam sobre inteiros de máquina de largura fixa --- 63 bits em
+OCaml e 64 bits em Haskell. A equivalência funcional é, portanto, enunciada
+sobre o subconjunto de $\mathbb{Z}$ representável em ambas as linguagens, e as
+cargas de \textit{benchmark} são construídas para não sair dele
+(Seção~\ref{sec:cargas}).
+
+\paragraph{Relação de transição.}
+A semântica é \emph{small-step}, com relação
+$\Rightarrow \;\subseteq\; \mathcal{C} \times \mathcal{C}$.
+A Figura~\ref{fig:semantica} apresenta as regras de redução e a gramática dos
+contextos de avaliação \cite{felleisen:92}, da qual decorrem as regras
+congruentes e a propagação de configurações de erro. A ordem de avaliação é
+fixada à esquerda pela forma dos contextos: em $\texttt{Add}\;E\;e$, o operando
+direito só é reduzido depois que o esquerdo se torna valor, e a decomposição de
+uma configuração em contexto e redex é única. Daí o determinismo de
+$\Rightarrow$.
+
+\begin{figure}[ht]
+\centering
+\small
+\fbox{\parbox{0.94\linewidth}{%
+\textbf{Contextos de avaliação}
+\par\smallskip
+$E ::= \Box \mid \texttt{Add}\;E\;e \mid \texttt{Add}\;v\;E
+      \mid \texttt{Mul}\;E\;e \mid \texttt{Mul}\;v\;E
+      \mid \texttt{Div}\;E\;e \mid \texttt{Div}\;v\;E$
+\par\smallskip
+\hspace{2.1em}$\mid \texttt{Let}\;x\;E\;b \mid \texttt{Seq}\;E\;e
+      \mid \texttt{Print}\;E$
+\par\medskip\hrule\par\medskip
+\textbf{(Var)}\quad
+$x \in \mathrm{dom}(\sigma) \implies
+ \langle \texttt{Var}\;x,\, \sigma,\, \omega \rangle
+ \Rightarrow \langle \sigma(x),\, \sigma,\, \omega \rangle$
+\par\medskip
+\textbf{(Var-err)}\quad
+$x \notin \mathrm{dom}(\sigma) \implies
+ \langle \texttt{Var}\;x,\, \sigma,\, \omega \rangle
+ \Rightarrow \langle \bot_{\mathit{err}},\,
+ \mathit{msg\_unbound}(x),\, \sigma,\, \omega \rangle$
+\par\medskip
+\textbf{(Add)}\quad
+$\langle \texttt{Add}\;n_1\;n_2,\, \sigma,\, \omega \rangle
+ \Rightarrow \langle n_1+n_2,\, \sigma,\, \omega \rangle$
+\par\medskip
+\textbf{(Div)}\quad
+$n_2 \neq 0 \implies
+ \langle \texttt{Div}\;n_1\;n_2,\, \sigma,\, \omega \rangle
+ \Rightarrow \langle n_1 \div n_2,\, \sigma,\, \omega \rangle$
+\par\medskip
+\textbf{(Div-zero)}\quad
+$\langle \texttt{Div}\;n_1\;0,\, \sigma,\, \omega \rangle
+ \Rightarrow \langle \bot_{\mathit{err}},\,
+ \mathit{msg\_div\_zero},\, \sigma,\, \omega \rangle$
+\par\medskip
+\textbf{(Let)}\quad
+$\langle \texttt{Let}\;x\;n\;b,\, \sigma,\, \omega \rangle
+ \Rightarrow \langle b,\, \sigma[x \mapsto n],\, \omega \rangle$
+\par\medskip
+\textbf{(Seq)}\quad
+$\langle \texttt{Seq}\;n\;e_2,\, \sigma,\, \omega \rangle
+ \Rightarrow \langle e_2,\, \sigma,\, \omega \rangle$
+\par\medskip
+\textbf{(Print)}\quad
+$\langle \texttt{Print}\;n,\, \sigma,\, \omega \rangle
+ \Rightarrow \langle n,\, \sigma,\, \omega \cdot n \rangle$
+\par\medskip
+\textbf{(Cong)}\quad
+$\langle e,\sigma,\omega\rangle \Rightarrow \langle e',\sigma',\omega'\rangle
+ \implies \langle E[e],\sigma,\omega\rangle \Rightarrow
+ \langle E[e'],\sigma',\omega'\rangle$
+\par\medskip
+\textbf{(Err-prop)}\quad
+$\langle e,\sigma,\omega\rangle \Rightarrow
+ \langle \bot_{\mathit{err}},m,\sigma',\omega'\rangle
+ \implies \langle E[e],\sigma,\omega\rangle \Rightarrow
+ \langle \bot_{\mathit{err}},m,\sigma',\omega'\rangle$
+}}
+\caption{Contextos de avaliação e regras da semântica operacional
+\textit{small-step}. $\Rightarrow^{*}$ denota o fecho reflexivo-transitivo de
+$\Rightarrow$; $\omega \cdot n$, a concatenação à direita; e $\div$, a divisão
+inteira com truncamento em direção a zero. Configurações de erro são terminais.}
+\label{fig:semantica}
+\end{figure}
+
+\paragraph{Progresso, terminação e função denotacional induzida.}
+Duas propriedades sustentam a boa definição da semântica. \emph{Progresso}: por
+indução na estrutura de $e$, toda configuração que não pertence a $\mathcal{R}$
+admite transição, de modo que não há estados travados. \emph{Terminação}: a cada
+passo, o tamanho da expressão decresce ou um redex é consumido, e a linguagem
+não possui laços nem recursão; logo $\Rightarrow$ é fortemente normalizante.
+Progresso, terminação e determinismo dão a totalidade e a unicidade da função
+semântica $\mathcal{D} : \mathcal{E} \times \Sigma \to \mathcal{R}$, definida
+por $\mathcal{D}(e, \sigma) = (v, \sigma', \omega)$ quando
+$\langle e, \sigma, \varepsilon \rangle \Rightarrow^{*}
+ \langle v, \sigma', \omega \rangle$ com $v \in \mathbb{Z}$, e por
+$\mathcal{D}(e, \sigma) = (\bot_{\mathit{err}}, m, \sigma', \omega)$ quando a
+redução termina em configuração de erro com mensagem $m$.
+
+\paragraph{Ortogonalidade dos efeitos.}
+Dizem-se \emph{ortogonais} os efeitos $E_{1}, \ldots, E_{n}$ quando suas regras
+de transição podem ser apresentadas em conjuntos disjuntos $R_{1}, \ldots, R_{n}$
+tais que, para cada $i \neq j$, as regras de $R_{i}$ alteram apenas
+\emph{observáveis} --- resultado, estado, traço --- que as regras de $R_{j}$
+preservam. No presente caso, a regra \textbf{(Print)} altera apenas $\omega$, a
+regra \textbf{(Let)} altera apenas $\sigma$ (e \textbf{(Var)} apenas o consulta),
+e as regras de erro (\textbf{Var-err}, \textbf{Div-zero}) alteram apenas o
+componente de resultado. Essa disjunção é o que justifica, semanticamente, a
+expectativa de que a inserção de um quarto efeito (Seção~\ref{sec:hipoteses},
+H2) deva exigir intervenção apenas nas regras desse novo efeito, e não nas
+existentes, expectativa que diferencia as duas abordagens em estudo.
+
+\paragraph{Equivalência funcional entre implementações.}
+Uma implementação $I$ é \emph{funcionalmente equivalente} a $\mathcal{D}$ se,
+para toda expressão $e$ e todo estado inicial $\sigma_{0}$, vale
+$\llbracket I \rrbracket(e, \sigma_{0}) = \mathcal{D}(e, \sigma_{0})$,
+em que $\llbracket I \rrbracket$ denota a função produzida por $I$ sobre o
+mesmo domínio $\mathcal{R}$. Em particular, exige-se: (i) o mesmo inteiro
+retornado nos casos de sucesso, (ii) o mesmo estado final $\sigma'$,
+(iii) o mesmo traço de saída $\omega$ (mesma sequência, na mesma ordem) e
+(iv) a mesma mensagem de erro nos casos de falha, isto é, igualdade em
+$\mathit{Msg}$, o que torna o critério verificável por comparação de cadeias.
+A verificação é operacionalizada por uma suíte de testes de oráculo derivada de
+$\mathcal{D}$, cuja construção é descrita na Seção~\ref{sec:oraculo}.
+
+\subsection{Hipóteses}\label{sec:hipoteses}
+
+As hipóteses são enunciadas em termos intralinguagem, em coerência com o escopo
+das comparações fixado na Seção~\ref{sec:metricas}. Os critérios de decisão são
+declarados aqui, antes da coleta, de modo que a confrontação com as evidências
+não dependa de limiares escolhidos depois de conhecidos os dados.
+
+\begin{itemize}
+  \item[\textbf{H1}] (legibilidade) Em OCaml, o avaliador com \textit{handlers}
+        apresentará contagem de operadores de efeito e profundidade de
+        aninhamento próximas às da referência imperativa, com diferença não
+        superior a 10\%; em Haskell, a versão monádica excederá as da sua base
+        em \texttt{IORef}. A formulação intralinguagem substitui a comparação
+        direta entre linguagens adotada no TCC~I, pelas razões discutidas na
+        Seção~\ref{sec:refinamento}.
+  \item[\textbf{H2}] (composabilidade) Em OCaml, a inserção do quarto efeito
+        exigirá número de pontos de modificação próximo ao da linha de base; em
+        Haskell, a versão monádica exigirá mais pontos que a sua base, por
+        requerer alteração do tipo da pilha e das restrições de classe
+        associadas \cite{kiselyov:13}. Registre-se que o uso de \textit{mtl}
+        dispensa a reintrodução de elevações para as operações canônicas, de
+        modo que a diferença esperada é menor do que a formulação do TCC~I
+        sugeria.
+  \item[\textbf{H3}] (abstração) Em cada linguagem, o mecanismo de efeitos
+        apresentará volume de \textit{boilerplate} superior ao da sua linha de
+        base, e o \textit{handler} permitirá reuso de componentes que a base não
+        permite \cite{pretnar:15}. A adoção de \textit{mtl}
+        (Seção~\ref{sec:fund-monadas}) reduz de antemão o \textit{boilerplate}
+        da versão monádica.
+  \item[\textbf{H4}] (desempenho) Os efeitos nativos do OCaml incorrerão em
+        sobrecusto inferior a $1{,}5\times$ sobre a referência imperativa
+        \emph{na mesma linguagem} \cite{sivaramakrishnan:21}, enquanto a pilha
+        de transformadores em Haskell incorrerá em sobrecusto superior a
+        $2{,}0\times$ sobre a sua própria linha de base (\texttt{IORef}) no
+        cenário \textsc{State} \cite{xie:20}. Cada metade é considerada
+        corroborada se o intervalo de confiança de 95\% da razão não contiver o
+        limiar.
+  \item[\textbf{P1}] (previsão exploratória) Espera-se que a razão de sobrecusto
+        em OCaml seja inferior à razão em Haskell. Por comparar duas razões
+        obtidas em \textit{runtimes} distintos, esta previsão é tratada como
+        exploratória e considerada informativa apenas se os intervalos de
+        confiança não se sobrepuserem (Seção~\ref{sec:protocolo}).
+\end{itemize}
+
+\subsection{Dimensões e Métricas de Avaliação}\label{sec:metricas}
+
+\paragraph{Escopo e unidade de contagem.} Todas as métricas desta subseção são
+comparadas \emph{entre pares da mesma linguagem} (efeitos \textit{versus}
+imperativa em OCaml; mônadas \textit{versus} \texttt{IORef} em Haskell), e não
+diretamente entre Haskell e OCaml; a justificativa empírica está na
+Seção~\ref{sec:refinamento}. Fixam-se ainda duas unidades disjuntas: as métricas
+de legibilidade (QP1) são contadas \emph{apenas sobre a função} \texttt{eval},
+que é a lógica semântica, e as de \textit{boilerplate} (QP3) sobre o
+\emph{arquivo menos} \texttt{eval}, que é o custo estrutural imposto pelo
+mecanismo fora da lógica. Assim, nenhuma linha é contada nas duas dimensões.
+
+\paragraph{Legibilidade (QP1).} Adotam-se três métricas estruturais. A primeira
+é o total de linhas de código efetivas (LOC) de \texttt{eval}, excluindo linhas
+em branco e comentários. A segunda é o número de \emph{operações de efeito},
+definido de modo a ser comparável entre as versões de uma mesma linguagem: conta
+tanto a realização abstrata quanto a direta do efeito --- em OCaml, cada
+\texttt{perform} na versão com \textit{handlers} e cada acesso a
+\texttt{Hashtbl}, \texttt{raise} ou emissão na base; em Haskell, cada
+\texttt{>>=}, \texttt{<-} em bloco \texttt{do}, \texttt{throwError},
+\texttt{get}, \texttt{modify'} e operação sobre \texttt{IORef}. A contagem é
+reportada também por construtor semântico (são oito), para que versões mais
+longas não sejam favorecidas. A terceira é a profundidade máxima de aninhamento
+léxico, medida sobre a árvore de sintaxe: incrementam a profundidade os nós de
+ligação (\texttt{let~\dots~in}, \texttt{<-} em bloco \texttt{do}), os braços de
+casamento de padrão e os blocos condicionais.
+
+Essas métricas são \emph{proxies} de legibilidade, não medidas diretas da
+legibilidade percebida; adotam-se múltiplos \emph{proxies} complementares. Para
+remover variação de estilo, o código é normalizado antes da contagem por
+\texttt{ormolu} e por \texttt{ocamlformat} com perfil \texttt{conventional}
+\cite{ormolu:tool,ocamlformat:tool}; os arquivos de configuração e as versões
+exatas são publicados no repositório, dado que perfis distintos produzem
+contagens distintas para o mesmo código. A análise qualitativa que acompanha as
+métricas é guiada por uma rubrica fixada \emph{a priori}, com três critérios ---
+(i) explicitação do fluxo de efeitos, (ii) localidade do tratamento de efeitos e
+(iii) volume de cerimônia sintática ---, cada um pontuado em escala ordinal de
+três pontos com âncoras descritas no documento de protocolo. A rubrica é
+aplicada \emph{antes} de conhecidas as contagens, para que não constitua
+racionalização dos números.
+
+\paragraph{Composabilidade (QP2).} Avaliada pelo número de pontos de modificação
+necessários para inserir um quarto efeito no interpretador existente. Para evitar
+que a métrica favoreça uma das abordagens por construção, ``ponto de
+modificação'' é definido a priori e de forma neutra como qualquer declaração ou
+definição preexistente cujo texto precise ser alterado para acomodar o novo
+efeito, excluindo-se as adições puras, que são contadas à parte. O quarto efeito
+é especificado antes da implementação como leitura de um fluxo de entrada,
+$\texttt{Input} : \texttt{unit} \to \texttt{int option}$, cujo esgotamento
+produz erro; a escolha é deliberada por \emph{interagir} com o efeito de
+exceção, e não ser meramente ortogonal, o que evita que H2 se confirme
+trivialmente. A inserção é medida nas quatro implementações --- inclusive nas
+linhas de base, que dão escala aos números --- e realizada em ramo separado do
+repositório, de modo que os \textit{benchmarks} continuem a ser executados sobre
+a versão de três efeitos descrita na Seção~\ref{sec:impl}.
+
+\paragraph{Poder de abstração (QP3).} Avaliado pelo volume de
+\textit{boilerplate}, na unidade fixada acima, e pelo número de instâncias de
+reutilização de componentes, definido como o emprego de um mesmo
+\textit{handler} ou camada em mais de um \emph{ponto de composição} --- isto é,
+mais de um ponto do programa em que o mecanismo é instalado ou instanciado ---
+sem reescrita. Registre-se que, com um único caso de uso, essa contagem tem
+baixo poder discriminante; a resposta a QP3 apoia-se, portanto, sobretudo na
+análise qualitativa das estratégias de reinterpretação de efeito
+(Seção~\ref{sec:oraculo}). O critério de classificação de cada linha como
+\textit{boilerplate} é fixado em um documento de protocolo, publicado com o
+código, e aplicado por dupla contagem independente do autor e do orientador,
+reportando-se o grau de concordância e as divergências.
+
+\subsection{Protocolo Experimental e Ameaças à Validade}\label{sec:protocolo}
+
+\paragraph{Configuração.} Os \textit{harnesses} de \textit{benchmark} estão
+implementados com Criterion~1.6 \cite{criterion:08} em Haskell
+(GHC~9.6.4, \texttt{-O2}) e Bechamel \cite{bechamel:21} em OCaml~5.2.1 com
+\textit{flambda} (\texttt{-O3}), em quatro cenários. Dentro de cada linguagem, o
+mecanismo e a sua linha de base são compilados com \textit{flags} idênticas. O
+uso de um \textit{switch} com \textit{flambda} é condição necessária: sem ele, a
+\textit{flag} \texttt{-O3} é silenciosamente ignorada, e a configuração descrita
+aqui não corresponderia à efetivamente executada.
+
+O cenário \textsc{Arith} avalia 10.000 expressões aritméticas sem variáveis. O
+cenário \textsc{State} envolve 500 variáveis distintas e 10.000 leituras; o
+prefixo de vinculação, um \texttt{Let} aninhado de 500 níveis, exercita
+deliberadamente o crescimento dinâmico do segmento de pilha na versão com
+\textit{handlers}. O cenário \textsc{Exn} avalia 10.000 expressões com 20\% de
+divisões por zero. O cenário \textsc{Output} avalia 10.000 expressões com
+\texttt{Print}, empregando o \textit{handler} acumulador em OCaml e um
+\texttt{IORef} de lista em Haskell, em lugar de escrita real: mede-se assim o
+custo do \emph{mecanismo} para o terceiro efeito sem que ele seja dominado pelo
+subsistema de E/S do sistema operacional.
+
+A geração das cargas é feita uma única vez, fora da região medida. Na versão
+Haskell, utilizam-se \texttt{Control.Monad.State.Strict} e
+\texttt{Data.Map.Strict}; os resultados aritméticos são forçados nas duas
+versões, de modo que a disciplina de estrictness seja idêntica no numerador e no
+denominador da razão, e os resultados finais são forçados à forma normal
+(\texttt{nf}/\texttt{nfIO}). Nas versões OCaml, o resultado é envolvido em
+\texttt{Sys.opaque\_identity} nas duas implementações, para que a otimização com
+\textit{flambda} não elimine trabalho de forma assimétrica. Em ambas as
+linguagens, o ambiente é reiniciado \emph{a cada iteração}, dentro da função
+medida e igualmente nas duas versões, de modo que o custo da reinicialização se
+cancele na razão; reiniciar apenas por amostra faria as iterações seguintes de
+cada lote operarem sobre um ambiente já povoado.
+
+O tratamento de exceções é feito por expressão avaliada, e não por carga
+inteira, de modo que um erro no cenário \textsc{Exn} aborte apenas a expressão
+corrente. Consequentemente, o \textit{handler} de exceção é instalado uma vez
+por expressão, e o cenário mede também o custo de instalação e descarte de
+\textit{handler} --- propriedade do uso realista do mecanismo, e não artefato,
+mas que precisa ser considerada na interpretação.
+
+Cada configuração é medida em 30 amostras, e os tempos são reportados com
+intervalos de confiança obtidos por \textit{bootstrap}, procedimento nativo de
+ambas as ferramentas \cite{georges:07}. Reporta-se também o volume de memória
+alocada (via \texttt{GHC.Stats} e \texttt{Gc.quick\_stat}), grandeza
+determinística que permite distinguir diferenças estruturais de ruído de
+medição, e o coeficiente de determinação da regressão do Criterion; corridas com
+$R^{2} < 0{,}95$ são descartadas e repetidas. Os três cenários são executados
+com três sementes distintas, para verificar a estabilidade das razões.
+
+%% TODO: registrar o tempo de parede da campanha completa apos a primeira
+%% execucao de A4, e inserir pausas de resfriamento entre configuracoes se
+%% necessario.
+As medições são conduzidas em máquina com Intel Core i5-12500H (arquitetura
+híbrida, quatro núcleos de desempenho e oito de eficiência), 32~GB de RAM, sob
+Windows~11, com o plano de energia fixado em alto desempenho, o
+\textit{turbo} desabilitado por \texttt{powercfg} (\textsc{perfboostmode}
+igual a zero, limites mínimo e máximo do processador igualados), afinidade
+restrita aos núcleos de desempenho por máscara de processador, verificação em
+tempo real do antivírus e tarefas de indexação suspensas, nenhuma outra
+aplicação ativa, e iterações de aquecimento para estabilização térmica e de
+\textit{cache}.
+
+\paragraph{Validação da equivalência funcional.} A entrada em produção dos
+\textit{benchmarks} é condicionada à passagem integral da suíte de oráculo
+descrita na Seção~\ref{sec:oraculo}, de modo que as diferenças observadas em
+desempenho reflitam o custo do mecanismo de efeitos, e não divergências de
+comportamento entre as implementações. A condição é reavaliada após qualquer
+alteração no código, inclusive a inserção do quarto efeito.
+
+\paragraph{Validade interna.} A principal ameaça é o \emph{confundimento entre o
+mecanismo de efeitos e o \textit{runtime} da linguagem}: a versão monádica
+executa sobre o GHC e as versões com efeitos e imperativa sobre o OCaml, com
+modelos de coleta de lixo e otimização distintos. Comparar diretamente os tempos
+absolutos entre Haskell e OCaml seria, portanto, comparar duas variáveis ao mesmo
+tempo. Para mitigar, cada abordagem é normalizada contra uma linha de base
+imperativa \emph{na sua própria linguagem}, a saber, a referência em OCaml
+(Seção~\ref{sec:impl-base}) e uma referência quase imperativa em Haskell
+baseada em \texttt{IORef} contendo o mesmo \texttt{Map~String~Int} da versão
+monádica (e não uma tabela de espalhamento), de modo que a razão de sobrecusto
+isole o mecanismo de efeitos, e não a estrutura de dados. Pela mesma razão, a
+camada \texttt{IO} da pilha monádica, ociosa nos cenários sem \texttt{Print},
+está presente também na base em \texttt{IORef} e se cancela na razão.
+
+Uma ressalva quantitativa é devida na comparação entre as duas razões (P1). As
+bases têm complexidades distintas --- \texttt{Hashtbl} em OCaml, com custo
+amortizado constante, e \texttt{Map} em Haskell, logarítmico e com alocação por
+consulta. Se o sobrecusto do mecanismo for aproximadamente aditivo por operação,
+a razão vale $1 + \Delta / T_{\mathrm{base}}$, de modo que uma base mais cara
+\emph{deflaciona} a razão. Como a base Haskell é a mais cara, o viés opera
+\emph{contra} H4 e P1, que predizem razão maior naquela linguagem; caso a
+predição se confirme, o resultado é mais forte do que o valor nominal sugere.
+
+\paragraph{Ameaças específicas do ambiente de medição.} Três limitações do
+ambiente disponível merecem registro. A primeira é o escalonamento em
+arquitetura híbrida: a fixação de afinidade aos núcleos de desempenho reduz, mas
+não elimina, a interferência do escalonador do sistema operacional. A segunda é
+térmica: as medições são feitas em computador portátil, e cargas sustentadas ao
+longo de trinta amostras podem induzir limitação por temperatura, fenômeno que
+nenhuma configuração de energia elimina. Ambas afetam sobretudo os tempos
+absolutos; como os resultados são reportados na forma de razões contra uma linha
+de base medida nas mesmas condições e na mesma sessão, e a ordem de execução é
+alternada entre tratamento e linha de base, o efeito sobre as conclusões é
+atenuado. A terceira é a plataforma: as medições são feitas em Windows, ao passo
+que a literatura de referência mede em Linux \cite{sivaramakrishnan:21}, e o
+caminho de alocação de \textit{fibers} pode diferir entre as duas.
+
+\paragraph{Validade de construto.} LOC, contagem de operações de efeito e
+aninhamento são \emph{proxies} de legibilidade, e a Seção~\ref{sec:refinamento}
+documenta um caso concreto em que a LOC se mostrou frágil. Registre-se ainda
+que, na versão com \textit{handlers}, o estado reside em uma \texttt{Hashtbl} e
+o traço em uma lista, ambos \emph{externos} ao \textit{handler}
+(Seção~\ref{sec:impl-efeitos}); a alternativa canônica, em que estado e traço
+são propagados pelo resultado do \textit{handler}, tem perfil de custo distinto,
+de modo que o sobrecusto medido é o do mecanismo \emph{nesta} realização, e não
+o de um \textit{handler} de estado em passagem de parâmetro.
+
+\paragraph{Validade externa.} Os resultados restringem-se a um único caso de uso
+(interpretador com três efeitos), a versões específicas de compilador e
+hardware, e ao regime de \emph{abortagem total} do efeito de exceção
+(Seção~\ref{sec:caso-de-uso}). Padrões de efeito não cobertos --- concorrência,
+não determinismo (inexpressável diretamente sob as continuações
+\emph{one-shot}) e efeitos escopados --- podem comportar-se de forma diferente.
+Tampouco se avalia a \emph{segurança estática de efeitos}
+(Seção~\ref{sec:fund-efeitos}), dimensão em que as duas abordagens diferem
+substancialmente e que fica fora do arcabouço adotado. A escolha de um caso de
+uso canônico na literatura e a publicação do código, dos dados brutos e das
+configurações mitigam parcialmente essas limitações e favorecem a replicação.
+
+\paragraph{Justificativa da escolha de linguagens.} Comparam-se efeitos
+algébricos no OCaml~5 com mônadas em Haskell por serem, respectivamente, as
+abordagens idiomáticas e suportadas em produção em cada linguagem. Uma
+comparação intralinguagem (por exemplo, \textit{extensible effects} em Haskell
+\textit{versus} transformadores \cite{xie:20}) é complementar e indicada como
+trabalho futuro. Incluí-la aqui confundiria a maturidade e o nível de otimização
+das bibliotecas com as propriedades do próprio mecanismo.
+
+%% ============================================================
+\section{Descrição das Implementações}\label{sec:impl}
+%% ============================================================
+
+Esta seção descreve o que foi desenvolvido desde a conclusão do TCC~I: as
+quatro implementações do interpretador, o núcleo comum de sintaxe e geração de
+cargas, a suíte de testes de oráculo e os dois \textit{harnesses} de
+\textit{benchmark}. Registram-se também as decisões de implementação tomadas no
+percurso, várias das quais corrigem problemas de equivalência funcional
+identificados na revisão do TCC~I.
+
+\subsection{Organização e Ferramental}\label{sec:organizacao}
+
+O código está organizado em dois projetos independentes, um por linguagem, com
+um núcleo comum de sintaxe e geração de cargas em cada um. A
+Tabela~\ref{tab:artefatos} lista os artefatos e suas dimensões atuais.
+
+\begin{table}[ht]
+  \centering
+  \caption{Artefatos desenvolvidos. LOC efetivas (sem linhas em branco nem
+           comentários), antes da normalização por formatadores.}
+  \label{tab:artefatos}
+  \small\setlength{\tabcolsep}{3pt}
+  \begin{tabular}{llr}
+    \toprule
+    \textbf{Artefato} & \textbf{Papel} & \textbf{LOC} \\
+    \midrule
+    \texttt{ocaml/lib/expr.ml}                  & sintaxe e geração de cargas & 52 \\
+    \texttt{ocaml/effects/interp\_effects.ml}   & efeitos algébricos e \textit{handlers} & 123 \\
+    \texttt{ocaml/imperative/interp\_imp.ml}    & linha de base do OCaml & 50 \\
+    \texttt{ocaml/test/test\_oracle.ml}         & suíte de oráculo & 94 \\
+    \texttt{ocaml/bench/bench\_main.ml}         & \textit{harness} Bechamel & 65 \\
+    \texttt{haskell/src/Expr.hs}                & sintaxe e geração de cargas & 72 \\
+    \texttt{haskell/src/Interp/Monadic.hs}      & \textit{monad transformers} & 54 \\
+    \texttt{haskell/src/Interp/IORefBase.hs}    & linha de base do Haskell & 63 \\
+    \texttt{haskell/test/Spec.hs}               & suíte de oráculo & 113 \\
+    \texttt{haskell/bench/Main.hs}              & \textit{harness} Criterion & 37 \\
+    \texttt{shared/conformance.json}            & artefatos comuns às duas linguagens & --- \\
+    \texttt{docs/protocolo-metricas.md}         & protocolo de contagem & --- \\
+    \midrule
+    \multicolumn{2}{l}{\textbf{Total (código)}} & \textbf{723} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+O ferramental foi fixado da seguinte forma. No lado OCaml, um \textit{switch}
+opam com OCaml~5.2.1 e \textit{flambda}, construído com \texttt{dune}~3.7 e a
+biblioteca Bechamel para os \textit{benchmarks}. No lado Haskell, GHC~9.6.4 e
+\texttt{cabal}, com \texttt{containers}, \texttt{mtl} e Criterion~1.6. A versão
+do OCaml é determinada pela plataforma de desenvolvimento: o suporte nativo ao
+Windows amadureceu com o opam~2.2 e a série 5.2 do compilador, de modo que a
+versão inicialmente planejada (5.1.1) foi substituída. Nenhuma das
+implementações depende de bibliotecas específicas de plataforma. A normalização
+de estilo prevista nas métricas usa \texttt{ocamlformat} e \texttt{ormolu}, com
+perfil e versão fixados no repositório.
+
+Três artefatos precisam ser idênticos nas duas linguagens: o gerador de cargas,
+as mensagens de erro canônicas e a tabela de casos do oráculo. Como a replicação
+manual não oferece garantia de conformidade, os três são definidos em um arquivo
+neutro (\texttt{shared/conformance.json}), lido por ambos os projetos no caso das
+mensagens e dos casos de teste, e comparado por \textit{diff} contra um
+\textit{dump} produzido por cada linguagem no caso do gerador. Um teste de
+conformidade falha se as réplicas divergirem, o que torna o critério (iv) de
+equivalência funcional verificável também \emph{entre} as linguagens, e não
+apenas dentro de cada uma.
+
+\subsection{Geração Determinística de Cargas}\label{sec:cargas}
+
+Um problema não previsto no TCC~I emergiu ao especificar os cenários de
+\textit{benchmark}: se cada linguagem gerasse suas expressões com o gerador
+pseudoaleatório de sua biblioteca padrão, Haskell e OCaml avaliariam árvores de
+sintaxe distintas, e a carga de trabalho passaria a ser uma segunda variável
+confundida junto com o \textit{runtime}. A solução adotada foi implementar um
+gerador congruencial linear próprio, $x_{n+1} = (1103515245\,x_n + 12345)
+\bmod 2^{30}$, replicado de forma idêntica nas duas linguagens, com a semente
+fixada no código e verificada pelo teste de conformidade
+(Seção~\ref{sec:organizacao}). O módulo $2^{30}$ mantém todos os valores
+intermediários dentro do inteiro nativo das duas linguagens.
+
+Duas precauções são necessárias no uso do gerador. A primeira diz respeito aos
+bits extraídos: em geradores congruenciais com módulo potência de dois, o bit
+$k$ tem período $2^{k+1}$, de modo que os bits baixos ciclam rapidamente ---
+tomar $x \bmod 8$ para escolher entre os oito construtores produziria uma
+sequência de período 8. As escolhas discretas usam, por isso, os bits altos,
+$(x \gg 15) \bmod n$. A segunda diz respeito à faixa dos literais: como as
+árvores têm profundidade~3 e podem conter até oito folhas multiplicadas entre
+si, os literais são sorteados em $[0,100]$, de modo que o pior caso, $100^{8} =
+10^{16}$, permaneça dentro do inteiro de 63 bits comum às duas linguagens
+(Seção~\ref{sec:semantica}).
+
+Os quatro cenários são construídos a partir desse gerador. \textsc{Arith} produz
+10.000 expressões aritméticas de profundidade~3 sem variáveis; para que o
+cenário não gere erros, os divisores são literais no intervalo $[1,9]$.
+\textsc{State} produz um \texttt{Let} aninhado que vincula 500 variáveis,
+seguido de 10.000 expressões que leem duas variáveis sorteadas. \textsc{Exn}
+produz 10.000 expressões nas quais 20\% terminam em uma divisão por zero.
+\textsc{Output} produz 10.000 expressões contendo \texttt{Print}.
+
+\subsection{Versão com Efeitos Algébricos}\label{sec:impl-efeitos}
+
+Cada efeito é declarado como uma operação estendendo \texttt{Effect.t} e
+disparado por \texttt{perform} (Listagem~\ref{lst:ocaml-eval}). Três decisões
+merecem registro.
+
+Primeiro, a operação \texttt{Get} devolve \texttt{int option}, e não
+\texttt{int}. A consequência é que a política de erro para variáveis não
+vinculadas é decidida no avaliador, que dispara \texttt{Fail} com a mensagem
+canônica, e o \textit{handler} de estado permanece ignorante da semântica de
+erro. Na formulação inicial do TCC~I, \texttt{Get} devolvia \texttt{int} e a
+busca na tabela lançava \texttt{Not\_found}, o que quebrava a equivalência
+funcional.
+
+Segundo, a ordem de avaliação dos operandos é fixada com \texttt{let}
+explícitos. O OCaml não especifica a ordem de avaliação dos argumentos de uma
+aplicação, de modo que \texttt{eval~a~+~eval~b} não garante que os efeitos de
+\texttt{a} precedam os de \texttt{b}, e o critério (iii) de equivalência
+funcional poderia falhar de forma dependente do compilador.
+
+Terceiro, o efeito de exceção é modelado descartando a continuação, e o de
+estado retomando-a (Listagem~\ref{lst:ocaml-handler}). Nesta implementação, os
+dois \textit{handlers} podem ser aninhados em qualquer ordem, por duas razões
+que convém não confundir com uma propriedade geral do mecanismo: o estado reside
+em uma \texttt{Hashtbl} \emph{externa} ao \textit{handler}, e não no seu
+resultado; e \texttt{run\_state} é polimórfico no tipo de resposta, ao passo que
+\texttt{run\_exn} o fixa. \textit{Handlers} que transformam o resultado impõem
+restrição de ordem tanto quanto uma camada monádica.
+
+\begin{lstlisting}[style=ocaml,caption={Declaração dos efeitos e avaliador em OCaml~5.},label={lst:ocaml-eval}]
+type _ Effect.t +=
+  | Get    : string -> int option Effect.t
+  | Set    : string * int -> unit Effect.t
+  | Fail   : string -> 'a Effect.t
+  | Output : int -> unit Effect.t
+
+let rec eval : expr -> int = function
+  | Num n -> n
+  | Var x -> (
+      match perform (Get x) with
+      | Some v -> v
+      | None -> perform (Fail (msg_unbound x)))
+  | Add (a, b) ->
+      let x = eval a in
+      let y = eval b in
+      x + y
+  | Div (a, b) ->
+      let x = eval a in
+      let y = eval b in
+      if y = 0 then perform (Fail msg_div_zero) else x / y
+  | Let (x, e, b) ->
+      let v = eval e in
+      perform (Set (x, v));
+      eval b
+  | Seq (a, b) -> ignore (eval a); eval b
+  | Print e -> let v = eval e in perform (Output v); v
+  (* Mul analogo a Add *)
+\end{lstlisting}
+
+\begin{lstlisting}[style=ocaml,caption={\textit{Handlers} de estado (retoma a continuação) e de exceção (descarta a continuação), e sua composição.},label={lst:ocaml-handler}]
+let run_state (tbl : (string, int) Hashtbl.t) (main : unit -> 'a) : 'a =
+  match_with main ()
+    { retc = (fun v -> v)
+    ; exnc = (fun e -> raise e)
+    ; effc = (fun (type a) (eff : a Effect.t) ->
+        match eff with
+        | Get x      -> Some (fun (k : (a, _) continuation) ->
+                           continue k (Hashtbl.find_opt tbl x))
+        | Set (x, v) -> Some (fun (k : (a, _) continuation) ->
+                           Hashtbl.replace tbl x v; continue k ())
+        | _          -> None) }
+
+let run_exn (main : unit -> int) : (int, string) result =
+  match_with main ()
+    { retc = (fun v -> Ok v)
+    ; exnc = (fun e -> raise e)
+    ; effc = (fun (type a) (eff : a Effect.t) ->
+        match eff with
+        | Fail msg -> Some (fun (_ : (a, _) continuation) -> Error msg)
+        | _        -> None) }
+
+(* Composicao usada na execucao e nos benchmarks *)
+let run (tbl : (string, int) Hashtbl.t) (e : expr) : (int, string) result =
+  run_state tbl (fun () -> run_output (fun () -> run_exn (fun () -> eval e)))
+\end{lstlisting}
+
+Um terceiro \textit{handler} interpreta \texttt{Output}. Foram implementadas
+duas versões: uma que escreve em \texttt{stdout}, usada na execução normal, e
+uma que acumula os valores emitidos em uma lista, usada pela suíte de oráculo e
+pelo cenário \textsc{Output}. Essa é uma manifestação concreta da propriedade
+que o trabalho se propõe a avaliar: trocar a interpretação de um efeito exigiu
+apenas fornecer outro \textit{handler}, sem alterar uma linha do avaliador.
+
+\subsection{Versão Monádica}\label{sec:impl-monadica}
+
+Os três efeitos são combinados na pilha
+\texttt{ExceptT~String~(StateT~Env~IO)}, com \texttt{Env~=~Map~String~Int}
+(Listagem~\ref{lst:haskell}). A ordem das camadas é uma decisão semântica, e não
+estilística: com \texttt{ExceptT} externo, o estado sobrevive ao lançamento da
+exceção, como exige o critério (ii) de equivalência funcional e como se comporta
+a versão com efeitos, cujo estado vive em uma tabela externa. A pilha inversa,
+\texttt{StateT~Env~(ExceptT~String~IO)}, descartaria o estado no erro, e essa
+divergência é justamente um dos casos cobertos pela suíte de oráculo
+(Seção~\ref{sec:oraculo}).
+
+A divisão usa \texttt{quot}, e não \texttt{div}: o primeiro trunca em direção a
+zero, coincidindo com o operador \texttt{/} do OCaml e com a semântica fixada na
+Seção~\ref{sec:semantica}, enquanto \texttt{div} arredonda para baixo e
+divergiria com operandos negativos. Utilizam-se
+\texttt{Control.Monad.State.Strict} e \texttt{Data.Map.Strict}; as atualizações
+de estado empregam \texttt{modify'} e os resultados aritméticos são forçados
+explicitamente, para que a disciplina de estrictness seja idêntica à da linha de
+base e a medição não capture acúmulo de \textit{thunks} em lugar do custo do
+mecanismo.
+
+\begin{lstlisting}[style=haskell,caption={Interpretador em Haskell com \textit{monad transformers}.},label={lst:haskell}]
+type Env = Map String Int
+type Interp a = ExceptT String (StateT Env IO) a
+
+eval :: Expr -> Interp Int
+eval (Num n) = return n
+eval (Var x) = do
+  env <- get
+  maybe (throwError (msgUnbound x)) return (Map.lookup x env)
+eval (Add a b) = do
+  x <- eval a
+  y <- eval b
+  return $! x + y
+eval (Div a b) = do
+  x <- eval a
+  y <- eval b
+  when (y == 0) (throwError msgDivZero)
+  return $! x `quot` y
+eval (Let x e b) = do
+  v <- eval e
+  modify' (Map.insert x v)
+  eval b
+eval (Seq a b) = eval a >> eval b
+eval (Print e) = do
+  v <- eval e
+  emit v
+  return v
+\end{lstlisting}
+
+\subsection{Linhas de Base}\label{sec:impl-base}
+
+A referência imperativa em OCaml usa \texttt{Hashtbl} para o ambiente, exceções
+nativas para erros e escrita direta para a saída, com as mesmas mensagens
+canônicas e a mesma fixação explícita da ordem de avaliação da versão com
+efeitos (Listagem~\ref{lst:imperative}). A tabela é recebida como parâmetro, e
+não capturada de um escopo global, para que o padrão de acesso seja idêntico ao
+da versão com \textit{handlers}. O cotejo com a Listagem~\ref{lst:ocaml-eval}
+isola o que o mecanismo de efeitos acrescenta: a estrutura do avaliador é a
+mesma, e a diferença reduz-se à substituição de acessos diretos à tabela e de
+\texttt{raise} por operações de efeito.
+
+\begin{lstlisting}[style=ocaml,caption={Referência imperativa em OCaml. Mesmas mensagens canônicas e mesma fixação de ordem da versão com efeitos.},label={lst:imperative}]
+let rec eval (env : (string, int) Hashtbl.t) : expr -> int = function
+  | Num n -> n
+  | Var x -> (
+      match Hashtbl.find_opt env x with
+      | Some v -> v
+      | None -> raise (Runtime_error (msg_unbound x)))
+  | Add (a, b) ->
+      let x = eval env a in
+      let y = eval env b in
+      x + y
+  | Div (a, b) ->
+      let x = eval env a in
+      let y = eval env b in
+      if y = 0 then raise (Runtime_error msg_div_zero) else x / y
+  | Let (x, e, b) ->
+      let v = eval env e in
+      Hashtbl.replace env x v;
+      eval env b
+  | Seq (a, b) -> ignore (eval env a); eval env b
+  | Print e -> let v = eval env e in !emit v; v
+\end{lstlisting}
+
+A linha de base do Haskell usa um \texttt{IORef} contendo o mesmo
+\texttt{Map~String~Int} da versão monádica, com erros por exceção
+(\texttt{throwIO}) e o mesmo forçamento explícito dos resultados aritméticos. A
+escolha do \texttt{Map}, em lugar de uma tabela de espalhamento, é deliberada:
+sendo a estrutura de dados idêntica à da versão monádica, a razão entre as duas
+isola o custo do mecanismo de efeitos, e não o da representação do ambiente.
+
+Em ambas as linguagens, a emissão de saída é feita através de uma referência a
+função (\texttt{emit}) que a suíte de oráculo substitui temporariamente. A
+uniformidade é deliberada: ela dispensa a captura de \texttt{stdout} na suíte
+Haskell, que dependia do \textit{buffering} do descritor e observava a
+\emph{renderização} do traço em lugar do traço $\omega$ definido na
+Seção~\ref{sec:semantica}.
+
+\subsection{Suíte de Testes de Oráculo}\label{sec:oraculo}
+
+A suíte materializa o critério de equivalência funcional da
+Seção~\ref{sec:semantica}. Cada caso fixa uma tripla esperada, composta por
+resultado, ambiente final ordenado e traço de saída, e cada implementação é
+verificada contra a mesma tabela de casos, definida no arquivo de conformidade e
+lida pelas duas linguagens (Listagem~\ref{lst:oraculo}). São 25 casos por
+implementação, cobrindo todos os construtores da Tabela~\ref{tab:syntax} em
+situações de sucesso e de erro, incluindo estados iniciais não vazios e
+operandos negativos.
+
+\begin{lstlisting}[style=ocaml,caption={Excerto da suíte de oráculo. Cada caso fixa resultado, ambiente final e traço de saída.},label={lst:oraculo}]
+(* Divisao truncada em direcao a zero, com sinais opostos:
+   quot (-7) 2 = -3, ao passo que div (-7) 2 = -4 *)
+("divisao truncada, negativo", Div (Num (-7), Num 2),
+ { result = Ok (-3); env = []; out = [] });
+
+(* Ordem de avaliacao dos operandos: fixada a esquerda *)
+("ordem de avaliacao", Add (Print (Num 1), Print (Num 2)),
+ { result = Ok 3; env = []; out = [ 1; 2 ] });
+
+(* O vinculo de Let persiste apos o corpo: ambiente global *)
+("let persiste apos o corpo", Seq (Let ("x", Num 1, Num 0), Var "x"),
+ { result = Ok 1; env = [ ("x", 1) ]; out = [] });
+
+(* Estado e saida sobrevivem ao erro *)
+("estado sobrevive ao erro",
+ Let ("x", Num 5, Seq (Print (Var "x"), Div (Num 1, Num 0))),
+ { result = Error msg_div_zero; env = [ ("x", 5) ]; out = [ 5 ] });
+\end{lstlisting}
+
+Quatro grupos de casos merecem destaque por travarem decisões de projeto, e não
+apenas por verificarem comportamento. O caso da divisão truncada usa operandos
+de sinais opostos, única configuração em que \texttt{quot} e \texttt{div}
+divergem, e portanto a única capaz de detectar a troca. O caso de ordem de
+avaliação usa \texttt{Print} nos dois operandos, única configuração que torna a
+ordem observável, e falha se o compilador avaliar o operando direito primeiro.
+Os casos de persistência e revinculação de \texttt{Let} falham se alguma
+implementação introduzir restauração de escopo. O caso em que estado e saída
+sobrevivem ao erro falha se a pilha monádica for invertida, o que transforma uma
+decisão sutil de ordenação de camadas em uma verificação automática.
+
+A observação do traço $\omega$ é feita sem modificar os avaliadores. Na versão
+com efeitos, por um \textit{handler} alternativo de \texttt{Output}; nas demais,
+substituindo a referência a função de emissão. A assimetria é, ela própria, um
+dado qualitativo relevante para QP3: nas três versões sem \textit{handlers} foi
+preciso \emph{inserir um ponto de indireção antecipando a necessidade}, ao passo
+que na versão com \textit{handlers} nada no avaliador precisou mudar, porque a
+abstração já previa a substituição do interpretador do efeito.
+
+\subsection{\textit{Harnesses} de \textit{Benchmark}}\label{sec:harness}
+
+Os dois \textit{harnesses} implementam os quatro cenários da
+Seção~\ref{sec:protocolo}, com as precauções ali descritas: geração das cargas
+fora da região medida, reinicialização do ambiente a cada iteração e igualmente
+nas duas versões de cada linguagem, forçamento à forma normal em Haskell,
+\texttt{Sys.opaque\_identity} em OCaml, e tratamento de exceções por expressão
+avaliada.
+
+\subsection{Estado Atual e Pendências}\label{sec:estado}
+
+As quatro implementações, a suíte de oráculo e os dois \textit{harnesses}
+existem como código. A validação sobre o ambiente definitivo está em andamento e
+é pré-requisito para a execução dos \textit{benchmarks}, conforme o cronograma
+da Seção~\ref{sec:atividades}. Três pendências técnicas estão identificadas: o
+relatório do \textit{harness} Bechamel depende de detalhes de API que variam
+entre versões da biblioteca, razão pela qual a versão é fixada no \texttt{opam};
+as anotações de tipo dos \textit{handlers} polimórficos em OCaml podem exigir
+ajuste fino; e o teste de conformidade entre as réplicas do gerador precisa ser
+executado nas duas plataformas. Soma-se a dependência de que o \textit{switch}
+com \textit{flambda} seja construído com êxito; caso não seja, a alternativa
+registrada é medir sem \textit{flambda}, declarando explicitamente a mudança de
+configuração. Nenhuma dessas pendências afeta o desenho experimental, apenas a
+sua execução.
+
+%% ============================================================
+\section{Instrumentos de Coleta e Observações Preliminares}\label{sec:esperados}
+%% ============================================================
+
+As tabelas de coleta desta seção são \emph{modelos} a serem preenchidos após a
+execução descrita na Seção~\ref{sec:atividades}. Nenhum valor de desempenho é
+reportado neste ponto de controle. Reporta-se, contudo, uma observação obtida
+sobre o código já escrito, que motivou um refinamento da metodologia.
+
+\subsection{Refinamento das Métricas de Legibilidade}\label{sec:refinamento}
+
+No TCC~I, a contagem preliminar de LOC foi feita sobre \emph{excertos
+ilustrativos} das implementações e apontava a versão com efeitos como a mais
+enxuta. Refeita a contagem sobre as implementações efetivas, o resultado se
+inverte (Tabela~\ref{tab:prelim-loc}): a versão monádica em Haskell apresenta a
+menor contagem, e a ordenação resultante não separa os mecanismos de efeito das
+linhas de base.
+
+%% TODO: preencher a coluna "Pos-normalizacao" apos executar ormolu e
+%% ocamlformat sobre o codigo efetivo (atividade A3).
+\begin{table}[ht]
+  \centering
+  \caption{LOC efetivas da função \texttt{eval} nas implementações
+           desenvolvidas, antes e depois da normalização por formatadores.}
+  \label{tab:prelim-loc}
+  \small
+  \begin{tabular}{llcc}
+    \toprule
+    \textbf{Versão} & \textbf{Linguagem} & \textbf{Pré-normalização}
+      & \textbf{Pós-normalização} \\
+    \midrule
+    Efeitos algébricos & OCaml~5  & 30 & -- \\
+    Imperativa         & OCaml    & 29 & -- \\
+    Mônadas            & Haskell  & 21 & -- \\
+    \texttt{IORef}     & Haskell  & 30 & -- \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Duas afirmações distintas devem ser separadas aqui. A primeira é que a contagem
+do TCC~I estava errada, e a razão é conhecida: ela mediu excertos, e não o
+código efetivo. A segunda, mais forte e que constitui o subproduto metodológico
+do trabalho, é que a LOC é sensível ao estilo de formatação e ao idioma
+disponível em cada linguagem. A coluna pós-normalização da
+Tabela~\ref{tab:prelim-loc} fornece a evidência direta desta segunda afirmação,
+ao exibir o efeito isolado da formatação sobre a mesma base de código.
+
+A análise das causas distingue-as por alcance. Duas operam \emph{entre}
+linguagens e são eliminadas pela restrição intralinguagem. A primeira é o estilo
+de formatação: no excerto do TCC~I, as vinculações que fixam a ordem de
+avaliação apareciam em uma única linha, enquanto no código efetivo, formatado de
+modo convencional, ocupam três linhas por operador binário. A segunda é o idioma
+disponível: fixar a ordem de avaliação custa linhas em OCaml e é gratuito em
+Haskell, onde o estilo aplicativo já sequencia à esquerda --- observe-se, porém,
+que essa causa se cancela \emph{dentro} do OCaml, pois a referência imperativa
+paga exatamente as mesmas linhas. A terceira causa é a única que opera dentro de
+uma única linguagem: por manipular explicitamente a referência mutável e forçar
+os resultados aritméticos, a linha de base do Haskell recorre à notação
+\texttt{do} com vinculações intermediárias. É por isso que restringir a
+comparação a pares da mesma linguagem elimina o confundimento com a sintaxe, mas
+não o confundimento com o idioma escolhido dentro de cada linguagem.
+
+Disso decorrem três ajustes na metodologia. Primeiro, a normalização por
+formatadores, antes prevista como cuidado complementar, passa a ser condição de
+validade de qualquer contagem, com perfil e versão fixados
+(Seção~\ref{sec:metricas}). Segundo, as comparações de métricas de código passam
+a ser restritas a pares da mesma linguagem, espelhando a normalização já adotada
+para o desempenho. Terceiro, e porque a restrição intralinguagem não basta, o
+peso da evidência sobre legibilidade desloca-se de LOC para a contagem de
+operações de efeito e para a profundidade de aninhamento, que dependem menos do
+\emph{estilo de formatação} --- embora permaneçam sensíveis ao idioma, limitação
+que a restrição intralinguagem atenua sem eliminar. A hipótese H1 foi
+reformulada nesses termos, e a definição de operação de efeito foi ampliada para
+abranger também a realização direta, sem o que a métrica daria zero para as
+linhas de base e a hipótese não seria confirmável. A LOC permanece reportada,
+por transparência e comparabilidade com a literatura, mas deixa de sustentar
+sozinha qualquer conclusão sobre QP1.
+
+Registre-se que esse resultado ilustra, sobre um caso de uso concreto, que uma
+métrica largamente empregada como \emph{proxy} de legibilidade pode inverter de
+sinal por efeito de formatação e de idioma, mesmo quando a comparação é feita
+dentro de uma única linguagem.
+
+\subsection{Instrumentos de Coleta}\label{sec:instrumentos}
+
+A Tabela~\ref{tab:metrics} consolidará as métricas de código, sempre em pares
+intralinguagem, e a Tabela~\ref{tab:perf}, os resultados de desempenho como
+razões de sobrecusto sobre a linha de base de cada linguagem.
+
+\begin{table}[ht]
+  \centering
+  \caption{Instrumento de coleta das métricas de código, por par intralinguagem
+           (valores a coletar após normalização).}
+  \label{tab:metrics}
+  \small\setlength{\tabcolsep}{4pt}
+  \begin{tabular}{lcccc}
+    \toprule
+    & \multicolumn{2}{c}{\textbf{OCaml}} & \multicolumn{2}{c}{\textbf{Haskell}} \\
+    \cmidrule(lr){2-3}\cmidrule(lr){4-5}
+    \textbf{Métrica} & \textbf{Imperativa} & \textbf{Efeitos} & \textbf{\texttt{IORef}} & \textbf{Mônadas} \\
+    \midrule
+    LOC de \texttt{eval} (normalizadas)   & -- & -- & -- & -- \\
+    Operações de efeito (total)           & -- & -- & -- & -- \\
+    Operações de efeito (por construtor)  & -- & -- & -- & -- \\
+    Profundidade de aninhamento           & -- & -- & -- & -- \\
+    Boilerplate (LOC fora de \texttt{eval})  & -- & -- & -- & -- \\
+    Instâncias de reutilização            & -- & -- & -- & -- \\
+    Pontos de modificação (4º efeito)     & -- & -- & -- & -- \\
+    Adições puras (4º efeito)             & -- & -- & -- & -- \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[ht]
+  \centering
+  \caption{Instrumento de coleta de desempenho: sobrecusto relativo à linha de
+           base de cada linguagem, com intervalo de confiança por
+           \textit{bootstrap} (valores a coletar).}
+  \label{tab:perf}
+  \small
+  \begin{tabular}{lcccc}
+    \toprule
+    & \multicolumn{2}{c}{\textbf{Efeitos / imperativa (OCaml)}}
+    & \multicolumn{2}{c}{\textbf{Mônadas / \texttt{IORef} (Haskell)}} \\
+    \cmidrule(lr){2-3}\cmidrule(lr){4-5}
+    \textbf{Cenário} & \textbf{Razão (IC 95\%)} & \textbf{Alocação}
+                     & \textbf{Razão (IC 95\%)} & \textbf{Alocação} \\
+    \midrule
+    \textsc{Arith}  & -- & -- & -- & -- \\
+    \textsc{State}  & -- & -- & -- & -- \\
+    \textsc{Exn}    & -- & -- & -- & -- \\
+    \textsc{Output} & -- & -- & -- & -- \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Previsões}\label{sec:previsoes}
+
+Três previsões orientam a análise. Primeiro, espera-se que o avaliador com
+\textit{handlers} exiba contagem de operações de efeito e aninhamento próximos
+aos da referência imperativa em OCaml, enquanto a versão monádica excederá os da
+sua base em Haskell (H1). Segundo, espera-se que a inserção do quarto efeito
+exija menos pontos de modificação na versão com efeitos, relativamente à sua
+base, do que na versão monádica relativamente à dela (H2). Terceiro, espera-se
+que o sobrecusto dos efeitos nativos sobre a base em OCaml seja inferior ao
+sobrecusto da pilha de transformadores sobre a base em Haskell, sobretudo no
+cenário \textsc{State} (P1); por comparar duas razões obtidas em
+\textit{runtimes} distintos, essa previsão é exploratória.
+
+Registre-se que a evidência já disponível tensiona parte dessas previsões. A
+contagem de LOC (Tabela~\ref{tab:prelim-loc}) mostra a versão monádica mais
+curta que a sua própria linha de base, e a Tabela~\ref{tab:artefatos} mostra, por
+arquivo, a versão com \textit{handlers} substancialmente maior que a base em
+OCaml, o que aponta contra H3 na métrica de \textit{boilerplate}. Ambos os
+sinais serão confrontados com as métricas normalizadas na fase seguinte.
+
+%% ============================================================
+\section{Atividades Desenvolvidas e Cronograma}\label{sec:atividades}
+%% ============================================================
+
+\subsection{Atividades Desenvolvidas desde o TCC~I}
+
+\begin{enumerate}
+  \item \textbf{Revisão crítica do relatório do TCC~I} \cite{marchioni:tcc1}.
+  A releitura do relatório identificou duas divergências em relação à semântica
+  pretendida, corrigidas antes da implementação: a divergência entre
+  \texttt{div} e \texttt{/} na divisão inteira e a ordem das camadas da pilha
+  monádica, que descartava o estado no erro. A terminologia da semântica também
+  foi corrigida: a regra \textbf{(Let)} implementa um ambiente global, e não
+  escopo léxico --- correção de descrição, não de comportamento pretendido, mas
+  hoje travada por caso de teste.
+  \item \textbf{Formalização da semântica e do critério de equivalência.}
+  Fixaram-se o domínio semântico, os contextos de avaliação, a definição de
+  ortogonalidade e o critério de equivalência funcional com quatro cláusulas
+  (Seção~\ref{sec:semantica}), que substituem a descrição informal do TCC~I.
+  \item \textbf{Implementação das quatro versões.} Desenvolvidas as versões com
+  efeitos algébricos, monádica e as duas linhas de base, além do núcleo comum de
+  sintaxe e geração determinística de cargas (Seção~\ref{sec:impl}). O exercício
+  de implementação expôs dois problemas que a especificação em papel não
+  revelava: a ordem de avaliação não especificada dos argumentos em OCaml e o
+  tratamento ausente de variável não vinculada na versão com efeitos. Ambos
+  foram corrigidos e estão hoje cobertos por casos de teste.
+  \item \textbf{Fixação do ferramental e do ambiente de medição.} Construção do
+  \textit{switch} opam com \textit{flambda}, substituição da versão do OCaml
+  planejada (5.1.1) pela 5.2.1 em razão da maturidade do suporte a Windows, e
+  identificação de que a \textit{flag} \texttt{-O3} é silenciosamente ignorada
+  sem \textit{flambda} (Seção~\ref{sec:organizacao}).
+  \item \textbf{Construção da suíte de oráculo.} Implementada nas duas
+  linguagens, com casos derivados da semântica formal, incluindo casos que
+  travam decisões de projeto (Seção~\ref{sec:oraculo}), e acompanhada de um teste
+  de conformidade entre as réplicas dos artefatos comuns.
+  \item \textbf{Implementação dos \textit{harnesses}.} Os cenários de carga
+  implementados com Criterion e Bechamel (Seção~\ref{sec:harness}).
+  \item \textbf{Atualização da revisão de literatura.} Foram incorporados
+  trabalhos posteriores ao levantamento inicial, com destaque para a
+  caracterização formal da correspondência entre efeitos modulares e
+  transformadores \cite{schrijvers:19}, para a comparação intralinguagem entre
+  \textit{handlers} e transformadores \cite{xie:20} e para a linha de pesquisa
+  sobre redução do sobrecusto de \textit{handlers}
+  \cite{karachalias:21,gaissert:25}.
+  \item \textbf{Refinamento da metodologia de métricas.} A contagem de LOC sobre
+  o código efetivo motivou a restrição das comparações de código a pares
+  intralinguagem e a reformulação de H1, H2 e H3 nesses termos
+  (Seção~\ref{sec:refinamento}).
+\end{enumerate}
+
+\subsection{Próximas Atividades}
+
+\begin{enumerate}
+  \item[\textbf{A1}] \textbf{Validação no ambiente definitivo.} Compilação das
+  quatro versões e execução da suíte de oráculo e do teste de conformidade até a
+  passagem integral, resolvendo as pendências da Seção~\ref{sec:estado}.
+  \item[\textbf{A2}] \textbf{Publicação do repositório.} Disponibilização
+  pública do código, do arquivo de conformidade, do documento de protocolo de
+  métricas e das configurações dos formatadores, com depósito arquivado e
+  identificador persistente.
+  \item[\textbf{A3}] \textbf{Implementação do quarto efeito.} Inserção do efeito
+  \texttt{Input} nas quatro implementações, em ramo separado, com registro dos
+  pontos de modificação e das adições puras, para responder a QP2. Reexecução da
+  suíte de oráculo sobre o ramo, conforme a pré-condição da
+  Seção~\ref{sec:protocolo}.
+  \item[\textbf{A4}] \textbf{Coleta de métricas de código.} Normalização por
+  formatadores e contagem por dupla verificação independente do autor e do
+  orientador, conforme o documento de protocolo.
+  \item[\textbf{A5}] \textbf{Execução dos \textit{benchmarks}.} Execução dos
+  quatro cenários nas condições da Seção~\ref{sec:protocolo}, sobre a versão de
+  três efeitos, com 30 amostras por configuração, três sementes e intervalos de
+  confiança por \textit{bootstrap}.
+  \item[\textbf{A6}] \textbf{Redação de Resultados e Discussão.} Preenchimento
+  das Tabelas~\ref{tab:metrics} e~\ref{tab:perf}, interpretação à luz de H1--H4
+  e P1, e discussão dos cenários em que cada abordagem é recomendada.
+  \item[\textbf{A7}] \textbf{Revisão final e submissão.} Revisão de
+  consistência, atualização das Seções~\ref{sec:intro} a~\ref{sec:relacionados}
+  à luz dos resultados, e reexecução em ambiente limpo para confirmar a
+  \emph{repetibilidade} --- a \emph{reprodutibilidade} por terceiros é viabilizada
+  pelos artefatos publicados em A2.
+\end{enumerate}
+
+%% TODO: ajustar as colunas do cronograma ao calendario vigente antes da entrega.
+\begin{table}[ht]
+  \centering
+  \caption{Cronograma das próximas atividades, com dependências. Uma atividade
+           só se inicia após a conclusão daquelas de que depende.}
+  \label{tab:cronograma}
+  \small\setlength{\tabcolsep}{4pt}
+  \begin{tabular}{llccccc}
+    \toprule
+    \textbf{Atividade} & \textbf{Dep.} & \textbf{Set} & \textbf{Out} & \textbf{Nov} & \textbf{Dez} & \textbf{Jan} \\
+    \midrule
+    A1. Validação no ambiente definitivo   & ---     & $\bullet$ &           &           &           &           \\
+    A2. Publicação do repositório          & A1      & $\bullet$ &           &           &           &           \\
+    A3. Implementação do quarto efeito     & A1      &           & $\bullet$ &           &           &           \\
+    A4. Coleta de métricas de código       & A3      &           & $\bullet$ & $\bullet$ &           &           \\
+    A5. Execução dos \textit{benchmarks}   & A1      &           &           & $\bullet$ &           &           \\
+    A6. Redação de Resultados e Discussão  & A4,\,A5  &           &           & $\bullet$ & $\bullet$ &           \\
+    A7. Revisão final e submissão          & A6      &           &           &           & $\bullet$ & $\bullet$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[ht]
+  \centering
+  \caption{Riscos identificados e respostas previstas.}
+  \label{tab:riscos}
+  \small
+  \begin{tabular}{p{0.34\linewidth}p{0.58\linewidth}}
+    \toprule
+    \textbf{Risco} & \textbf{Resposta} \\
+    \midrule
+    O \textit{switch} com \textit{flambda} não é construído com êxito na
+    plataforma escolhida &
+    Medir sem \textit{flambda}, declarando a mudança de configuração; em último
+    caso, migrar a medição para Linux, registrando a alteração de ambiente entre
+    as ameaças à validade \\
+    A API do Bechamel diverge entre versões &
+    Versão fixada no \texttt{opam} e citada no texto \\
+    Atraso em A1, que precede todas as demais &
+    A2 e A3 podem ser antecipadas parcialmente; A5 dispõe de folga em dezembro \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+%% ============================================================
+\section{Considerações Parciais}\label{sec:consideracoes}
+%% ============================================================
+
+Este artigo reportou o estado do trabalho no primeiro ponto de controle do
+TCC~II. Em relação ao relatório do TCC~I \cite{marchioni:tcc1}, três avanços se
+destacam.
+
+\paragraph{Passagem do desenho à implementação.} As quatro versões do
+interpretador, a suíte de oráculo e os \textit{harnesses} de \textit{benchmark}
+existem como código. Duas divergências foram identificadas pela releitura
+crítica do relatório anterior --- a operação de divisão inteira e a ordem das
+camadas monádicas ---, e duas outras só se revelaram no ato de implementar, que
+a especificação em papel não expunha: a ordem de avaliação não especificada dos
+argumentos em OCaml e o tratamento de variáveis não vinculadas na versão com
+efeitos. Todas as quatro foram corrigidas e estão hoje cobertas por casos de
+teste que falham se a decisão for revertida.
+
+\paragraph{Construção de instrumentos auditáveis.} Um gerador de cargas
+replicado nas duas linguagens, com teste automático de conformidade entre as
+réplicas, assegura que Haskell e OCaml avaliem as mesmas árvores de sintaxe; e
+uma suíte de oráculo derivada da semântica formal condiciona a execução dos
+\textit{benchmarks} à equivalência funcional verificada.
+
+\paragraph{Refinamento metodológico motivado por evidência.} A contagem de LOC
+sobre o código efetivo inverteu a tendência observada nos excertos do TCC~I. A
+análise das causas mostrou que a métrica é sensível ao estilo de formatação, ao
+custo sintático de fixar a ordem de avaliação em OCaml e ao idioma com que cada
+linha de base manipula o estado --- nenhum dos quais diz respeito ao mecanismo de
+efeitos. Em resposta, as comparações de código passaram a ser restritas a pares
+da mesma linguagem, pela mesma razão que já levava o desempenho a ser normalizado
+contra uma linha de base por linguagem.
+
+\paragraph{Limitações e etapas seguintes.} As conclusões que o trabalho poderá
+oferecer restringem-se a um único caso de uso, a versões específicas de
+compilador e hardware, ao regime de abortagem total do efeito de exceção, e às
+quatro dimensões adotadas --- ficando de fora a segurança estática de efeitos,
+em que as abordagens diferem substancialmente. A comparação direta entre as duas
+linguagens permanece exploratória, por ser confundida pelo \textit{runtime}.
+Registre-se ainda que a evidência preliminar sobre o código já tensiona parte
+das hipóteses: em Haskell, a versão monádica é mais curta que a sua própria
+linha de base, e em OCaml o custo estrutural dos \textit{handlers}, medido por
+arquivo, supera o da referência imperativa. As medições que permitirão responder
+em definitivo às quatro questões de pesquisa constituem a etapa seguinte, e a
+validação das implementações no ambiente definitivo é o pré-requisito imediato.
+
+%% ============================================================
+\bibliographystyle{sbc}
+\bibliography{sbc-template}
+
+\end{document}
