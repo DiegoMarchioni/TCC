@@ -1,5 +1,17 @@
 # Guia de defesa — Parte 3: Trabalhos Relacionados
 
+> ⚠️ **Guia desatualizado (aviso de 09/11/2026).** Este guia foi escrito para a
+> versão anterior do artigo (com a Tabela de lacuna, a Figura 1 da semântica e
+> as hipóteses H1–H5). A versão atual removeu esses elementos e mudou algumas
+> afirmações. Antes de estudar por aqui, leia `revisao-completa.md`, seção 7.
+>
+> Contradições com o artigo atual que podem custar caro na arguição:
+> - A `tab:lacuna` foi removida; a Seção 3 agora tem três partes.
+> - `kammar:13` e `xie:20` **comparam handlers e mônadas na mesma linguagem,
+>   com uma versão pura de controle** (conferido nas fontes em 09/11). Logo, a
+>   normalização por base de controle não é inédita; o que é próprio deste
+>   trabalho é confrontar as duas razões entre linguagens (item C3 da revisão).
+
 Cobre a Seção 3 do `artigo.tex` (`sec:relacionados`), incluindo as quatro
 subseções e a `tab:lacuna`.
 
