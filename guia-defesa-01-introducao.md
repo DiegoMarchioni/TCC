@@ -423,14 +423,21 @@ verificáveis.
 
 ## Bloco 9 — Estado do trabalho e organização
 
-Contribuições 1, 2 e 4 consolidadas. Contribuição 3 existe como código, com
-validação no ambiente definitivo em curso. **Medições empíricas ainda não
-realizadas.**
+*(Atualizado na revisão de 09/11/2026.)* Contribuições 1, 2 e 4 consolidadas.
+Contribuição 3 implementada e validada: o oráculo passa nas quatro
+implementações (28 casos por implementação, 61 verificações por linguagem).
+**Uma primeira campanha de medição foi executada** (3 sementes, 4 cenários) e
+refuta H4 nas duas metades. Métricas de código normalizadas e o quarto efeito
+(`Input`) ainda estão pendentes.
 
-Não esconda isso. O trabalho é honesto sobre o próprio estágio, e essa honestidade
-joga a favor na arguição. O que você tem para mostrar: quatro implementações,
-semântica formalizada, oráculo com 25 casos por implementação, gerador
-determinístico, dois harnesses.
+Não esconda o que falta. O trabalho é honesto sobre o próprio estágio, e essa
+honestidade joga a favor na arguição. O que você tem para mostrar: quatro
+implementações, semântica formalizada, oráculo, gerador determinístico, dois
+harnesses e a primeira tabela de razões de sobrecusto.
+
+> **Atenção:** para a entrega à banca (4º PC, até 23/11/2026), o regulamento
+> exige que a Introdução traga a *síntese do que foi feito e os principais
+> resultados obtidos*. Veja `revisao-completa.md`.
 
 ---
 
@@ -456,7 +463,9 @@ essa fala.
 
 Leia antes de apresentar. É melhor você levantar do que a banca.
 
-1. **Nenhum resultado empírico ainda.** O 2º PC pede resultados preliminares.
+1. **Resultados ainda parciais.** Há uma campanha de desempenho (H4 refutada), mas
+   faltam as métricas de código normalizadas e o quarto efeito — e a entrega à
+   banca exige seção de Resultados e de Conclusões e Trabalhos Futuros.
 2. **`liang:95`** tem, pela sua própria tabela, a mesma marca em "caso integrado".
 3. **"Cerimônia sintática"** é constructo seu; sobrevive na rubrica qualitativa,
    sem âncora externa na literatura.
@@ -478,5 +487,7 @@ Leia antes de apresentar. É melhor você levantar do que a banca.
       on Haskell*), DOI 10.1145/3406088.3409022 acrescentado
 - [ ] Ano de `marchioni:tcc1` (está 2025; o próprio `.bib` pede ajuste)
 - [ ] E-mail e nome completo do orientador
-- [ ] Lista de seções na declaração de uso de IA (Agradecimentos)
-- [ ] **Limite de 16 páginas do Art. 4º** — o artigo está acima
+- [x] ~~Lista de seções na declaração de uso de IA~~ — atualizada em 09/11/2026;
+      **falta a versão do modelo** (Art. 8º)
+- [ ] **Limite de 16 páginas do Art. 4º** — o artigo tem **~37 páginas** no
+      layout SBC (medido em 09/11/2026). Plano de corte em `revisao-completa.md`.

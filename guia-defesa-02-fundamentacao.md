@@ -281,7 +281,9 @@ A correspondência recai sobre efeitos cuja teoria admite apresentação
 **algébrica**, de modelo livre (`plotkin:03`). Nem toda mônada é algébrica:
 
 - **Contraexemplo clássico:** a mônada de continuação
-- **Caso limítrofe:** os efeitos **escopados** (`sec:custo`)
+- **Caso limítrofe:** os efeitos **escopados** (`sec:expressividade`, onde `wu:14`
+  é discutido; a remissão do artigo apontava por engano para `sec:custo` e foi
+  corrigida em 09/11/2026)
 
 **E é por essa razão — e não por conveniência — que o caso de uso adota ambiente
 global sem restauração de vínculos.** Essa frase antecipa uma acusação séria
