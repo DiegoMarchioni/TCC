@@ -1,62 +1,66 @@
-# Revisão completa do TCC — 09/11/2026
+# Revisão intensiva do TCC — 2ª rodada (09/11/2026)
 
-**O que foi revisado:** `artigo.tex` e `sbc-template.bib` na versão do commit
-`7327bb3` (16/09/2026), mais os três guias de defesa.
-**Referência normativa:** `Regulamento_TCC_CC.pdf`, Regulamento Geral de TCC de
-01/08/2026, agora incluído no repositório.
-**O prazo que importa:** 4º PC do TCC II, a **entrega do artigo à banca, já
-revisado pelo orientador, até 23/11/2026** (14 dias a partir de hoje). As bancas
-são de 02 a 10/12/2026.
+**O que foi revisado:** a versão do artigo e da bibliografia que você enviou
+hoje, gravada **sem alteração** no commit `f1f1949`. As correções desta
+revisão estão no commit seguinte. `git diff f1f1949` mostra exatamente o que mudou.
 
-**Limites desta revisão**
+**Referência normativa:** `Regulamento_TCC_CC.pdf`.
+**Prazo:** 4º PC, entrega à banca **já revisada pelo orientador, até
+23/11/2026**. Bancas de 02 a 10/12.
 
-- O código (`ocaml/`, `haskell/`, `shared/`) **não está neste repositório**. Por
-  isso, nada do que o texto afirma sobre as implementações, os testes ou as
-  medições pôde ser conferido contra o código ou contra os dados brutos. O texto
-  foi conferido contra ele mesmo, contra a literatura citada e contra o
-  regulamento.
-- `sbc-template.sty` e `sbc.bst` também não estão no repositório. Para medir o
-  número de páginas, compilei com uma réplica do layout SBC (A4, margens
-  3,5/2,5/3 cm, Times 12 pt, 6 pt entre parágrafos), usando `apalike` no lugar
-  do `sbc.bst`. No Overleaf, a contagem pode variar em uma ou duas páginas. A
-  conclusão não muda.
-- Se existe no Overleaf uma versão mais recente que a deste repositório (por
-  exemplo, a do 3º PC, de 21/10), sincronize antes de aplicar o que segue.
+**Como esta revisão foi feita**
 
-Os números de linha citados referem-se ao `artigo.tex` **depois** das correções
-deste commit.
+- O PDF foi compilado com uma réplica do layout SBC (A4, margens 3,5/2,5/3 cm,
+  Times 12 pt), porque `sbc-template.sty` e `sbc.bst` não estão no repositório.
+  A contagem de páginas pode variar um pouco no Overleaf.
+- **As afirmações sobre a literatura foram conferidas no texto das fontes**
+  (Seção 3 deste documento). Duas estavam erradas e foram corrigidas.
+- **O código do TCC não está em nenhum repositório da sua conta do GitHub**: a
+  única entrada é este `DiegoMarchioni/TCC`, que só tem o artigo. Por isso nada
+  sobre o código pôde ser conferido, e isso é também um problema de
+  conformidade (C2).
+- **Não toquei nos trechos marcados `VOZ`** (resumo, *abstract* e 1º parágrafo da
+  Introdução). O orientador pediu que você os reescreva com as suas palavras, e
+  um texto meu ali agravaria o "I.A.?" que ele anotou. Os problemas de conteúdo
+  desses trechos estão listados aqui, para você corrigir ao reescrever.
+
+Números de linha referem-se ao `artigo.tex` **depois** das correções.
 
 ---
 
 ## 1. Resumo executivo
 
-Cinco problemas impedem a entrega no estado atual, em ordem de urgência:
+**A versão nova avançou bastante.** Coube em 16 páginas (com Times), tem a
+estrutura exigida para a banca (Resultados; Conclusões e Trabalhos Futuros),
+traz síntese dos resultados na Introdução e um único ambiente de medição. Ela
+também resolveu vários pontos da 1ª revisão: `georges:07`, o critério de H4, a
+instalação por expressão e a frase sobre a ambiente global.
 
-1. **O artigo tem ~37 páginas; o máximo é 16 (Art. 4º).** O regulamento diz que
-   artigos fora desse formato "não serão aceitos". É preciso cortar cerca de 57%
-   do texto (plano na Seção 5).
-2. **A estrutura é de relatório intermediário, e não de entrega à banca.** O 4º
-   PC exige as seções *Resultados* e *Conclusões e Trabalhos Futuros*, e uma
-   Introdução com "síntese do que foi feito e principais resultados obtidos". O
-   artigo ainda tem "Resultados Preliminares", "Atividades Desenvolvidas e
-   Cronograma" e "Considerações Parciais".
-3. **O ambiente de medição descrito no protocolo não é o que foi usado.** O
-   protocolo descreve i5-12500H, Windows 11, GHC 9.6.4 e 30 amostras. A campanha
-   relata i5-1345U, Ubuntu 22.04, GHC 9.4.8 e `limit:5000`. Uma banca percebe
-   isso na primeira leitura.
-4. **O confronto de H4 não usa o critério que o próprio texto fixou a priori**
-   (IC de 95% da razão), e esse critério, como está escrito, é logicamente
-   incompleto.
-5. **A declaração de IA está incompleta** (falta a versão do modelo, exigida pelo
-   Art. 8º), e **não há repositório público citado**, embora o Art. 5º §3 exija
-   que o produto possa ser reproduzido por outros pesquisadores.
+**O que ainda impede a entrega, em ordem de urgência:**
 
-**Pontos fortes, que convém preservar no corte.** A fundamentação teórica é
-sólida e bem citada. A normalização por linha de base intralinguagem é uma
-contribuição metodológica real e bem defendida. Um oráculo derivado de uma
-semântica formal, com casos que travam decisões de projeto, é raro em TCC. E a
-refutação de H4, relatada com honestidade, é um resultado mais interessante do
-que uma confirmação seria.
+1. **QP1, QP2 e QP3 estão sem resposta, e o texto não diz isso.** A Tabela 1
+   está toda em "---" e o quarto efeito está no futuro ("será inserido"). Ainda
+   assim, as Conclusões falam em "a legibilidade medida" (l. 890), e a
+   Introdução sintetiza os resultados sem mencionar que três das quatro
+   questões estão abertas (C1).
+2. **O "repositório público" para onde o texto manda o leitor não existe**, e é
+   lá que estariam a semântica formal, as listagens e o gerador. O Art. 5º §3
+   exige que o produto possa ser reproduzido por outros pesquisadores (C2).
+3. **A contribuição metodológica precisa ser reenquadrada.** Conferidos na
+   fonte, Kammar et al. (2013) e Xie & Leijen (2020) **já comparam *handlers* e
+   mônadas na mesma linguagem contra uma versão pura de controle**. A
+   normalização por base intralinguagem, portanto, não é inédita; o que é
+   próprio deste trabalho é confrontar as duas razões entre linguagens e sobre
+   um caso integrado (C3).
+4. **O principal achado da Discussão (alocação 10–20× "uma ordem de grandeza")
+   não se sustenta como está escrito.** A coluna de alocação não contém os
+   segmentos de pilha; a base do OCaml aloca quase nada, o que infla a razão; e
+   o próprio texto recusa, para o tempo, a comparação entre linguagens que faz
+   para a alocação (C4).
+5. **Formato e declaração.** O *abstract* (~12 linhas) e o Resumo (~14 linhas,
+   transbordando para a pág. 2) excedem o limite SBC de 10 linhas na 1ª página.
+   O "[PREENCHER]" da declaração de IA sai impresso, e a finalidade declarada
+   provavelmente subdeclara o uso (C5, C6).
 
 ---
 
@@ -64,451 +68,305 @@ que uma confirmação seria.
 
 | Dispositivo | Exigência | Situação | Ação |
 |---|---|---|---|
-| Art. 3º | LaTeX no padrão SBC | ⚠️ `lmodern`, carregado depois do `sbc-template`, trocava a Times por Latin Modern | ✅ corrigido neste commit |
-| Modelo SBC | *Abstract* e Resumo com até 10 linhas, ambos na 1ª página | ❌ *Abstract* com ~17 linhas; o Resumo cai na pág. 2; o título ocupa 7 linhas | Encurtar título e resumos (Seção 6) |
-| Art. 4º | De 10 a 16 páginas | ❌ ~37 páginas | Plano de corte (Seção 5) |
-| Art. 4º §1 I | Introdução com contextualização, justificativa, problema, objetivos e descrição das seções | ✅ | Condensar |
-| Tab. 2, 4º PC | Introdução com **síntese do que foi feito e dos principais resultados** | ❌ o parágrafo "Estado do trabalho" (l. 307) fala em resultados preliminares, sem números | Reescrever (rascunho na Seção 6) |
-| Art. 4º §1 II | Referencial teórico e revisão de literatura | ✅ | Condensar |
-| Art. 4º §1 III | Metodologia **com diagramas, fluxogramas, figuras**, e ferramentas citadas | ⚠️ só há a figura da semântica; nenhuma figura do fluxo experimental | Acrescentar um diagrama do *pipeline* (oráculo → *benchmarks* → razões) |
-| Art. 4º §1 IV e Art. 5º §3 | Resultados comentados e analisados, expostos em gráficos, figuras ou tabelas | ⚠️ só há desempenho; as métricas de código estão vazias; há duas tabelas de desempenho redundantes | Seções 4.1 e 6 |
-| Art. 4º §1 V e Art. 5º §3 | Última seção: **Conclusões e Trabalhos Futuros**, com contribuições, resultados frente à literatura e caminhos de continuação | ❌ "Considerações Parciais", sem os resultados de desempenho e sem confronto com a literatura | Reescrever |
-| Art. 4º §1 VI | Pelo menos 10 referências | ✅ 37, todas citadas | Corrigir as notas "AJUSTAR" (C5) |
-| Art. 5º §3 | Produto descrito de modo **reprodutível por outros pesquisadores** | ❌ nenhuma URL nem DOI do código | Publicar e citar o repositório (atividade A2) |
-| Tab. 2, 4º PC | Resumo em português | ✅ | Encurtar |
-| Art. 7º | Declaração de IA com ferramenta, finalidade e seções | ⚠️ a lista de seções estava desatualizada | ✅ atualizada neste commit; confira |
-| Art. 8º | Nome, **versão** e fornecedor da ferramenta | ❌ falta a versão | **Você** precisa inserir (há um lembrete no `.tex`) |
-| Art. 9º e 10 | Veracidade; vedada a fabricação de resultados | — | Nenhum dado foi criado nesta revisão; as lacunas de dados estão listadas na Seção 7 |
+| Art. 3º | LaTeX, padrão SBC | ⚠️ `lmodern` voltou e trocava a Times por Latin Modern | ✅ removido |
+| Modelo SBC | *Abstract* e Resumo com até 10 linhas, ambos na 1ª página | ❌ ~12 e ~14 linhas; o Resumo cai na pág. 2 | **Você**, ao reescrever os trechos `VOZ` (~120 palavras cada) |
+| Art. 4º | 10 a 16 páginas | ✅ 16 com Times (17 com Latin Modern) | Cuidado ao acrescentar texto (Seção 6) |
+| Art. 4º §1 I | Introdução completa | ✅ | — |
+| Tab. 2, 4º PC | Introdução com síntese do que foi feito e principais resultados | ⚠️ não diz que QP1–QP3 estão abertas | C1 |
+| Art. 4º §1 III | Metodologia **com diagramas, fluxogramas, figuras** | ⚠️ o artigo não tem **nenhuma** figura (a Figura 1 saiu) | Considerar um diagrama compacto do *pipeline* (G12) |
+| Art. 4º §1 IV e Art. 5º §3 | Resultados comentados e analisados | ❌ só desempenho; a Tabela 1 está vazia | C1 |
+| Art. 4º §1 V e Art. 5º §3 | Conclusões com contribuições, resultados frente à literatura e trabalhos futuros | ✅ estrutura; ⚠️ contribuição metodológica sobredeclarada (C3) | C3 |
+| Art. 4º §1 VI | ≥ 10 referências | ✅ 31 citadas | — |
+| Art. 5º §3 | Produto reprodutível | ❌ repositório inexistente | C2 |
+| Arts. 7º e 8º | Ferramenta, finalidade, seções, **versão** | ❌ "[PREENCHER]" impresso; ⚠️ finalidade | C6 |
+| Arts. 9º e 10 | Veracidade; sem fabricação | ⚠️ "legibilidade medida" sem medição (C1); hipóteses omitidas (G4) | C1, G4 |
 
 ---
 
-## 3. O que já corrigi neste commit
+## 3. Afirmações conferidas nas fontes
 
-Correções objetivas, que não dependem de decisão sua:
-
-| # | Onde | O que mudou |
+| Afirmação do artigo | Fonte | Resultado |
 |---|---|---|
-| 1 | Preâmbulo | Removido o `\usepackage{lmodern}`, que sobrescrevia a Times do modelo SBC. Conferi no PDF: o texto agora sai em Times (NimbusRomNo9L). |
-| 2 | Tabela 1 (`tab:lacuna`) | Estourava a margem direita em 147 pt e cortava a coluna "Caso integrado". Agora a primeira coluna quebra linha, a fonte é `\footnotesize` e o cabeçalho foi abreviado para "Integr.", com a legenda explicando. Acrescentado `\usepackage{array}`. |
-| 3 | Figura 1 (l. 824) | **Faltava a regra (Mul).** Sem ela, `Mul n₁ n₂` fica travado e a propriedade de Progresso afirmada na l. 868 é falsa. |
-| 4 | Listagem 3 (Haskell) | `emit` estava definido **entre** as equações de `eval`, o que em Haskell é erro de compilação ("Multiple declarations of 'eval'"). Movido para antes de `eval`; acrescentado o comentário `-- Mul analogo a Add`, como na listagem OCaml. |
-| 5 | Seção 2.3 (l. 516) | A remissão sobre efeitos escopados apontava para `sec:custo` (3.3, custo de execução). Eles são discutidos em `sec:expressividade` (3.2, `wu:14`). |
-| 6 | Seção 2.3 (l. 501) | "As equações do estado são precisamente o que a suíte verifica" era exagerado: os casos de `Let` verificam duas das quatro (ler após escrever; a última escrita prevalece). Texto ajustado. |
-| 7 | l. 1099 e 1436 | "estrictness" não existe em português nem em inglês; trocado por *strictness*. |
-| 8 | Abertura da Seção 6 | Dizia "Nenhum valor de desempenho é reportado neste ponto de controle", duas páginas antes da Tabela 7. Reescrita para refletir o estado atual. |
-| 9 | Seção 6.1 | "A coluna pós-normalização **fornece** a evidência direta": a coluna está vazia. Agora diz "quando preenchida, fornecerá". |
-| 10 | Seção 6.4 (l. 1817) | "Quatro previsões [...], uma por dimensão", seguidas de apenas três. Agora "Três previsões". |
-| 11 | Seção 6.4 (l. 1840) | "Dispersão inferior a 2%" contradizia a legenda da Tabela 7 ("inferior a 2,7%"). Alinhado em 2,7%. |
-| 12 | Atividade A6 | "à luz de H1--H5 a H5 e P1" → "à luz de H1 a H5 e P1". |
-| 13 | Comentários TODO | Apontavam para A3 e A4 onde o certo é A4 (normalização) e A5 (*benchmarks*). |
-| 14 | Agradecimentos | A lista de seções e a finalidade foram atualizadas para incluir esta revisão. O comentário agora lembra que o **Art. 8º exige a versão do modelo**. |
-| 15 | `.bib` | O estilo rebaixava nomes próprios nos títulos ("onto ocaml", "in haskell", "java", "curso i"). Protegidos com chaves. |
-| 16 | Guias de defesa | O guia 01 ainda dizia "medições empíricas ainda não realizadas" e "oráculo com 25 casos" (são 28). O guia 02 repetia a remissão errada a `sec:custo`. Corrigidos. |
+| ~1% de sobrecusto em programas **sem** *handlers* (l. 859) | Sivaramakrishnan et al. 2021, resumo: "mean 1% overhead on a comprehensive macro benchmark suite that does not use effect handlers" | ✅ |
+| Desacelerações de 6,7 a 12,3× em recursão não-*tail* com *handler* (l. 862) | Idem, Tab. 2 ("Micro benchmarks with handlers but no perform"): 12,25 · 12,05 · 11,44 · 6,74 · 8,9 | ✅ Detalhe útil: é **exatamente o regime de Arith** (*handler* instalado, nenhum `perform`). Vale dizer isso no texto (M5). |
+| 23 ns para alocar e trocar de *fiber*, 5 ns para realizar e tratar (l. 868) | Idem, §6.3: "a-b […] allocating a new fiber and switching to it […] 23 ns, 5 ns […] dominated by the memory allocation" | ✅ |
+| Segmentos de pilha e a coluna de alocação (l. 492–496) | Idem, §5.2: "Fibers are allocated on the C heap using malloc", com cache de pilhas; confirmado em `runtime/fiber.c` do OCaml 5.2 (`caml_stat_alloc_noexc`/`mmap`) | ❌ o texto dizia que a triplicação dos segmentos "deve ser levada em conta ao ler a coluna de alocação". A coluna (palavras do *heap* do coletor) **não vê** os segmentos. **Corrigido.** |
+| `kammar:13` "não compara os dois mecanismos" (Seção 3.2) | Kammar et al. 2013, §5: "comparing handler code against monadic code that makes use of existing libraries"; Tab. 1: pure 51 ms, *state monad* 51 ms, *handlers* (continuações) 77 ms; "As a control, we also tested a pure version" | ❌ **Corrigido.** |
+| `xie:20`: "lá o confronto é entre bibliotecas de efeitos" (Conclusões) | Xie & Leijen 2020, §6: EV contra EE, FE e **MTL**, com Pure e RunST. Counter: Pure 9 ms = MTL 9 ms; Counter5: Pure 247, MTL 327 (1,32×); Error: Pure 57,2, MTL 62,2 (1,09×) | ❌ incompleto: MTL é medido contra uma base pura, e o seu 1,08 em State cai na faixa 1,0–1,3. **Corrigido**, o que dá ao artigo um confronto com a literatura que ele não tinha. |
+| `joriatti:25`: tradução dirigida pela sintaxe; cobre operações e não *handlers*; validada por exemplos; sem medição de custo | Joriatti et al. 2025 (SBLP), Conclusão: "limita-se à tradução das funções e efeitos, não podendo gerar os códigos equivalentes aos handlers"; Resultados por testes; nenhuma medição | ✅ as quatro afirmações. O alvo é a biblioteca *extensible-effects*, que é `kiselyov:15`, presente no `.bib` e não citada (M6). |
+| `gaissert:25`: prenome e paginação | dblp e ACM DL bloquearam o acesso | ⚠️ **não confirmado.** A versão anterior do `.bib` tinha "Marcial", artigo 307, DOI 10.1145/3763085; a sua tem "Marius" e pp. 978–1006 (29 p.). Anotei no `.bib`. |
+| `munozbaron:20`: paginação | idem | ⚠️ não confirmado |
 
 ---
 
-## 4. Problemas encontrados, por gravidade
+## 4. O que corrigi neste commit
 
-### 4.1 Críticos (impedem a entrega ou são contradições que a banca vê de imediato)
+Só erros objetivos, fora dos trechos `VOZ`. Os novos trechos de texto estão
+listados abaixo; **reescreva-os com a sua voz se preferir**.
 
-**C1. Dois ambientes de medição incompatíveis no mesmo texto.**
-- Seção 4.5, l. 1071 e 1142–1150: GHC 9.6.4; Intel i5-12500H (4P+8E), Windows 11,
-  `powercfg`, *turbo* desligado, afinidade aos núcleos P.
-- Seção 4.5, l. 1183–1195: as ameaças à validade discutem Windows, notebook e
-  "as medições são feitas em Windows, ao passo que a literatura mede em Linux".
-- Seção 5.1, l. 1274–1278, e atividade 4, l. 1895: GHC 9.6.4; a versão do OCaml
-  foi escolhida "em razão da maturidade do suporte a Windows".
-- Seção 6.3, l. 1752–1753: **i5-1345U, Ubuntu 22.04.4, kernel 6.8, GHC 9.4.8.**
-- A Tabela 9 (riscos) previa "migrar a medição para Linux" se o *flambda*
-  falhasse, mas a Seção 5.8 diz que o *flambda* funcionou.
-
-**O que fazer:** descreva em 4.5 o ambiente **efetivamente usado** e registre a
-mudança como desvio do plano, dizendo por quê. Para o Linux, informe o
-*governor* de frequência, o *turbo* e a afinidade (`taskset`). O i5-1345U também
-é híbrido (2 núcleos P e 8 E), então a ameaça do escalonador híbrido continua
-valendo. Unifique a versão do GHC em todo o texto. Se a parte de Windows não se
-aplica mais, ela sai, o que também ajuda no corte de páginas.
-
-**C2. H4 confrontada sem o critério declarado, e com um critério incompleto.**
-- H4 (l. 950) diz: "corroborada se o intervalo de confiança de 95% da razão
-  **não contiver o limiar**". Lido literalmente, a metade OCaml seria
-  *corroborada*: um IC em torno de 1,96 também não contém 1,5. O texto de
-  resultados (l. 1840–1842) conclui o contrário, o que só está certo na leitura
-  direcional.
-- Nenhum IC de razão foi calculado. O texto usa a dispersão entre sementes, que
-  mede a variação da **carga**, e não a incerteza da **medição**.
-
-**O que fazer (sem reescrever a hipótese registrada):** acrescente nos resultados
-algo como:
-
-> "O critério de H4 (Seção 4.3) é aplicado no sentido direcional: cada metade é
-> corroborada se o IC de 95% da razão estiver inteiramente do lado previsto do
-> limiar (abaixo de 1,5× em OCaml; acima de 2,0× em Haskell), refutada se estiver
-> inteiramente do lado oposto, e inconclusiva se o contiver."
-
-Calcule o IC da razão. Com os ICs que o Criterion e o Bechamel já fornecem para
-cada medição, um intervalo **conservador** é
-`[M_inf / B_sup ; M_sup / B_inf]`, em que *M* é o mecanismo e *B* a linha de base.
-Se tiver as amostras brutas, um *bootstrap* da razão é melhor. Coloque os ICs na
-tabela de desempenho. Com os valores atuais (1,96 contra 1,5 e 1,08 contra 2,0),
-a conclusão quase certamente se mantém, mas precisa ser demonstrada pelo critério
-anunciado.
-
-**C3. Trechos que contradizem o estado atual.** Além dos que já corrigi:
-- Seção 5.8 (l. 1585–1609), inteira: é uma lista de pendências de setembro, com
-  detalhes de API do Bechamel. **Remover.**
-- Seção 6.2 (l. 1696–1747): a Tabela 6 (desempenho, "valores a coletar") duplica
-  a Tabela 7, que já tem os valores. **Fundir em uma tabela só, com ICs.**
-- Seção 7 (l. 1868–1990): A1 consta como próxima atividade, mas foi concluída;
-  A5 está parcialmente feita; a Tabela 9 trata como riscos coisas já resolvidas
-  (*flambda*, atraso em A1). A primeira campanha de medição **nem aparece** entre
-  as atividades desenvolvidas. Para o 4º PC, a seção inteira sai (ver Seção 6).
-- Seção 8 (l. 1994–2037): diz "primeiro ponto de controle do TCC II"; lista três
-  avanços **sem mencionar os resultados de desempenho**, que são a principal
-  novidade do artigo; termina com "as medições [...] constituem a etapa seguinte,
-  e a validação [...] é o pré-requisito imediato", e ambas já foram feitas.
-
-**C4. H3 lida ao contrário.**
-H3 (l. 938) prevê que, em cada linguagem, "o mecanismo de efeitos apresentará
-volume de *boilerplate* **superior** ao da sua linha de base". Pela Tabela 3
-menos a Tabela 4, o *boilerplate* (arquivo menos `eval`, antes da normalização)
-é:
-
-| | Mecanismo | Linha de base |
+| # | Onde | Mudança |
 |---|---|---|
-| OCaml | 123 − 30 = **93** | 50 − 29 = **21** |
-| Haskell | 54 − 21 = **33** | 63 − 30 = **33** |
+| 1 | Preâmbulo | Removido `\usepackage{lmodern}`: o texto volta a sair em Times, como exige o padrão SBC. Na medição, isso também reduziu o artigo de 17 para 16 páginas. |
+| 2 | Título | Só a quebra de linha: o `\\` deixava "Composabilidade," sozinho numa linha. Agora são três linhas, sem mudar nenhuma palavra. |
+| 3 | Comentário junto ao *abstract* | Aviso: a sugestão de dizer que "o custo está na criação de segmentos de pilha" não pode se apoiar na coluna de alocação (C4). |
+| 4 | l. 190 e 523 | "a versão monádica executa sobre o GHC, e **as demais**, sobre o OCaml": a base `IORef` também roda no GHC. Agora: "e a versão com *handlers*, sobre o OCaml". |
+| 5 | l. 253 | "a extensão de Kleisli **é** o `>>=`" → "corresponde ao `>>=`, com os argumentos trocados". |
+| 6 | Seção 3.2 (l. 364–372) | `kammar:13` saiu da lista dos que "não comparam os dois mecanismos" e foi para o grupo mais próximo, ao lado de `xie:20` ("incluem uma versão pura como controle […] assentam sobre *microbenchmarks*"). A lista dos de desempenho passou a dizer "não comparam *handlers* com transformadores monádicos", o que é preciso: Sivaramakrishnan et al. comparam com uma mônada de concorrência (M10). |
+| 7 | Seção 4.3 (l. 492–496) | A triplicação dos segmentos de pilha aparece no **tempo**, e não na coluna de alocação, que registra fechamentos e registros. Com citação. |
+| 8 | Seção 5 (l. 575) | "congruencial linear de semente **fixa**" → "**explícita**": a campanha usa três sementes. |
+| 9 | Seção 5.1 | "Em ambas, a emissão…" → "Nas três versões sem *handlers*…": a versão monádica também usa a referência. |
+| 10 | Conclusões (l. 873–877) | A frase sobre `xie:20` foi reescrita com o que as fontes medem (MTL e mônada de estado contra versão pura: 1,0–1,3) e situa o 1,08 em State nessa faixa. |
+| 11 | Agradecimentos | Finalidade acrescida de "correção de afirmações factuais no texto e nas referências" (esta revisão). O comentário lembra que "[PREENCHER]" sai impresso e alerta para a possível subdeclaração (C6). |
+| 12 | `.bib` | Os três "CONFERIR" que saíam impressos foram para um campo `xconferir`, que o BibTeX ignora: o lembrete fica no fonte e some do PDF. Também: "{I}nvited" em `pretnar:15` e a discrepância de `gaissert:25` anotada. |
+| 13 | Guias de defesa | Aviso no topo de cada guia. Eles descrevem a versão antiga, e **o guia 02 defende o oposto do artigo atual** sobre o ambiente global (Seção 7). |
 
-O lado OCaml **confirma** H3. Mesmo assim, a l. 1832 diz que isso "aponta
-**contra** H3", e a l. 2034 lista o mesmo dado como tensão com as hipóteses. O
-dado que realmente tensiona H3 é o de Haskell (33 = 33), e esse o texto não
-menciona. Além disso, a l. 392 fala em "vantagem esperada dos *handlers* em
-volume de *boilerplate* (H3)", algo que H3, como está escrita, não afirma. H3
-também não é comparativa e, portanto, não responde à QP3 ("qual abordagem
-acrescenta **menos**").
-
-**O que fazer:** decida o que H3 afirma. Se for comparativa ("o acréscimo dos
-*handlers* sobre a base OCaml será menor que o da pilha sobre a base Haskell"),
-declare que foi reformulada depois das contagens de LOC. Depois disso, corrija
-as l. 392, 1832 e 2034.
-
-**C5. Notas "AJUSTAR" saem impressas nas Referências.** Conferi no PDF:
-`marchioni:tcc1` ("AJUSTAR ano, número e repositório institucional"),
-`ormolu:tool` e `ocamlformat:tool` ("AJUSTAR versão utilizada"). O ano do TCC I
-está como 2025, mas o repositório começa em março de 2026; **confira se não é
-2026**.
-
-### 4.2 Graves (a banca provavelmente aponta)
-
-**G1. Protocolo declarado e protocolo executado diferem.**
-- "Cada configuração é medida em 30 amostras" (l. 1121; repetido em A5,
-  l. 1937). A campanha usou `limit:5000` e cota de 20 s no Bechamel e mil
-  reamostragens no Criterion.
-- O critério de qualidade do Bechamel seria o "erro padrão relativo [...] acima
-  de 5%" (l. 1128), mas a campanha reporta R² (0,983).
-- O protocolo diz que "a ordem de execução é alternada entre tratamento e linha
-  de base" (l. 1191); a campanha diz "corridas estritamente sequenciais". As duas
-  coisas podem ser compatíveis, mas o texto precisa dizer se houve alternância.
-- O TODO das l. 1136–1138 continua aberto: confirmar que os *harnesses* usam
-  `perRunEnv` e o "estágio de preparação de `Staged`". Até onde conheço o
-  Bechamel, `Staged.stage` apenas impede que o compilador otimize o fechamento;
-  recursos por execução são criados com `Test.make_with_resource ~allocate
-  ~free`. **Confira a API e o código**, porque hoje o texto afirma algo que o
-  próprio TODO diz não ter sido verificado.
-
-**G2. Em Haskell, o cenário Arith não é condição de controle.** As l. 1078–1080
-dizem que em Arith "o avaliador não realiza operação de efeito alguma". Isso vale
-em OCaml. Em Haskell, cada `<-` de `Add`, `Mul` e `Div` é um *bind* da pilha
-`ExceptT String (StateT Env IO)`, e a própria definição da Seção 4.4 conta cada
-`<-` como operação de efeito. O 1,90× de Arith em Haskell é, portanto, o custo
-do *bind* da pilha, ou seja, do próprio mecanismo estudado. A expectativa de H5
-de razão "próxima de 1 nas duas linguagens" (l. 961) tinha pouco fundamento para
-Haskell. Discuta isso nos resultados, sem reescrever H5.
-
-**G3. A alocação de OCaml em Arith (19,4×) está sendo superinterpretada.**
-- Em OCaml, avaliar aritmética inteira não aloca nada. A alocação da linha de base
-  é quase nula, e uma razão sobre denominador quase nulo infla. **Reporte também
-  a alocação absoluta por expressão** (palavras/expressão).
-- Até onde conheço o *runtime* do OCaml 5, os segmentos de pilha das *fibers* são
-  alocados **fora** do *heap* gerenciado (`malloc` mais um cache por domínio, em
-  `runtime/fiber.c`). Se for assim, `Gc.quick_stat` e `minor_allocated` não os
-  contam, e os 19,4× refletem fechamentos, registros de *handler*, resultados
-  `Ok` e objetos de continuação, não o segmento de pilha. Nesse caso, a frase
-  final da l. 1863–1865 ("o custo de alocação dos segmentos de pilha [...] é
-  verificável na própria tabela") não se sustenta. **Verifique antes de defender
-  essa frase na banca.**
-- "O custo de estar sob o mecanismo é sobretudo de memória" (l. 1799) compara
-  uma razão de tempo com uma de alocação, que não são comensuráveis; alocar no
-  *minor heap* do OCaml custa pouco. Uma redação segura: "o mecanismo multiplica
-  a alocação muito mais do que o tempo".
-
-**G4. Quantos *handlers* são instalados por expressão?** A Listagem 2 (l. 1407)
-compõe três `match_with` em `run`. Se o *harness* chama `run` por expressão,
-**cada expressão cria três *fibers***. O texto só justifica instalar o de exceção
-por expressão (l. 1116). Esclareça. Se forem três, é uma decisão que afeta todas
-as razões do OCaml, inclusive Arith, e precisa ser declarada e justificada. Uma
-variante com estado e saída instalados uma vez por carga seria um bom controle.
-
-**G5. QP3 (reuso e reinterpretação de efeito) favorece os *handlers* por
-construção.** A l. 1571 diz que, "nas três versões sem *handlers*, foi preciso
-inserir um ponto de indireção antecipando a necessidade". Mas, no estilo *mtl*
-que o próprio trabalho declara adotar ("o transformador como ele é
-idiomaticamente usado", l. 392), a forma de reinterpretar a saída é uma classe
-(`class Monad m => MonadEmit m where emit :: Int -> m ()`) ou `MonadWriter`, com
-duas instâncias. Esse é o análogo monádico de trocar o *handler*, e também não
-exige alterar `eval`. Usar um `IORef` contendo uma função na versão monádica
-contradiz a escolha declarada. Implemente a variante com classe ou declare isso
-como limitação de QP3.
-
-**G6. A métrica de aninhamento não é a da *Cognitive Complexity* citada.** A
-Seção 4.4 conta cada `let … in` e cada `<-` como nível de aninhamento. A
-*Cognitive Complexity* (`campbell:18`) incrementa o aninhamento por **estruturas
-de controle** (condicionais, *match*, laços, *catch*, funções aninhadas), e não
-por vinculações sequenciais. Do jeito que está definida, a profundidade cresce
-com o número de vinculações em sequência, o que penaliza justamente o
-sequenciamento explícito do OCaml que o artigo identifica como confundimento.
-Alinhe a definição com a de Campbell ou deixe de citá-la como base.
-
-**G7. A rubrica não pode mais ser aplicada "antes de conhecidas as contagens"**
-(l. 1033), porque as contagens de LOC já estão publicadas nas Tabelas 3 e 4.
-Reformule ("antes das contagens de operações de efeito e de aninhamento") ou
-peça ao orientador que aplique a rubrica às cegas.
-
-**G8. H1, em OCaml, é confirmada por construção.** A versão com efeitos foi
-escrita como espelho da base imperativa; a l. 1482 diz que "a estrutura do
-avaliador é a mesma". Que as contagens "coincidam construtor a construtor" fica
-garantido pelo modo como o código foi escrito, e não testado. Declare isso na
-validade de construto.
-
-**G9. H2 tem duas fragilidades.**
-- "Próximo ao da linha de base" não tem critério numérico, embora a l. 914 afirme
-  que os critérios de decisão foram declarados antes da coleta. Defina um (por
-  exemplo, diferença de no máximo um ponto).
-- O parágrafo "Ortogonalidade dos efeitos" (l. 883) justifica a expectativa de
-  H2 pela ortogonalidade, mas o quarto efeito foi escolhido justamente por **não**
-  ser ortogonal (l. 1044). Reconcilie os dois trechos.
-
-**G10. QP1 ficou sem classificação.** Na l. 986, QP2 é dita "informativa" e QP3
-"exploratória"; QP1 também compara duas diferenças e não recebe classificação.
-
-**G11. A divisão das unidades de contagem favorece os *handlers* em QP1 e os
-penaliza em QP3.** QP1 conta só `eval`; QP3 conta o arquivo menos `eval`. Na
-versão com efeitos, a semântica dos efeitos vive nos *handlers*, fora de `eval`;
-na imperativa, vive dentro. Isso é uma escolha legítima, mas deve ser dita
-explicitamente na validade de construto.
-
-**G12. A listagem do oráculo contradiz o texto.** A l. 1528 diz que os casos
-estão no JSON de conformidade, lido pelas duas linguagens; a Listagem 5
-(l. 1537) mostra casos como literais OCaml. Ajuste a legenda ("representação em
-OCaml dos casos do arquivo de conformidade") ou o texto.
-
-**G13. Confira se `xie:20` sustenta a direção de H4 em Haskell.** H4 cita Xie e
-Leijen (2020) para prever sobrecusto acima de 2,0× da pilha de transformadores
-sobre uma base com `IORef`. Pela minha lembrança, nos *benchmarks* desse artigo o
-*mtl* aparece entre as variantes **mais rápidas**, e não sei se há uma base com
-`IORef`. Se for assim, a citação não sustenta a previsão. Releia a seção de
-avaliação deles antes da banca.
-
-**G14. `georges:07` não sustenta o *bootstrap*.** Georges et al. (2007) defendem
-intervalos de confiança (t de Student), múltiplas invocações e ANOVA, e não
-*bootstrap*; tampouco falam das ferramentas usadas aqui. Use a citação para
-"avaliação estatisticamente rigorosa" em geral (l. 1121–1123).
-
-**G15. Afirmação sem evidência na Seção 6.1.** A l. 1692–1694 diz que a LOC
-"pode inverter de sinal [...] **mesmo quando a comparação é feita dentro de uma
-única linguagem**". A inversão documentada é entre os excertos do TCC I e o
-código real, entre linguagens. Dentro do OCaml, 30 contra 29 não inverte nada, e
-não há contagem do TCC I por par intralinguagem. Remova a oração final ou
-apresente a evidência.
-
-**G16. Integridade do "a priori".** Pelo histórico do repositório, os limiares de
-H4 e o critério do IC já estavam na primeira versão (07/09), antes dos
-resultados, então isso está em ordem. Já **H5** e a reformulação de **H1**
-entraram em 16/09, mesmo dia em que os resultados foram registrados. Se H5 foi
-escrita depois da corrida-piloto (cota de 5 s) ou de qualquer medição, diga
-"formulada após a corrida-piloto". A banca não vê o `git`, mas os Arts. 9º e 10
-tratam justamente da veracidade.
-
-**G17. Estado com várias posições tem sete equações, não quatro.** `Get x` e
-`Set (x, v)` implementam estado global com uma posição por variável. Para esse
-caso, a apresentação de Plotkin e Power tem sete equações (as quatro por posição
-mais três de comutação entre posições distintas; *Notions of Computation
-Determine Monads*, FoSSaCS 2002). As quatro equações citadas valem para uma única
-célula de estado. Há ainda a parcialidade (`Get` devolve `int option`). Ajuste o
-item "Estado" da Seção 2.3 ou restrinja a afirmação.
-
-### 4.3 Moderados
-
-- **M1. Argumento de terminação (l. 872):** "o tamanho da expressão decresce ou
-  um redex é consumido" é vago; `Var x → n` não diminui o tamanho. Use uma
-  medida que decresce estritamente, por exemplo o número de nós que não são
-  literais.
-- **M2. Definição de 𝓔₆₄ (l. 896):** depende também do estado inicial σ₀, porque
-  `Var` lê valores dele. Defina sobre pares (e, σ₀).
-- **M3. Sementes:** a l. 1301–1302 fala em "semente fixada no código", mas a campanha
-  usa três (42, 43 e 44). Diga que o teste de conformidade cobre as três.
-- **M4. "Seis das oito medições" (l. 1809):** esclareça que são as oito do
-  Bechamel (quatro cenários × duas versões em OCaml).
-- **M5. Output "não exercitado em nenhum trabalho anterior desta comparação"
-  (l. 969):** afirmação forte e ambígua. Simplifique ou retire.
-- **M6. `liang:95` "quase uma década" (Seção 3.4):** a formulação algébrica é de
-  2003 (8 anos depois); os *handlers*, o mecanismo de linguagem, de 2009
-  (14 anos). Precise qual dos dois.
-- **M7. Tabela 1 incompleta frente à prosa:** `wu:14`, `leijen:14`, `leijen:17`
-  e `bauer:15` são discutidos e não aparecem. O guia 03 já registrava isso para
-  `wu:14`. Acrescente as linhas ou diga na legenda que a tabela cobre apenas os
-  trabalhos comparáveis nas quatro dimensões.
-- **M8. Contagem de operações de efeito (Seção 4.4):** a lista para Haskell não
-  inclui `>>` (usado em `Seq`) e não diz como contar `emit` e `liftIO`.
-- **M9. Explicação de Output > Exn em OCaml:** em `run`, `run_exn` é o *handler*
-  mais interno. `Get` e `Set` atravessam `run_exn` e `run_output` antes de chegar
-  a `run_state`; `Output` atravessa `run_exn`. Quando `effc` devolve `None`, o
-  efeito é repassado ao *handler* externo, e isso tem custo por salto. Esse
-  repasse pode explicar parte das razões de State e Output. Um experimento
-  barato e informativo: trocar a ordem dos *handlers* e medir de novo. Ele
-  dialoga com a discussão de que "*handlers* não comutam" (Seção 2.2).
-- **M10. Tensão entre 3.4 e 4.5:** a l. 622 elogia `xie:20` por comparar na mesma
-  linguagem, "eliminando o confundimento com o *runtime*"; a l. 1219 rejeita a
-  comparação intralinguagem porque "confundiria a maturidade das bibliotecas".
-  Os dois argumentos podem coexistir, mas o texto precisa assumir o
-  *trade-off* explicitamente.
-- **M11. Continuações descartadas:** no cenário Exn, 20% das expressões
-  descartam a continuação sem `discontinue`. Confira no manual do OCaml 5 a
-  recomendação sobre continuações não retomadas e se isso afeta memória ou GC no
-  seu *harness*.
-- **M12. Resumos:** "The results contradict the initial hypothesis, which
-  predicted lower overhead for native effects" (l. 114 e 144) mistura H4
-  (limiares) com P1 (comparação entre linguagens), e P1 se confirma em Arith.
-  Sugestão: "contradict both halves of the performance hypothesis (H4)".
-
-### 4.4 Menores (redação, LaTeX, bibliografia)
-
-- **Tiques de redação:** "Registre-se" aparece 8 vezes, "deliberad-" 8,
-  "precisamente" 6 e "portanto" 10. Na reescrita, varie ou corte.
-- **"Abortagem"** (l. 711, 1209, 2028) não é forma corrente; prefira
-  "abortamento" ou "interrupção total".
-- **Terminologia instável:** "linha de base imperativa", "referência imperativa",
-  "base em `IORef`", "referência quase imperativa". Escolha um termo.
-- **Repetições estruturais**, que também custam páginas: a justificativa da
-  normalização intralinguagem aparece no resumo, na Introdução, em 3.3, 4.4, 4.5,
-  6.1 e 8; a história das correções do TCC I (`div`/`quot`, ordem da pilha, ordem
-  de avaliação em OCaml) aparece em 4, 5.3, 5.4, 7 e 8.
-- **Notação:** 𝒟(e, σ) = (v, σ′, ω) usa tupla onde as configurações usam ⟨·⟩.
-- **`munozbaron:20`** está sem páginas ou número de artigo.
-- **Chave `criterion:08`** com ano 2009 (invisível no PDF, mas confunde).
-- **Comentário obsoleto no `.bib`:** "Entradas a ACRESCENTAR ao arquivo
-  sbc-template.bib".
-- **Autor e orientador:** os comentários CONFERIR das l. 84–85 (domínio do e-mail
-  e nome completo do orientador) continuam pendentes.
-- **Reprodutibilidade da compilação:** `sbc-template.sty` e `sbc.bst` não estão no
-  repositório. Inclua-os, para que o PDF possa ser gerado fora do Overleaf.
+Validado: compila sem erros, sem *overfull*, sem referências indefinidas, **16
+páginas** e fonte Times.
 
 ---
 
-## 5. Plano para caber em 16 páginas
+## 5. Problemas encontrados, por gravidade
 
-Medido no layout SBC aproximado (com Times): **37 páginas**. É preciso manter
-cerca de 43% do texto atual.
+### 5.1 Críticos
 
-| Seção | Hoje (págs.) | Meta | Como |
-|---|---:|---:|---|
-| Título, *Abstract*, Resumo | 1,3 | 1 | Título em 2 linhas; resumos com no máximo 10 linhas cada |
-| 1 Introdução | 3 | 1,5 | Fundir problema e justificativa; OEs e QPs em listas curtas; cortar "Contribuições" (repete os objetivos); **acrescentar a síntese dos resultados** |
-| 2 Fundamentação | 4 | 1,5 | Manter a definição de efeito, os isomorfismos das pilhas, os *handlers* do OCaml 5 em um parágrafo e o argumento de equivalência em um parágrafo |
-| 3 Trabalhos Relacionados | 3 | 1,5 | 3.1 e 3.2 com um parágrafo cada; 3.3 curta; manter a Tabela 1 |
-| 4 Metodologia + 5 Implementações | 9 + 7 | 4 | **Fundir as duas.** Semântica: figura e um parágrafo. Hipóteses e métricas em tabelas. Protocolo em um parágrafo; validade em lista curta. Uma única listagem lado a lado (*handlers* × mônadas). **Novo:** diagrama do *pipeline* |
-| Resultados | 4 | 3 | Validação; tabela de desempenho **com ICs**; tabela de métricas de código; tabela "hipótese × veredito"; discussão frente à literatura |
-| Conclusões e Trabalhos Futuros | 1 | 1 | Reescrita (Seção 6) |
-| Atividades e Cronograma | 2 | 0 | **Remover**: é exigência do TCC I, não do 4º PC do TCC II |
-| Agradecimentos + Referências | 3,5 | 2,5 | Retirar referências citadas só em trechos cortados |
-| **Total** | **~37** | **~16** | |
+**C1. QP1–QP3 sem resposta, sem que o texto o admita.**
+A Tabela 1 está vazia (l. 714), o quarto efeito está no futuro (l. 660) e a
+Discussão diz que as respostas "dependem das contagens [...] em curso". Isso é
+honesto *ali*, mas:
+- as Conclusões dizem "a legibilidade medida é a estrutural, não a percebida"
+  (l. 890), e nenhuma legibilidade foi medida;
+- a síntese da Introdução (l. 210–222) e as Conclusões não dizem que três das
+  quatro questões estão abertas.
 
-**O que sai inteiro:** a Seção 5.8 (estado e pendências); a 6.2 (tabelas vazias,
-substituídas por tabelas com dados); a Seção 7 inteira (atividades, cronograma,
-riscos); as Listagens 4 (imperativa) e 5 (oráculo), que podem ir para o
-repositório; o parágrafo "Ortogonalidade dos efeitos", que vira uma frase; e a
-narrativa das correções do TCC I, já que no artigo final bastam a decisão e o
-caso de teste que a trava.
+**O que fazer:** o caminho mais barato é **medir**. Normalizar com `ormolu` e
+`ocamlformat` e contar LOC, operações de efeito e aninhamento é mecânico e cabe
+em uma tarde. A dupla contagem de *boilerplate* exige outra pessoa (orientador).
+O `Input` (QP2) é a parte cara; se não couber até 23/11, **diga isso** na
+síntese e nas Conclusões e mova a QP2 para trabalhos futuros. Relatar como
+medido o que não foi medido é o que o Art. 10 veda. *Se você adicionar o
+repositório do código a esta sessão, posso rodar os formatadores e as contagens
+mecânicas, com o script versionado. A dupla contagem e a interpretação ficam com
+você e com o orientador.*
 
-**Apêndice:** o Art. 4º §2 permite apêndices, se o orientador indicar. Pergunte a
-ele se o apêndice conta nas 16 páginas. Se não contar, a semântica formal
-completa e as listagens podem ir para lá.
+**C2. O repositório público não existe.**
+"acompanha o repositório público, ao qual se remete o leitor" (l. 564); "O
+domínio e as regras acompanham o repositório" (l. 413–414). Nenhum repositório
+de código do TCC aparece na sua conta. Depois que a Figura 1 e as listagens
+saíram, a semântica formal, que é uma das contribuições declaradas, **só existe
+nesse repositório**. Publique o código (pode ser neste mesmo repositório, numa
+pasta `codigo/`) e cite a URL no texto. Inclua também `medir.sh` e `main16.tex`,
+citados nos comentários e ausentes daqui.
+
+**C3. Reenquadrar a contribuição metodológica (l. 215 e 852–854).**
+"A metodológica é a normalização intralinguagem, que separa o que cabe ao
+mecanismo do que cabe ao *runtime*." Kammar et al. (2013, Tab. 1) e Xie &
+Leijen (2020, Fig. 2) já medem *handlers* e mônadas contra uma versão pura na
+mesma linguagem. Uma redação defensável seria:
+
+> "A metodológica é levar a normalização por uma base de controle, já usada em
+> comparações intralinguagem [kammar:13, xie:20], ao confronto entre
+> linguagens e a um caso de uso integrado, separando o que cabe ao mecanismo do
+> que cabe ao *runtime*."
+
+Na banca, esta é a pergunta de quem conhece a área: "isso já não estava em
+Kammar 2013?". Com a redação acima, a resposta está no texto.
+
+**C4. A leitura da alocação na Discussão (l. 804–812).**
+- **A coluna não contém os segmentos de pilha** (Seção 3). Ela mede fechamentos
+  e registros por instalação de *handler*.
+- **A base do OCaml aloca quase nada:** aritmética de inteiros não aloca, e a
+  razão 19,4 divide por um número muito pequeno. É o mesmo argumento
+  1+Δ/T_base que o texto usa para o tempo, aplicado à alocação. **Reporte a
+  alocação absoluta por expressão.** Palavras do OCaml × 8 = bytes, o que torna
+  os números das duas linguagens comparáveis em valor absoluto. Os dados já
+  existem.
+- "É uma ordem de grandeza contra um fator pequeno" compara razões **entre
+  linguagens**, a leitura que o parágrafo seguinte recusa para o tempo. O
+  raciocínio fica inconsistente.
+- "É a alocação, não o tempo, que pesaria em uma decisão de projeto" não tem
+  sustentação. Alocar no *minor heap* do OCaml custa pouco, e o tempo é o custo
+  que o usuário sente. Sugiro retirar ou restringir a afirmação.
+
+**C5. Resumos (padrão SBC) e trechos `VOZ`.**
+O *abstract* tem 145 palavras (~12 linhas) e o Resumo 170 (~14 linhas, com
+transbordo para a pág. 2). Para caber em 10 linhas, cada um precisa de ~120
+palavras. Ao reescrever, corrija também o que o comentário do outro revisor já
+apontava: a LOC **não** é sensível ao "sequenciamento explícito exigido pelo
+OCaml" (a Seção 6.1 diz que ambas usam três linhas por operador), e a restrição
+intralinguagem não é o remédio para o estilo (quem cuida disso é a
+normalização).
+
+**C6. Declaração de IA (Arts. 7º, 8º e 11).**
+- "[PREENCHER]" sai **impresso** em negrito.
+- Pelos comentários deste fonte ("O texto foi corrigido para não afirmar -O3",
+  "a Figura 1 saiu", "o texto aqui […] foi alinhado ao SEGUNDO ambiente"), a
+  ferramenta também **condensou, reestruturou e reescreveu** trechos e conferiu
+  o texto contra o código. Se foi assim, "sugestões de redação e de concisão"
+  subdeclara o uso, e o Art. 11 prevê sanção por omissão. O Art. 6º **permite**
+  geração de conteúdo, desde que declarada; declarar a mais é seguro, declarar a
+  menos é o risco.
+- Os comentários dirigidos a você no fonte ("que você me mandou", "Divida como
+  quiser") devem sair antes da versão final.
+
+### 5.2 Graves
+
+**G1. `hughes:89` citado para o oposto do que Hughes argumenta (l. 161, trecho
+`VOZ`).** "Ela facilita o raciocínio equacional e a verificação formal
+\cite{hughes:89}": Hughes abre o artigo criticando justamente quem defende a
+programação funcional por essas propriedades, e argumenta pela modularidade
+(funções de alta ordem e avaliação preguiçosa). A 1ª versão do artigo tinha
+corrigido isso, e o guia 01 prevê a pergunta. Ao reescrever, cite Hughes para a
+modularidade ou retire a citação desse ponto.
+
+**G2. Em Haskell, Arith não é condição de controle (l. 497, 783, 804).**
+Pela sua própria métrica (l. 440), cada vinculação monádica é uma operação de
+efeito em Haskell, e Arith faz várias por expressão através da pilha
+`ExceptT`/`StateT`/`IO`. O 1,90× é o custo do *bind* da pilha, e não "estar sob
+o mecanismo" no sentido do OCaml. O rótulo "(controle)" e a frase "não realiza
+operação de efeito alguma" valem para o OCaml. Diga isso, e descreva também a
+estrutura por expressão do *harness* Haskell (`runExceptT`/`runStateT` por
+expressão?), simétrica à do OCaml.
+
+**G3. Os tempos absolutos das bases já existem.** Uma razão M/B só pode ser
+calculada com B. Reportá-los (duas colunas na Tabela 2, ou na legenda) elimina
+uma das duas "limitações principais" da síntese (l. 221) e a "primeira leitura
+recusada" (l. 814–822), e dispensa a "segunda campanha" (l. 825).
+
+**G4. As hipóteses saíram junto com o resultado que as refutava.** O TCC I e as
+versões anteriores fixavam a priori sobrecusto < 1,5× no OCaml e > 2,0× no
+Haskell; os dados contradizem as duas metades. O orientador, que está na banca,
+conhece essas hipóteses. Uma ou duas frases ("a expectativa do TCC I […] não se
+confirmou: […]") custam pouco espaço, protegem contra a pergunta "e a hipótese
+H4?" e mostram o resultado mais interessante do trabalho. Cite `marchioni:tcc1`
+(hoje não citado; M8).
+
+**G5. A métrica de aninhamento ficou sem definição operacional (l. 442).** A
+versão atual não diz o que incrementa a profundidade. A anterior contava cada
+`let…in` e cada `<-`, o que diverge da *Cognitive Complexity* (que conta
+estruturas de controle, não vinculações sequenciais). Defina antes de contar e
+alinhe a definição a Campbell, ou deixe de citá-la como base. A ressalva de
+Muñoz Barón et al. (resultados mistos quanto à correção das tarefas) também
+saiu; sem ela, l. 446 superestima a validação.
+
+**G6. Só QP3 é dita exploratória entre linguagens (l. 430).** QP1 inclui a LOC,
+que é igualmente sensível ao idioma. Classifique QP1 também.
+
+**G7. A Seção 6.1 superestima a restrição intralinguagem (l. 688).** "[o
+idioma] deixa de interferir apenas quando a comparação fica dentro de uma mesma
+linguagem": dentro do Haskell, a base `IORef` usa vinculações `do` e
+forçamento explícito que a versão monádica não usa. O idioma é atenuado, não
+eliminado. A 1ª versão dizia isso corretamente.
+
+**G8. A assimetria de QP3 (l. 647) favorece os *handlers* por construção.** No
+estilo *mtl* que o texto declara adotar, reinterpretar a saída se faz com uma
+classe (`class Monad m => MonadEmit m where emit :: Int -> m ()`) com duas
+instâncias, sem alterar `eval`. A referência a função num `IORef` não é o idioma
+*mtl*. Declare isso como limitação ou implemente a variante.
+
+**G9. A divisão das unidades favorece os *handlers* em QP1 e os penaliza em
+QP3.** A semântica dos efeitos fica fora de `eval` na versão com *handlers*, e
+dentro dela na imperativa. Declare na validade de construto.
+
+**G10. O teste de conformidade só cobre Arith (l. 569–571).** Os geradores de
+State, Exn e Output e as sementes 43 e 44 não são conferidos entre linguagens.
+Dentro de cada linguagem não há problema, mas o cotejo entre linguagens pode
+comparar cargas diferentes. Uma correção barata: um *hash* de cada carga por
+cenário e semente, comparado entre as linguagens.
+
+**G11. Reprodutibilidade do protocolo.**
+- As *flags* de otimização não aparecem (l. 485): diga `-O2` no GHC, se for o
+  caso, e as *flags* efetivas das bibliotecas OCaml (o comentário da l. 749
+  explica que o `-O3` não chega a elas).
+- O i5-1345U é híbrido (2 núcleos P e 8 E). Afinidade, *governor* e *turbo* não
+  são descritos.
+- "Corridas estritamente sequenciais" (l. 761): mecanismo e base foram medidos
+  em janelas diferentes? A deriva térmica entra direto na razão.
+
+**G12. Nenhuma figura.** O Art. 4º §1 III fala em metodologia "com diagramas,
+fluxogramas, figuras". Um diagrama compacto do fluxo (oráculo → *benchmarks* →
+razões) reduziria o risco de uma leitura estrita.
+
+### 5.3 Moderados
+
+- **M1.** 𝓔₆₄ (l. 416) depende também de σ₀, porque `Var` lê valores dele;
+  defina sobre pares (e, σ₀). E 𝒟 é total sobre 𝓔×Σ de qualquer forma: o
+  domínio 𝓔₆₄ importa para a equivalência das implementações, não para a
+  totalidade.
+- **M2.** Efeitos escopados são definidos duas vezes, de formas diferentes: na
+  Seção 2.3, como operações que recebem uma subcomputação (correto), e na l.
+  336–338, como "semântica depende do contexto de chamada". Apagar a segunda
+  economiza uma linha e meia.
+- **M3.** "a alocação mostrou-se praticamente invariante entre sementes, o que
+  corrobora o tratamento dela como grandeza determinística" (l. 791–793):
+  invariância entre **cargas** não é determinismo entre **execuções**.
+- **M4.** "seis das oito medições" e "valores até 2,9× maiores" (l. 795–797):
+  diga que são as do Bechamel, e se 2,9× é tempo absoluto ou razão.
+- **M5.** A Tab. 2 de Sivaramakrishnan et al. ("handlers but no perform") é o
+  análogo direto de Arith. Dizer isso fortalece o confronto com a literatura.
+- **M6.** `joriatti:25` traduz para a biblioteca *extensible-effects*: cite
+  `kiselyov:15` ali ("esse mesmo arcabouço", l. 329).
+- **M7.** "nenhum deles reúne" (l. 177) é absoluto; a Seção 3.2 diz, com razão,
+  "nenhum dos trabalhos revisados".
+- **M8.** `marchioni:tcc1` não é citado, mas o texto se refere ao TCC I ("uma
+  contagem preliminar […] sobre excertos", l. 680; "uma formulação anterior",
+  l. 607).
+- **M9.** Tensão entre a Seção 3.2 (a comparação intralinguagem "elimina o
+  confundimento") e o fim da 4.3 (ela "confundiria a maturidade de uma
+  biblioteca"): assuma o *trade-off* numa frase.
+- **M10.** Sivaramakrishnan et al. comparam *handlers* com uma mônada de
+  concorrência (Tab. 2: 33–349× contra 6,7–12,3×). Não é transformador, mas é um
+  dado de "*handlers* versus mônada" no próprio OCaml que pode entrar na
+  discussão.
+
+### 5.4 Menores
+
+- "Abortagem" (l. 396, 886) não é forma corrente; prefira "abortamento".
+- "Registre-se" aparece 3 vezes em pouco espaço.
+- `gaissert:25` e `munozbaron:20`: conferir na fonte (Seção 3).
+- Ano de `marchioni:tcc1` (2025?) e e-mail e nome do orientador: os CONFERIR
+  continuam.
+- O cabeçalho do `.bib` tem uma nota obsoleta ("o .bib atual grafa
+  Brachtauser").
 
 ---
 
-## 6. Estrutura sugerida para a entrega à banca (4º PC)
+## 6. Espaço
 
-1. **Introdução:** contexto, problema, justificativa, objetivos geral e
-   específicos, QPs, **síntese do que foi feito e principais resultados**, e
-   organização do texto.
-2. **Referencial Teórico e Trabalhos Relacionados:** podem ser fundidos; o Art. 4º
-   §1 II os trata como um único item.
-3. **Metodologia:** caso de uso e semântica, implementações, oráculo, hipóteses,
-   métricas, protocolo, ameaças à validade, e o **diagrama do *pipeline***.
-4. **Resultados:** validação; desempenho; métricas de código; quarto efeito;
-   confronto com as hipóteses; discussão frente a `sivaramakrishnan:21` e
-   `xie:20`.
-5. **Conclusões e Trabalhos Futuros:** contribuições; principais resultados
-   frente à literatura; limitações; trabalhos futuros (legibilidade percebida com
-   participantes humanos, comparação intralinguagem em Haskell com bibliotecas de
-   efeitos, efeitos escopados, segurança estática de efeitos, outras
-   plataformas).
-6. **Agradecimentos** (declaração de IA completa) e **Referências**.
+Na réplica, com Times, o artigo fecha em 16 páginas e a última tem cerca de 26
+linhas de referências: sobra algo como um terço de página. A nota "1.600
+caracteres" do fonte foi medida com Latin Modern; com a Times a folga deve ser
+maior. **Confirme com o seu `medir.sh` no Overleaf.**
 
-**Rascunho do parágrafo de síntese para a Introdução**, usando apenas dados que
-já estão no artigo:
-
-> **Síntese do que foi feito e principais resultados.** Foram desenvolvidas
-> quatro implementações funcionalmente equivalentes do interpretador, verificadas
-> por uma suíte de oráculo de 28 casos derivada da semântica formal, que passa
-> integralmente nas quatro. Na campanha de desempenho, o sobrecusto dos
-> *handlers* do OCaml 5 sobre a linha de base da própria linguagem ficou entre
-> 1,45× e 2,35×, e o da pilha de transformadores em Haskell entre 1,08× e 1,90×,
-> o que refuta H4 nas duas metades. *[Completar com os resultados de QP1 a QP3
-> quando coletados.]*
-
-**Sugestões de título em duas linhas:**
-- *Mônadas e Efeitos Algébricos: Uma Comparação Normalizada por Linha de Base
-  Intralinguagem*
-- *Mônadas em Haskell e Efeitos Algébricos em OCaml 5: Legibilidade,
-  Composabilidade, Abstração e Desempenho*
+O que ainda precisa entrar: os dois parágrafos de QP1–QP3, uma ou duas frases
+sobre as hipóteses (G4) e o estado de QP1–QP3 na síntese (C1). Os tempos
+absolutos (G3) cabem como colunas da Tabela 2, sem prosa nova. Cortes
+disponíveis: M2 (1,5 linha) e os "Registre-se".
 
 ---
 
-## 7. O que depende de você
+## 7. Guias de defesa
 
-Nada disso pode ser preenchido por mim sem inventar dados, o que o Art. 10
-proíbe.
+Os três guias descrevem a versão anterior. Pus um aviso no topo de cada um. Os
+pontos perigosos:
 
-1. **Ambiente real das medições** (máquina, SO, GHC, *governor*, *turbo*,
-   afinidade) e o motivo da mudança de plano (C1).
-2. **ICs das razões**, a partir dos relatórios do Criterion e do Bechamel (C2).
-3. **Métricas de código normalizadas** (atividade A4). Sem elas, QP1 e QP3 ficam
-   sem resposta. A dupla contagem prevista exige tempo do orientador; combine já.
-4. **Quarto efeito `Input`** (atividade A3). Sem ele, QP2 fica sem resposta. Se
-   não couber até 23/11, **diga isso no texto** e mova a QP2 para trabalhos
-   futuros. Não é possível relatar o que não foi medido.
-5. **Decidir o que H3 afirma** (C4) e o critério numérico de H2 (G9).
-6. **Quantos *handlers* por expressão** o *harness* instala (G4), e conferir a
-   alocação das *fibers* (G3) e a API do Bechamel (G1).
-7. **URL do repositório público** com o código, os dados brutos e as
-   configurações (Art. 5º §3).
-8. **Versão do modelo** na declaração de IA (Art. 8º).
-9. **Ano do TCC I** (provavelmente 2026), versões do `ormolu` e do
-   `ocamlformat`, e e-mail e nome completo do orientador.
-10. **Perguntar ao orientador** se o apêndice conta nas 16 páginas.
+- **Guia 02:** defende que o ambiente global foi adotado "não por conveniência",
+  por causa da teoria. **O artigo atual diz o contrário** (l. 390–394:
+  "simplificação da linguagem interpretada, e não imposição da teoria").
+- **Guia 01:** diz que Hughes é citado só para modularidade; o artigo atual
+  voltou a citá-lo para raciocínio equacional (G1).
+- **Guia 03:** a Tabela de lacuna não existe mais, e `kammar:13` e `xie:20`
+  agora são os trabalhos mais próximos (C3).
+
+Vale regerar os guias depois que o texto final estiver fechado.
 
 ---
 
 ## 8. Cronograma sugerido até 23/11
 
-O 4º PC exige o artigo **já revisado pelo orientador**, então a sua versão
-precisa chegar a ele alguns dias antes.
-
 | Datas | O quê |
 |---|---|
-| 10–11/11 | Decisões C1, C4 e G4; ICs das razões; publicar o repositório |
-| 11–15/11 | Métricas de código (A4), com a contagem do orientador; decidir se o `Input` (A3) cabe no prazo |
-| 13–18/11 | Corte e reestruturação para 16 páginas (Seções 5 e 6 deste documento) |
-| 18–21/11 | Revisão do orientador e incorporação das correções |
+| 10–12/11 | Publicar o código (C2); normalizar e contar (QP1/QP3); decidir se o `Input` cabe no prazo |
+| 12–14/11 | Preencher a Tabela 1 e escrever os dois parágrafos; tempos absolutos e alocação por expressão (G3, C4) |
+| 14–16/11 | Reescrever os trechos `VOZ` (resumos com até 10 linhas, Hughes); C3, G4; completar a declaração |
+| 17–21/11 | Revisão do orientador (o 4º PC exige o artigo já revisado por ele) |
 | até 23/11 | Entrega à banca |

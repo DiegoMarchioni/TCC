@@ -1,5 +1,16 @@
 # Guia de defesa — Parte 1: Introdução
 
+> ⚠️ **Guia desatualizado (aviso de 09/11/2026).** Este guia foi escrito para a
+> versão anterior do artigo (com a Tabela de lacuna, a Figura 1 da semântica e
+> as hipóteses H1–H5). A versão atual removeu esses elementos e mudou algumas
+> afirmações. Antes de estudar por aqui, leia `revisao-completa.md`, seção 7.
+>
+> Contradições com o artigo atual que podem custar caro na arguição:
+> - O guia diz que `hughes:89` foi citado *só* para modularidade; o artigo atual
+>   voltou a citá-lo para "raciocínio equacional e verificação formal", que é o
+>   oposto do argumento de Hughes (item G1 da revisão).
+> - Não existem mais `tab:lacuna` nem H1–H5 no texto.
+
 Guia de estudo para a apresentação. Cobre do título ao fim da Introdução do `artigo.tex`.
 Primeiro de uma série por seção.
 

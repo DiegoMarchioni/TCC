@@ -3,7 +3,9 @@
 \usepackage{graphicx,url}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}      % glifos acentuados e hifenizacao correta no pdfLaTeX
-\usepackage{lmodern}
+%% REVISAO: lmodern removido. Carregado depois do sbc-template, ele trocava a
+%% Times exigida pelo padrao SBC (Art. 3o) por Latin Modern -- e, por ser mais
+%% largo, custava cerca de uma pagina (17 contra 16 na medicao da revisao).
 \usepackage[brazil]{babel}
 \usepackage{microtype}
 \usepackage{booktabs}
@@ -68,8 +70,8 @@
                 val,and,begin,end,try,raise,exception,function,module,open}
 }
 \title{Mônadas e Efeitos Algébricos em Linguagens Funcionais:\\
-Uma Análise Comparativa em Legibilidade, Composabilidade,\\
-Poder de Abstração e Desempenho}
+Uma Análise Comparativa em Legibilidade,\\
+Composabilidade, Poder de Abstração e Desempenho}
 
 \author{Diego Marchioni\inst{1}, Marco Rodrigo\inst{1}}
 
@@ -100,6 +102,13 @@ Poder de Abstração e Desempenho}
 %% contra 10,6 a 20,4 em alocacao, no OCaml -- o custo esta na criacao de
 %% segmentos de pilha, nao na operacao de efeito. Escreva com as suas palavras,
 %% nas duas linguas.
+%% REVISAO (09/11): CUIDADO com a frase acima. No OCaml 5 os segmentos de pilha
+%% sao alocados com malloc, FORA do heap do coletor (Sivaramakrishnan et al.
+%% 2021, Sec. 5.2; runtime/fiber.c da versao 5.2), e por isso NAO entram na
+%% coluna de alocacao do Bechamel, que conta palavras do heap. A razao 10,6-20,4
+%% mede fechamentos e registros criados por instalacao de handler, nao pilhas.
+%% Ver revisao-completa.md, item C4. Os resumos tambem precisam caber em ate 10
+%% linhas cada, ambos na 1a pagina (hoje: ~12 e ~14 linhas; ~120 palavras cada).
 \begin{abstract}
 Managing computational effects is a central challenge in functional language
 design, and two approaches concentrate the attention of the literature:
@@ -178,7 +187,7 @@ comparar mônadas e efeitos algébricos em legibilidade, composabilidade, poder
 de abstração e desempenho, sobre um caso de uso único que combine estado
 mutável, exceções e saída. A medição direta não é possível, porque o mecanismo
 não se separa do \textit{runtime} que o hospeda: a versão monádica executa
-sobre o GHC, e as demais, sobre o OCaml. Mede-se então por razões, cada
+sobre o GHC, e a versão com \textit{handlers}, sobre o OCaml. Mede-se então por razões, cada
 mecanismo contra uma linha de base imperativa na sua própria linguagem, nos
 termos fixados na Seção~\ref{sec:protocolo}. As duas razões são em seguida
 confrontadas, e esse confronto é exploratório: elas assentam sobre bases de
@@ -240,8 +249,8 @@ $\eta:\mathrm{Id}\Rightarrow T$ e $\mu:T^2\Rightarrow T$ são transformações
 naturais sujeitas às leis de unidade e associatividade; a contribuição central
 é a separação entre valores, de tipo $A$, e computações, de tipo $TA$
 \cite{moggi:91}. A formulação equivalente como tripla de Kleisli é a que o
-programador manipula --- $\eta$ é o \texttt{return} e a extensão de Kleisli é
-o \texttt{>>=} ---, e é satisfazendo aquelas leis que uma instância de
+programador manipula --- $\eta$ é o \texttt{return} e a extensão de Kleisli
+corresponde ao \texttt{>>=}, com os argumentos trocados ---, e é satisfazendo aquelas leis que uma instância de
 \texttt{Monad} preserva o raciocínio equacional sob efeitos
 \cite{wadler:90,wadler:92}.
 
@@ -353,12 +362,14 @@ dimensões que governam a escolha: os de fundamentação estabelecem o mecanismo
 e a sua semântica, sem medir custo \cite{plotkin:03,plotkin:09}; os de
 expressividade e composição tratam de legibilidade e abstração, sem medição
 \cite{swierstra:08,pretnar:15,lindley:17}; e os de desempenho medem com rigor,
-mas não comparam os dois mecanismos nem avaliam as demais dimensões
-\cite{kammar:13,sivaramakrishnan:21,karachalias:21,gaissert:25}. Dois chegam
-mais perto do desenho adotado aqui. A comparação entre \textit{handlers} e
-transformadores na mesma linguagem elimina o confundimento com o
-\textit{runtime}, mas não assenta sobre um caso de uso integrado
-\cite{xie:20}. E o antecedente direto do caso de uso são os interpretadores
+mas não comparam \textit{handlers} com transformadores monádicos nem avaliam
+as demais dimensões \cite{sivaramakrishnan:21,karachalias:21,gaissert:25}.
+Dois grupos chegam mais perto do desenho adotado aqui. As comparações de
+desempenho entre \textit{handlers} e mônadas na mesma linguagem, que incluem
+uma versão pura como controle, eliminam o confundimento com o
+\textit{runtime}, mas assentam sobre \textit{microbenchmarks}, e não sobre um
+caso de uso integrado, e não tratam das demais dimensões
+\cite{kammar:13,xie:20}. E o antecedente direto do caso de uso são os interpretadores
 modulares construídos com transformadores \cite{liang:95}, único trabalho
 revisado que articula múltiplos efeitos sobre um caso integrado, ainda que não
 meça desempenho nem pudesse contrastar as duas abordagens, formuladas com
@@ -478,9 +489,11 @@ idênticas. São quatro cenários, de 10.000 expressões cada. A instalação do
 \textit{handlers} é por expressão avaliada: o de exceção precisa sê-lo, sob
 pena de a primeira divisão por zero encerrar a carga e \textsc{Exn} medir uma
 fração das expressões; os de estado e de saída poderiam ser instalados uma vez
-por carga, e não o foram --- os três são instalados juntos, o que triplica as
-alocações de segmento de pilha e deve ser levado em conta ao ler a coluna de
-alocação. \textsc{Arith}, sem \texttt{Var}, \texttt{Let} ou \texttt{Print},
+por carga, e não o foram --- os três são instalados juntos, o que triplica a
+criação de segmentos de pilha. Esse custo aparece no tempo, e não na coluna de
+alocação: o OCaml~5 aloca os segmentos fora do \textit{heap} do coletor
+\cite{sivaramakrishnan:21}, e a coluna registra apenas os fechamentos e
+registros que cada instalação cria. \textsc{Arith}, sem \texttt{Var}, \texttt{Let} ou \texttt{Print},
 não realiza operação de efeito alguma, mas instala os \textit{handlers} 10.000
 vezes: mede, portanto, o custo de \textit{estar} sob o mecanismo, e não o de
 realizar efeitos. \textsc{State} tem 500 variáveis e duas leituras por
@@ -507,8 +520,8 @@ sim diluí-la, já que $(M+R)/(B+R)$ aproxima-se de~1 conforme $R$ cresce, onde
 $M$ e $B$ são os tempos do mecanismo e da base e $R$, o da reinicialização.
 
 A principal ameaça à validade é o confundimento entre o mecanismo e o
-\textit{runtime}: a versão monádica executa sobre o GHC e as demais sobre o
-OCaml, com modelos de coleta de lixo e otimização distintos, de modo que
+\textit{runtime}: a versão monádica executa sobre o GHC e a versão com
+\textit{handlers} sobre o OCaml, com modelos de coleta de lixo e otimização distintos, de modo que
 comparar tempos absolutos seria comparar duas variáveis ao mesmo tempo. Para
 mitigar, cada abordagem é normalizada contra uma base imperativa na sua
 própria linguagem --- em Haskell, uma referência em \texttt{IORef} contendo o
@@ -559,7 +572,7 @@ de conferência --- valores do congruencial e as primeiras expressões de
 nessa amostra, e não em toda a carga. O gerador é próprio, e não o da biblioteca
 padrão de cada linguagem, porque geradores distintos fariam Haskell e OCaml
 avaliarem árvores diferentes, e a carga seria uma segunda variável confundida
-junto com o \textit{runtime}; é um congruencial linear de semente fixa, e as
+junto com o \textit{runtime}; é um congruencial linear de semente explícita, e as
 precauções que ele exige estão documentadas no repositório.
 
 \subsection{Versão Monádica e Linhas de Base}\label{sec:impl-monadica}
@@ -581,8 +594,8 @@ reduz-se à substituição de acessos diretos à tabela e de \texttt{raise} por
 operações de efeito. A base do Haskell usa um \texttt{IORef} contendo o mesmo
 \texttt{Map String Int} da versão monádica, com erros por \texttt{throwIO};
 sendo a estrutura idêntica, a razão entre as duas isola o custo do mecanismo,
-e não o da representação do ambiente. Em ambas, a emissão passa por uma
-referência a função que a suíte substitui temporariamente, o que dispensa
+e não o da representação do ambiente. Nas três versões sem \textit{handlers},
+a emissão passa por uma referência a função que a suíte substitui temporariamente, o que dispensa
 capturar \texttt{stdout} --- sensível ao \textit{buffering} e que observaria a
 renderização do traço, e não o traço $\omega$.
 
@@ -857,10 +870,11 @@ tratar um efeito ---, o que explica por que o sobrecusto pesa onde os
 \textit{handlers} são instalados com frequência --- regime em que os quatro
 cenários operam --- e se diluiria onde um mesmo escopo cobrisse muito trabalho,
 o que não se mediu.
-Em Haskell, a razão de 1,08 em \textsc{State} tampouco é comparável ao que a
-literatura intralinguagem reporta, pois lá o confronto é entre bibliotecas de
-efeitos \cite{xie:20}; aqui, base e versão monádica compartilham o
-\texttt{Map}, cujo custo logarítmico dilui a razão.
+Em Haskell, a literatura intralinguagem mede a mônada de estado e a pilha do
+\textit{mtl} contra uma versão pura em \textit{microbenchmarks} de contador e
+encontra razões entre 1,0 e 1,3 \cite{kammar:13,xie:20}; a razão de 1,08 em
+\textsc{State} cai nessa faixa, com a ressalva de que aqui base e versão
+monádica compartilham o \texttt{Map}, cujo custo logarítmico dilui a razão.
 Por fim, a linha de pesquisa que remove sobrecusto por transformação
 fonte-a-fonte e por compilação por rastreamento
 \cite{karachalias:21,gaissert:25} implica que estes números descrevem o
@@ -898,8 +912,13 @@ pede um estudo com participantes, único instrumento capaz de validar os
 %% CONFERIR (Arts. 6o a 8o do Regulamento): o Art. 7o exige declarar (I) a
 %% ferramenta, (II) a finalidade e (III) as secoes em que a IA contribuiu; o
 %% Art. 8o exige nome, VERSAO e fornecedor. Preencha a versao que voce
-%% efetivamente usou no lugar de <versao> e confira se a lista de finalidades
-%% corresponde ao que de fato foi feito.
+%% efetivamente usou no lugar de [PREENCHER] -- que hoje SAI IMPRESSO no PDF --
+%% e confira se a lista de finalidades corresponde ao que de fato foi feito.
+%% REVISAO (09/11): os comentarios deste fonte indicam que a ferramenta tambem
+%% condensou e reestruturou o texto, removeu listagens e a Figura 1 e conferiu
+%% o texto contra o codigo; se foi assim, "sugestoes de redacao e de concisao"
+%% subdeclara o uso (Art. 11). A revisao de 09/11 corrigiu afirmacoes factuais
+%% nas Secoes 2 a 6 e nas referencias -- incluido abaixo.
 \section*{Agradecimentos}
 
 Em conformidade com os Arts.~6\textsuperscript{o} a 8\textsuperscript{o} do
@@ -907,7 +926,8 @@ Regulamento Geral de TCC, declara-se o uso do modelo Claude (Anthropic, versão
 \textbf{[PREENCHER]}) na revisão crítica de todas as seções deste texto, com as
 seguintes finalidades: verificação de consistência interna, conferência da
 correspondência entre afirmações e referências citadas, identificação de
-redundâncias e sugestões de redação e de concisão. O conteúdo técnico, os
+redundâncias, sugestões de redação e de concisão, e correção de afirmações
+factuais no texto e nas referências. O conteúdo técnico, os
 resultados e a redação final são de responsabilidade do autor.
 
 %% ============================================================

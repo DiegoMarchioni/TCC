@@ -1,5 +1,19 @@
 # Guia de defesa — Parte 2: Fundamentação Teórica
 
+> ⚠️ **Guia desatualizado (aviso de 09/11/2026).** Este guia foi escrito para a
+> versão anterior do artigo (com a Tabela de lacuna, a Figura 1 da semântica e
+> as hipóteses H1–H5). A versão atual removeu esses elementos e mudou algumas
+> afirmações. Antes de estudar por aqui, leia `revisao-completa.md`, seção 7.
+>
+> Contradição com o artigo atual que pode custar caro na arguição:
+> - O guia defende que o ambiente global foi adotado "não por conveniência", e
+>   sim porque o escopo com restauração sairia da classe algébrica. **O artigo
+>   atual diz o contrário** (Seção 4.1): é "simplificação da linguagem
+>   interpretada, e não imposição da teoria", e o escopo léxico seria
+>   exprimível com as mesmas operações de primeira ordem. Defenda a versão do
+>   artigo.
+> - As quatro equações do estado e a Figura 1 não estão mais no texto.
+
 Cobre a Seção 2 do `artigo.tex` (`sec:fundamentacao`), incluindo as três
 subseções: Mônadas e Transformadores, Efeitos Algébricos e Handlers, e Relação
 Formal entre as Abordagens.
