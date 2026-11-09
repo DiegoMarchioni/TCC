@@ -1,0 +1,3 @@
+(library
+ (name interp_effects)
+ (libraries tcc_expr))

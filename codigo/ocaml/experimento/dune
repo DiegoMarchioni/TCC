@@ -1,0 +1,6 @@
+; Experimento reprodutivel: abandonar uma continuacao sem retoma-la vaza o
+; segmento de pilha no OCaml 5.2 (ver comentario em continuacao.ml).
+
+(executable
+ (name continuacao)
+ (libraries tcc_expr interp_effects unix))

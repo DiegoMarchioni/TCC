@@ -1,0 +1,24 @@
+cabal-version:      2.4
+name:               metricas-hs
+version:            1.0.0
+synopsis:           Métricas de código sobre a AST dos avaliadores Haskell (TCC)
+description:
+  Analisa os avaliadores Haskell com o parser do GHC (ghc-lib-parser 9.4) e
+  emite JSON com LOC efetiva, operações de efeito, aninhamento e declarações,
+  nas definições de ../docs/protocolo-metricas.md.
+
+license:            MIT
+build-type:         Simple
+
+executable metricas-hs
+  default-language: Haskell2010
+  hs-source-dirs:   .
+  main-is:          MetricasHs.hs
+  ghc-options:      -O1 -Wall
+  build-depends:
+    , aeson              >=2.0  && <2.3
+    , base               >=4.16 && <5
+    , bytestring
+    , containers
+    , ghc-lib-parser     >=9.4  && <9.5
+    , ghc-lib-parser-ex  >=9.4  && <9.5

@@ -1,0 +1,62 @@
+cabal-version:      2.4
+name:               tcc-efeitos
+version:            1.0.0
+synopsis:
+  Interpretador com monad transformers e linha de base IORef (TCC)
+
+description:
+  Versão monádica (ExceptT String (StateT Env IO)) e linha de base com IORef
+  do interpretador do caso de uso, com a suíte de oráculo, o harness Criterion
+  e o gerador de cargas replicado. Ver ../README.md.
+
+license:            MIT
+build-type:         Simple
+
+common comum
+  default-language: Haskell2010
+  ghc-options:      -O2 -Wall
+  build-depends:
+    , base        >=4.16 && <5
+    , containers  >=0.6  && <0.8
+    , deepseq     >=1.4  && <1.6
+    , mtl         >=2.2  && <2.3
+
+library
+  import:          comum
+  hs-source-dirs:  src
+  exposed-modules:
+    Expr
+    Interp.IORefBase
+    Interp.Monadic
+
+test-suite oraculo
+  import:         comum
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is:        Spec.hs
+  build-depends:
+    , aeson       >=2.0  && <2.3
+    , directory
+    , filepath
+    , tcc-efeitos
+    , text
+    , vector
+
+benchmark desempenho
+  import:         comum
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: bench
+  main-is:        Main.hs
+  ghc-options:    -rtsopts "-with-rtsopts=-T"
+  build-depends:
+    , criterion   >=1.6  && <1.7
+    , directory
+    , filepath
+    , statistics  >=0.15 && <0.17
+    , tcc-efeitos
+
+executable cargas
+  import:         comum
+  hs-source-dirs: app
+  main-is:        Cargas.hs
+  build-depends:  tcc-efeitos
