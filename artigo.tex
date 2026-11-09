@@ -3,10 +3,12 @@
 \usepackage{graphicx,url}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}      % glifos acentuados e hifenizacao correta no pdfLaTeX
-\usepackage{lmodern}
+%% lmodern removido: carregado depois do sbc-template, ele substituia a Times
+%% exigida pelo padrao SBC (Art. 3o do Regulamento) por Latin Modern.
 \usepackage[brazil]{babel}
 \usepackage{microtype}
 \usepackage{booktabs}
+\usepackage{array}            % colunas p{} com alinhamento na Tabela de lacuna
 \usepackage{textcomp}         % necessario para upquote nas listagens
 \usepackage{listings}
 \usepackage{xcolor}
@@ -496,9 +498,9 @@ Usam a continuação no máximo uma vez porque \texttt{get}, \texttt{set} e
 \texttt{out} a retomam exatamente uma vez e \texttt{raise} a descarta --- uso
 \emph{afim}, e não estritamente linear, justamente por causa do descarte. Nenhum
 exige retomada múltipla, e todos cabem sob as continuações \emph{one-shot} do
-OCaml~5. As equações do estado são, aliás, precisamente o que a suíte de oráculo
-verifica nos casos de persistência e revinculação de \texttt{Let}
-(Seção~\ref{sec:oraculo}).
+OCaml~5. Duas das equações do estado --- ler após escrever devolve o escrito e
+a última escrita prevalece --- são, aliás, o que a suíte de oráculo verifica nos
+casos de persistência e revinculação de \texttt{Let} (Seção~\ref{sec:oraculo}).
 
 \emph{Quarto}, segue-se que, \emph{para os três efeitos deste caso de uso}, os
 dois mecanismos têm o mesmo alcance expressivo, e as diferenças observáveis são
@@ -511,7 +513,7 @@ em geral.
 Cabe ainda qualificar o alcance da correspondência. Ela recai sobre efeitos cuja
 teoria admite apresentação \emph{algébrica} (de modelo livre) \cite{plotkin:03};
 nem toda mônada é algébrica, sendo a mônada de continuação o contraexemplo
-clássico, e os efeitos \emph{escopados} o caso limítrofe (Seção~\ref{sec:custo}).
+clássico, e os efeitos \emph{escopados} o caso limítrofe (Seção~\ref{sec:expressividade}).
 É por essa razão --- e não por conveniência --- que o caso de uso adota ambiente
 global sem restauração de vínculos (Seção~\ref{sec:caso-de-uso}).
 
@@ -634,14 +636,14 @@ comparação conjunta das quatro dimensões sobre um mesmo caso de uso concreto.
 \begin{table}[ht]
   \centering
   \caption{Cobertura dos trabalhos relacionados frente às quatro dimensões e ao
-           critério de caso de uso integrado. $\bullet$ indica tratamento
+           critério de caso de uso integrado (Integr.). $\bullet$ indica tratamento
            explícito; $\circ$, tratamento parcial ou incidental.}
   \label{tab:lacuna}
-  \small
-  \begin{tabular}{lccccc}
+  \footnotesize\setlength{\tabcolsep}{4pt}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{0.43\linewidth}ccccc}
     \toprule
     \textbf{Trabalho} & \textbf{Legib.} & \textbf{Compos.} & \textbf{Abstr.}
-      & \textbf{Desemp.} & \textbf{Caso integrado} \\
+      & \textbf{Desemp.} & \textbf{Integr.} \\
     \midrule
     \cite{plotkin:03,plotkin:09} &  & $\circ$ &  &  &  \\
     \cite{liang:95}              & $\circ$ & $\bullet$ & $\circ$ &  & $\bullet$ \\
@@ -818,6 +820,10 @@ $x \notin \mathrm{dom}(\sigma) \implies
 \textbf{(Add)}\quad
 $\langle \texttt{Add}\;n_1\;n_2,\, \sigma,\, \omega \rangle
  \Rightarrow \langle n_1+n_2,\, \sigma,\, \omega \rangle$
+\par\medskip
+\textbf{(Mul)}\quad
+$\langle \texttt{Mul}\;n_1\;n_2,\, \sigma,\, \omega \rangle
+ \Rightarrow \langle n_1 \times n_2,\, \sigma,\, \omega \rangle$
 \par\medskip
 \textbf{(Div)}\quad
 $n_2 \neq 0 \implies
@@ -1090,7 +1096,7 @@ subsistema de E/S do sistema operacional.
 A geração das cargas é feita uma única vez, fora da região medida. Na versão
 Haskell, utilizam-se \texttt{Control.Monad.State.Strict} e
 \texttt{Data.Map.Strict}; os resultados aritméticos são forçados nas duas
-versões, de modo que a disciplina de estrictness seja idêntica no numerador e no
+versões, de modo que a disciplina de \textit{strictness} seja idêntica no numerador e no
 denominador da razão, e os resultados finais são forçados à forma normal
 (\texttt{nf}/\texttt{nfIO}). Nas versões OCaml, o resultado é envolvido em
 \texttt{Sys.opaque\_identity} nas duas implementações, para que a otimização com
@@ -1131,7 +1137,7 @@ afirmada.
 %% preparacao de Staged (Bechamel) para a reinicializacao do ambiente, conforme
 %% descrito neste paragrafo. Se a API nao permitir, ajustar o texto.
 %% TODO: registrar o tempo de parede da campanha completa apos a primeira
-%% execucao de A4, e inserir pausas de resfriamento entre configuracoes se
+%% execucao de A5, e inserir pausas de resfriamento entre configuracoes se
 %% necessario.
 As medições são conduzidas em máquina com Intel Core i5-12500H (arquitetura
 híbrida, quatro núcleos de desempenho e oito de eficiência), 32~GB de RAM, sob
@@ -1427,13 +1433,17 @@ Seção~\ref{sec:semantica}, enquanto \texttt{div} arredonda para baixo e
 divergiria com operandos negativos. Utilizam-se
 \texttt{Control.Monad.State.Strict} e \texttt{Data.Map.Strict}; as atualizações
 de estado empregam \texttt{modify'} e os resultados aritméticos são forçados
-explicitamente, para que a disciplina de estrictness seja idêntica à da linha de
+explicitamente, para que a disciplina de \textit{strictness} seja idêntica à da linha de
 base e a medição não capture acúmulo de \textit{thunks} em lugar do custo do
 mecanismo.
 
 \begin{lstlisting}[style=haskell,caption={Interpretador em Haskell com \textit{monad transformers}.},label={lst:haskell}]
 type Env = Map String Int
 type Interp a = ExceptT String (StateT Env IO) a
+
+-- emit: referencia a funcao, substituida temporariamente pelo oraculo
+emit :: Int -> Interp ()
+emit v = liftIO (readIORef emitRef >>= \f -> f v)
 
 eval :: Expr -> Interp Int
 eval (Num n) = return n
@@ -1454,14 +1464,11 @@ eval (Let x e b) = do
   modify' (Map.insert x v)
   eval b
 eval (Seq a b) = eval a >> eval b
--- emit: referencia a funcao, substituida temporariamente pelo oraculo
-emit :: Int -> Interp ()
-emit v = liftIO (readIORef emitRef >>= \f -> f v)
-
 eval (Print e) = do
   v <- eval e
   emit v
   return v
+-- Mul analogo a Add
 \end{lstlisting}
 
 \subsection{Linhas de Base}\label{sec:impl-base}
@@ -1605,10 +1612,11 @@ Tabela~\ref{tab:prelim-loc}.
 \section{Resultados Preliminares}\label{sec:esperados}
 %% ============================================================
 
-As tabelas de coleta desta seção são \emph{modelos} a serem preenchidos após a
-execução descrita na Seção~\ref{sec:atividades}. Nenhum valor de desempenho é
-reportado neste ponto de controle. Reporta-se, contudo, uma observação obtida
-sobre o código já escrito, que motivou um refinamento da metodologia.
+Esta seção reporta a observação obtida sobre o código já escrito, que motivou um
+refinamento da metodologia, e os resultados da primeira campanha de medição de
+desempenho (Seção~\ref{sec:medicao}). As métricas de código normalizadas e as do
+quarto efeito ainda não foram coletadas, e as respectivas tabelas permanecem como
+instrumentos de coleta.
 
 \subsection{Refinamento das Métricas de Legibilidade}\label{sec:refinamento}
 
@@ -1620,7 +1628,7 @@ menor contagem, e a ordenação resultante não separa os mecanismos de efeito d
 linhas de base.
 
 %% TODO: preencher a coluna "Pos-normalizacao" apos executar ormolu e
-%% ocamlformat sobre o codigo efetivo (atividade A3).
+%% ocamlformat sobre o codigo efetivo (atividade A4).
 \begin{table}[ht]
   \centering
   \caption{LOC efetivas da função \texttt{eval} nas implementações
@@ -1645,8 +1653,9 @@ do TCC~I estava errada, e a razão é conhecida: ela mediu excertos, e não o
 código efetivo. A segunda, mais forte e que constitui o subproduto metodológico
 do trabalho, é que a LOC é sensível ao estilo de formatação e ao idioma
 disponível em cada linguagem. A coluna pós-normalização da
-Tabela~\ref{tab:prelim-loc} fornece a evidência direta desta segunda afirmação,
-ao exibir o efeito isolado da formatação sobre a mesma base de código.
+Tabela~\ref{tab:prelim-loc}, quando preenchida, fornecerá a evidência direta
+desta segunda afirmação, ao exibir o efeito isolado da formatação sobre a mesma
+base de código.
 
 A análise das causas distingue-as por alcance. Duas operam \emph{entre}
 linguagens e são eliminadas pela restrição intralinguagem. A primeira é o estilo
@@ -1805,7 +1814,7 @@ valores aqui reportados usam a configuração corrigida.
 
 \subsection{Previsões e Confronto Preliminar}\label{sec:previsoes}
 
-Quatro previsões orientam a análise, uma por dimensão. Primeiro, espera-se que o avaliador com
+Três previsões orientam a análise. Primeiro, espera-se que o avaliador com
 \textit{handlers} exiba contagem de operações de efeito e aninhamento próximos
 aos da referência imperativa em OCaml, enquanto a versão monádica excederá os da
 sua base em Haskell (H1). Segundo, espera-se que a inserção do quarto efeito
@@ -1828,7 +1837,7 @@ preliminar com as hipóteses enunciadas na Seção~\ref{sec:hipoteses}. \textbf{
 não se sustenta em nenhuma de suas metades.} Ela prevê sobrecusto inferior a
 1,5$\times$ em OCaml e superior a 2,0$\times$ em Haskell no cenário
 \textsc{State}; o medido foi 1,96$\times$ e 1,08$\times$, respectivamente. Como
-a dispersão entre sementes é inferior a 2\%, o intervalo observado não contém
+a dispersão entre sementes é inferior a 2,7\%, o intervalo observado não contém
 nenhum dos dois limiares, e o critério de corroboração fixado a priori decide
 contra a hipótese nas duas direções.
 
@@ -1928,8 +1937,8 @@ custo de alocação dos segmentos de pilha em OCaml e a diluição pelo custo do
   três efeitos, com 30 amostras por configuração, três sementes e intervalos de
   confiança por \textit{bootstrap}.
   \item[\textbf{A6}] \textbf{Redação de Resultados e Discussão.} Preenchimento
-  das Tabelas~\ref{tab:metrics} e~\ref{tab:perf}, interpretação à luz de H1--H5
-  a H5 e P1, e discussão dos cenários em que cada abordagem é recomendada.
+  das Tabelas~\ref{tab:metrics} e~\ref{tab:perf}, interpretação à luz de H1 a H5
+  e P1, e discussão dos cenários em que cada abordagem é recomendada.
   \item[\textbf{A7}] \textbf{Revisão final e submissão.} Revisão de
   consistência, atualização das Seções~\ref{sec:intro} a~\ref{sec:relacionados}
   à luz dos resultados, e reexecução em ambiente limpo para confirmar a
@@ -2028,8 +2037,12 @@ em definitivo às quatro questões de pesquisa constituem a etapa seguinte, e a
 validação das implementações no ambiente definitivo é o pré-requisito imediato.
 
 %% ============================================================
-%% CONFERIR antes da entrega: a lista de secoes abaixo e a versao do modelo
-%% devem refletir exatamente o uso que voce fez da ferramenta (Arts. 6o a 8o).
+%% CONFERIR antes da entrega (Arts. 6o a 8o do Regulamento):
+%%  - Art. 8o exige NOME, VERSAO e FORNECEDOR: acrescentar a versao do modelo
+%%    logo apos "modelo Claude" (ex.: "modelo Claude, versao X, Anthropic").
+%%  - A lista de secoes e a finalidade devem refletir TODO o uso da ferramenta,
+%%    inclusive revisoes posteriores (a revisao de nov/2026 alterou trechos das
+%%    Secoes 2 a 7 e das referencias).
 \section*{Agradecimentos}
 
 Em conformidade com os Arts.~6\textsuperscript{o} a 8\textsuperscript{o} do
@@ -2038,8 +2051,9 @@ Inteligência Artificial neste trabalho. Foi utilizado o modelo Claude
 (Anthropic), por meio da interface Claude Code, com a finalidade de revisão
 crítica do texto: verificação de consistência entre seções, conferência da
 correspondência entre afirmações e referências citadas, identificação de
-redundâncias e sugestões de redação e de concisão. A ferramenta contribuiu nas
-Seções~\ref{sec:intro}, \ref{sec:fundamentacao} e~\ref{sec:relacionados}. A
+redundâncias, sugestões de redação e de concisão, e correção de inconsistências
+pontuais em regras da semântica, listagens de código, tabelas e referências. A
+ferramenta contribuiu em todas as seções do texto e na lista de referências. A
 concepção do trabalho, o desenho experimental, a formalização da semântica, as
 implementações e a interpretação dos resultados são de autoria do aluno, que
 permanece integralmente responsável pelo conteúdo apresentado.
