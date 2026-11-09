@@ -1,0 +1,9 @@
+; Flags identicas para o mecanismo e para a linha de base (Secao 4.3).
+; -O3 vale para TODAS as bibliotecas e executaveis deste projeto, inclusive
+; interp_effects e interp_imp, que sao o codigo medido. Requer um switch com
+; flambda; sem flambda o compilador ignora -O3 (ver README).
+
+(env
+ (_
+  (ocamlopt_flags
+   (:standard -O3))))

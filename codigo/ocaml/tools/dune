@@ -1,0 +1,4 @@
+(executables
+ (names cargas metricas_ocaml)
+ (modules cargas metricas_ocaml)
+ (libraries tcc_expr compiler-libs.common yojson))

@@ -1,0 +1,761 @@
+diff -ruN -x _build -x dist-newstyle -x __pycache__ -x resultados base/docs/semantica.md novo/docs/semantica.md
+--- base/docs/semantica.md	2026-11-09 20:38:08.000000000 +0000
++++ novo/docs/semantica.md	2026-11-09 21:00:45.928465653 +0000
+@@ -16,13 +16,14 @@
+ | Ligação | `Let x e b` | avalia *e*, vincula (ou revincula) *x* no ambiente **global** e avalia *b*; o vínculo persiste após *b* |
+ | Sequência | `Seq e₁ e₂` | avalia *e₁*, descarta o valor, avalia *e₂* |
+ | Impressão | `Print e` | emite o valor de *e* e o devolve |
++| Leitura | `Read` | consome o próximo valor do fluxo de entrada; erro se o fluxo está esgotado (quarto efeito) |
+ 
+ ## Domínio
+ 
+ - 𝓔: expressões; *Var*: identificadores; ℤ: inteiros.
+ - Estado (ambiente) σ : *Var* ⇀ ℤ, função parcial finita; Σ é o conjunto de estados.
+-- Traço de saída ω ∈ ℤ\*.
+-- *Msg* = { msg_unbound(x) | x ∈ *Var* } ∪ { msg_div_zero }, com as cadeias
++- Traço de saída ω ∈ ℤ\*; fluxo de entrada ι ∈ ℤ\* (quarto efeito).
++- *Msg* = { msg_unbound(x) | x ∈ *Var* } ∪ { msg_div_zero, msg_input_exhausted }, com as cadeias
+   canônicas de [`../shared/conformance.json`](../shared/conformance.json).
+ - Valores: identifica-se o inteiro *n* com `Num n`.
+ - Configurações: 𝓒 = (𝓔 × Σ × ℤ\*) ∪ ({⊥err} × *Msg* × Σ × ℤ\*). As do segundo
+@@ -42,6 +43,8 @@
+ 
+ ## Regras
+ 
++As regras abaixo omitem ι quando não o alteram: ele é carregado inalterado.
++
+ ```
+ (Var)       x ∈ dom(σ)  ⟹  ⟨Var x, σ, ω⟩ ⇒ ⟨σ(x), σ, ω⟩
+ (Var-err)   x ∉ dom(σ)  ⟹  ⟨Var x, σ, ω⟩ ⇒ ⟨⊥err, msg_unbound(x), σ, ω⟩
+@@ -52,6 +55,8 @@
+ (Let)       ⟨Let x n b, σ, ω⟩ ⇒ ⟨b, σ[x ↦ n], ω⟩
+ (Seq)       ⟨Seq n e₂, σ, ω⟩ ⇒ ⟨e₂, σ, ω⟩
+ (Print)     ⟨Print n, σ, ω⟩ ⇒ ⟨n, σ, ω · n⟩
++(Read)      ⟨Read, σ, ω, n · ι⟩ ⇒ ⟨n, σ, ω, ι⟩
++(Read-err)  ⟨Read, σ, ω, ε⟩ ⇒ ⟨⊥err, msg_input_exhausted, σ, ω, ε⟩
+ (Cong)      ⟨e, σ, ω⟩ ⇒ ⟨e′, σ′, ω′⟩  ⟹  ⟨E[e], σ, ω⟩ ⇒ ⟨E[e′], σ′, ω′⟩
+ (Err-prop)  ⟨e, σ, ω⟩ ⇒ ⟨⊥err, m, σ′, ω′⟩  ⟹  ⟨E[e], σ, ω⟩ ⇒ ⟨⊥err, m, σ′, ω′⟩
+ ```
+diff -ruN -x _build -x dist-newstyle -x __pycache__ -x resultados base/haskell/src/Expr.hs novo/haskell/src/Expr.hs
+--- base/haskell/src/Expr.hs	2026-11-09 20:46:59.000000000 +0000
++++ novo/haskell/src/Expr.hs	2026-11-09 21:00:22.129144890 +0000
+@@ -7,7 +7,9 @@
+   ( Expr (..),
+     msgUnbound,
+     msgDivZero,
++    msgInputExhausted,
+     emitRef,
++    inputRef,
+     Scenario (..),
+     scenarios,
+     scenarioName,
+@@ -44,6 +46,7 @@
+   | Let String Expr Expr
+   | Seq Expr Expr
+   | Print Expr
++  | Read
+   deriving (Eq, Show)
+ 
+ instance NFData Expr where
+@@ -55,6 +58,7 @@
+   rnf (Let x e b) = rnf x `seq` rnf e `seq` rnf b
+   rnf (Seq a b) = rnf a `seq` rnf b
+   rnf (Print e) = rnf e
++  rnf Read = ()
+ 
+ -- Mensagens canônicas (critério (iv) de equivalência) -------------------
+ 
+@@ -64,6 +68,9 @@
+ msgDivZero :: String
+ msgDivZero = "divisao por zero"
+ 
++msgInputExhausted :: String
++msgInputExhausted = "entrada esgotada"
++
+ -- Emissão ----------------------------------------------------------------
+ 
+ -- | Referência a função pela qual as duas versões Haskell emitem. A suíte de
+@@ -72,6 +79,12 @@
+ emitRef = unsafePerformIO (newIORef print)
+ {-# NOINLINE emitRef #-}
+ 
++-- | Fluxo de entrada do quarto efeito, consumido da esquerda para a direita.
++-- A suíte de oráculo o define antes de cada caso.
++inputRef :: IORef [Int]
++inputRef = unsafePerformIO (newIORef [])
++{-# NOINLINE inputRef #-}
++
+ -- Gerador congruencial linear ---------------------------------------------
+ --
+ -- x_{n+1} = (1103515245 x_n + 12345) mod 2^30. O produto cabe em Int de 64
+@@ -195,6 +208,7 @@
+ sexpS (Let x e b) =
+   showString "(Let " . showString x . showChar ' ' . sexpS e . showChar ' ' . sexpS b . showChar ')'
+ sexpS (Print e) = showString "(Print " . sexpS e . showChar ')'
++sexpS Read = showString "(Read)"
+ 
+ bin :: String -> Expr -> Expr -> ShowS
+ bin tag a b = showChar '(' . showString tag . showChar ' ' . sexpS a . showChar ' ' . sexpS b . showChar ')'
+diff -ruN -x _build -x dist-newstyle -x __pycache__ -x resultados base/haskell/src/Interp/IORefBase.hs novo/haskell/src/Interp/IORefBase.hs
+--- base/haskell/src/Interp/IORefBase.hs	2026-11-09 20:47:16.000000000 +0000
++++ novo/haskell/src/Interp/IORefBase.hs	2026-11-09 21:00:22.131137150 +0000
+@@ -17,7 +17,7 @@
+ 
+ import Control.Exception (Exception, throwIO, try)
+ import Control.Monad (when)
+-import Data.IORef (IORef, modifyIORef', readIORef)
++import Data.IORef (IORef, modifyIORef', readIORef, writeIORef)
+ import Data.Map.Strict (Map)
+ import qualified Data.Map.Strict as Map
+ import Expr
+@@ -33,6 +33,14 @@
+ emit :: Int -> IO ()
+ emit v = readIORef emitRef >>= \f -> f v
+ 
++-- | Quarto efeito: leitura direta do fluxo de entrada 'inputRef'.
++ler :: IO (Maybe Int)
++ler = do
++  xs <- readIORef inputRef
++  case xs of
++    [] -> return Nothing
++    v : vs -> writeIORef inputRef vs >> return (Just v)
++
+ eval :: IORef Env -> Expr -> IO Int
+ eval _ (Num n) = return n
+ eval ref (Var x) = do
+@@ -60,6 +68,7 @@
+   v <- eval ref e
+   emit v
+   return v
++eval _ Read = ler >>= maybe (throwIO (RuntimeError msgInputExhausted)) return
+ 
+ -- | Tratamento de erro por expressão avaliada.
+ run :: IORef Env -> Expr -> IO (Either String Int)
+diff -ruN -x _build -x dist-newstyle -x __pycache__ -x resultados base/haskell/src/Interp/Monadic.hs novo/haskell/src/Interp/Monadic.hs
+--- base/haskell/src/Interp/Monadic.hs	2026-11-09 20:47:09.000000000 +0000
++++ novo/haskell/src/Interp/Monadic.hs	2026-11-09 21:00:22.129767735 +0000
+@@ -21,20 +21,28 @@
+ import Control.Monad (when)
+ import Control.Monad.Except (ExceptT, runExceptT, throwError)
+ import Control.Monad.IO.Class (liftIO)
+-import Control.Monad.State.Strict (StateT, get, modify', runStateT)
+-import Data.IORef (readIORef)
++import Control.Monad.State.Strict (StateT, get, lift, modify', runStateT, state)
++import Data.IORef (readIORef, writeIORef)
+ import Data.Map.Strict (Map)
+ import qualified Data.Map.Strict as Map
+ import Expr
+ 
+ type Env = Map String Int
+ 
+-type Interp a = ExceptT String (StateT Env IO) a
++-- Quarto efeito: o fluxo de entrada é uma nova camada da pilha.
++type Interp a = ExceptT String (StateT Env (StateT [Int] IO)) a
+ 
+ -- | Emissão pela referência 'emitRef', substituída pela suíte e pelo harness.
+ emit :: Int -> Interp ()
+ emit v = liftIO (readIORef emitRef >>= \f -> f v)
+ 
++-- | Leitura do fluxo de entrada, na camada StateT [Int].
++ler :: Interp (Maybe Int)
++ler = lift (lift (state proxima))
++  where
++    proxima [] = (Nothing, [])
++    proxima (v : vs) = (Just v, vs)
++
+ eval :: Expr -> Interp Int
+ eval (Num n) = return n
+ eval (Var x) = do
+@@ -62,8 +70,13 @@
+   v <- eval e
+   emit v
+   return v
++eval Read = ler >>= maybe (throwError msgInputExhausted) return
+ 
+ -- | Executa a pilha sobre uma expressão, a partir de um ambiente. O
+ -- tratamento de erro é por expressão avaliada, como na versão com handlers.
+ run :: Env -> Expr -> IO (Either String Int, Env)
+-run env e = runStateT (runExceptT (eval e)) env
++run env e = do
++  xs <- readIORef inputRef
++  ((r, env'), resto) <- runStateT (runStateT (runExceptT (eval e)) env) xs
++  writeIORef inputRef resto
++  return (r, env')
+diff -ruN -x _build -x dist-newstyle -x __pycache__ -x resultados base/haskell/test/Spec.hs novo/haskell/test/Spec.hs
+--- base/haskell/test/Spec.hs	2026-11-09 20:48:50.000000000 +0000
++++ novo/haskell/test/Spec.hs	2026-11-09 21:00:22.132455932 +0000
+@@ -2,14 +2,14 @@
+ 
+ -- | Suíte de oráculo e de conformidade (Seções 4.1 e 5.3 do artigo).
+ --
+--- * 28 casos, lidos de @shared/conformance.json@, verificados contra cada uma
++-- * 34 casos (28 + 6 do quarto efeito), lidos de @shared/conformance.json@, verificados contra cada uma
+ --   das duas implementações Haskell: resultado, ambiente final ordenado e
+ --   traço de saída.
+ -- * 5 conferências de conformidade: mensagens canônicas, amostra do LCG,
+ --   primeiras expressões de ARITH, hashes das 12 cargas e integridade da
+ --   tabela de casos.
+ --
+--- Total: 28 x 2 + 5 = 61 verificações. O traço é observado substituindo
++-- Total: 34 x 2 + 5 = 73 verificações. O traço é observado substituindo
+ -- temporariamente a referência 'emitRef', sem modificar os avaliadores.
+ module Main (main) where
+ 
+@@ -63,6 +63,7 @@
+   [A.String "Seq", a, b] -> Seq (exprDe a) (exprDe b)
+   [A.String "Let", x, e, b] -> Let (texto x) (exprDe e) (exprDe b)
+   [A.String "Print", e] -> Print (exprDe e)
++  [A.String "Read"] -> Read
+   _ -> error ("expressao malformada: " ++ show v)
+ 
+ paresDe :: A.Value -> [(String, Int)]
+@@ -161,6 +162,7 @@
+   -- Oráculo: 28 casos x 2 implementações
+   forM_ [("monadica", observarMonadica), ("ioref", observarIORef)] $ \(impl, observar) ->
+     forM_ casos $ \caso -> do
++      writeIORef inputRef (maybe [] (map inteiro . lista) (campoTalvez "entrada" caso))
+       let nome = texto (campo "nome" caso)
+           esperado = esperadoDe (campo "esperado" caso)
+       obtido <- observar (exprDe (campo "expr" caso)) (paresDe (campo "env_inicial" caso))
+@@ -205,8 +207,8 @@
+   let nomes = map (texto . campo "nome") casos
+       envsOrdenados = all (\c -> let e = paresDe (campo "env" (campo "esperado" c)) in e == sort e) casos
+   verificar
+-    "[conformidade] tabela de casos (28, nomes unicos, env ordenado)"
+-    (length casos == 28 && length (nub nomes) == 28 && envsOrdenados)
++    "[conformidade] tabela de casos (34, nomes unicos, env ordenado)"
++    (length casos == 34 && length (nub nomes) == 34 && envsOrdenados)
+     (show (length casos, length (nub nomes)))
+ 
+   t <- readIORef total
+diff -ruN -x _build -x dist-newstyle -x __pycache__ -x resultados base/ocaml/effects/interp_effects.ml novo/ocaml/effects/interp_effects.ml
+--- base/ocaml/effects/interp_effects.ml	2026-11-09 20:45:36.000000000 +0000
++++ novo/ocaml/effects/interp_effects.ml	2026-11-09 20:59:52.916186032 +0000
+@@ -20,6 +20,10 @@
+   | Fail : string -> 'a Effect.t
+   | Output : int -> unit Effect.t
+ 
++(* Quarto efeito: leitura do fluxo de entrada. Declarado como extensão nova,
++   sem editar a declaração dos três efeitos originais. *)
++type _ Effect.t += Input : int option Effect.t
++
+ let rec eval : expr -> int = function
+   | Num n -> n
+   | Var x -> (
+@@ -49,6 +53,10 @@
+       let v = eval e in
+       perform (Output v);
+       v
++  | Read -> (
++      match perform Input with
++      | Some v -> v
++      | None -> perform (Fail msg_input_exhausted))
+ 
+ (* Estado: retoma a continuação com o valor lido ou após escrever. *)
+ let run_state (tbl : (string, int) Hashtbl.t) (main : unit -> 'a) : 'a =
+@@ -129,14 +137,36 @@
+           | _ -> None);
+     }
+ 
++(* Entrada: retoma a continuação com o próximo valor do fluxo, se houver. *)
++let run_input (main : unit -> 'a) : 'a =
++  match_with main ()
++    {
++      retc = (fun v -> v);
++      exnc = raise;
++      effc =
++        (fun (type a) (eff : a Effect.t) ->
++          match eff with
++          | Input ->
++              Some
++                (fun (k : (a, _) continuation) ->
++                  match !input with
++                  | v :: resto ->
++                      input := resto;
++                      continue k (Some v)
++                  | [] -> continue k None)
++          | _ -> None);
++    }
++
+ (* Composição usada na execução e nos benchmarks: os três handlers são
+    instalados por expressão avaliada (Seção 4.3). *)
+ let run (tbl : (string, int) Hashtbl.t) (e : expr) : (int, string) result =
+   run_state tbl (fun () ->
+-      run_output_emit (fun () -> run_exn (fun () -> eval e)))
++      run_output_emit (fun () ->
++          run_input (fun () -> run_exn (fun () -> eval e))))
+ 
+ (* Composição usada pela suíte de oráculo: troca apenas o handler de saída. *)
+ let run_acc (tbl : (string, int) Hashtbl.t) (acc : int list ref) (e : expr) :
+     (int, string) result =
+   run_state tbl (fun () ->
+-      run_output_acc acc (fun () -> run_exn (fun () -> eval e)))
++      run_output_acc acc (fun () ->
++          run_input (fun () -> run_exn (fun () -> eval e))))
+diff -ruN -x _build -x dist-newstyle -x __pycache__ -x resultados base/ocaml/imperative/interp_imp.ml novo/ocaml/imperative/interp_imp.ml
+--- base/ocaml/imperative/interp_imp.ml	2026-11-09 20:40:39.000000000 +0000
++++ novo/ocaml/imperative/interp_imp.ml	2026-11-09 20:59:52.916513968 +0000
+@@ -11,6 +11,14 @@
+ 
+ exception Runtime_error of string
+ 
++(* Quarto efeito: leitura direta do fluxo de entrada [Expr.input]. *)
++let ler () =
++  match !input with
++  | v :: resto ->
++      input := resto;
++      Some v
++  | [] -> None
++
+ let rec eval (env : (string, int) Hashtbl.t) : expr -> int = function
+   | Num n -> n
+   | Var x -> (
+@@ -40,6 +48,10 @@
+       let v = eval env e in
+       !emit v;
+       v
++  | Read -> (
++      match ler () with
++      | Some v -> v
++      | None -> raise (Runtime_error msg_input_exhausted))
+ 
+ (* Tratamento de erro por expressão avaliada, como na versão com handlers. *)
+ let run (env : (string, int) Hashtbl.t) (e : expr) : (int, string) result =
+diff -ruN -x _build -x dist-newstyle -x __pycache__ -x resultados base/ocaml/lib/expr.ml novo/ocaml/lib/expr.ml
+--- base/ocaml/lib/expr.ml	2026-11-09 20:40:18.000000000 +0000
++++ novo/ocaml/lib/expr.ml	2026-11-09 20:59:42.532249792 +0000
+@@ -13,11 +13,13 @@
+   | Let of string * expr * expr
+   | Seq of expr * expr
+   | Print of expr
++  | Read
+ 
+ (* ---- Mensagens canônicas (critério (iv) de equivalência) ---- *)
+ 
+ let msg_unbound x = "variavel nao vinculada: " ^ x
+ let msg_div_zero = "divisao por zero"
++let msg_input_exhausted = "entrada esgotada"
+ 
+ (* ---- Emissão --------------------------------------------------------
+    Referência a função: a suíte de oráculo e o harness a substituem
+@@ -29,6 +31,12 @@
+       print_int v;
+       print_newline ())
+ 
++(* ---- Entrada --------------------------------------------------------
++   Fluxo de entrada do quarto efeito, consumido da esquerda para a direita.
++   A suíte de oráculo o define antes de cada caso. *)
++
++let input : int list ref = ref []
++
+ (* ---- Gerador congruencial linear ------------------------------------
+    x_{n+1} = (1103515245 x_n + 12345) mod 2^30. O produto cabe no inteiro
+    de 63 bits do OCaml: 1103515245 * (2^30 - 1) < 2^61. As escolhas usam os
+@@ -143,6 +151,7 @@
+       Buffer.add_string buf "(Print ";
+       sexp_to buf e;
+       Buffer.add_char buf ')'
++  | Read -> Buffer.add_string buf "(Read)"
+ 
+ and bin buf tag a b =
+   Printf.bprintf buf "(%s " tag;
+diff -ruN -x _build -x dist-newstyle -x __pycache__ -x resultados base/ocaml/test/test_oracle.ml novo/ocaml/test/test_oracle.ml
+--- base/ocaml/test/test_oracle.ml	2026-11-09 20:45:36.000000000 +0000
++++ novo/ocaml/test/test_oracle.ml	2026-11-09 21:00:02.262929956 +0000
+@@ -1,12 +1,12 @@
+ (* Suíte de oráculo e de conformidade (Seções 4.1 e 5.3 do artigo).
+ 
+-   - 28 casos, lidos de shared/conformance.json, verificados contra cada uma
++   - 34 casos (28 + 6 do quarto efeito), lidos de shared/conformance.json, verificados contra cada uma
+      das duas implementações OCaml: resultado, ambiente final ordenado e traço
+      de saída (critérios (i) a (iv) de equivalência funcional).
+    - 5 conferências de conformidade entre as réplicas: mensagens canônicas,
+      amostra do LCG, primeiras expressões de ARITH, hashes de todas as cargas
+      (4 cenários x 3 sementes) e integridade da tabela de casos.
+-   Total: 28 x 2 + 5 = 61 verificações.
++   Total: 34 x 2 + 5 = 73 verificações.
+ 
+    A observação do traço não modifica os avaliadores: na versão com handlers,
+    por um handler alternativo de Output; na imperativa, substituindo
+@@ -41,6 +41,7 @@
+   | [ `String "Let"; x; e; b ] ->
+       Let (to_string x, expr_of_json e, expr_of_json b)
+   | [ `String "Print"; e ] -> Print (expr_of_json e)
++  | [ `String "Read" ] -> Read
+   | _ -> failwith ("expressao malformada: " ^ Yojson.Safe.to_string j)
+ 
+ type observado = {
+@@ -134,6 +135,10 @@
+           let e = expr_of_json (member "expr" caso) in
+           let env0 = pares_of_json (member "env_inicial" caso) in
+           let esperado = esperado_of_json (member "esperado" caso) in
++          (Expr.input :=
++             match member "entrada" caso with
++             | `Null -> []
++             | l -> List.map to_int (to_list l));
+           let obtido = observar e env0 in
+           verificar
+             (Printf.sprintf "[%s] %s" impl nome)
+@@ -211,8 +216,8 @@
+         env = List.sort compare env)
+       casos
+   in
+-  verificar "[conformidade] tabela de casos (28, nomes unicos, env ordenado)"
+-    (List.length casos = 28 && List.length unicos = 28 && envs_ordenados)
++  verificar "[conformidade] tabela de casos (34, nomes unicos, env ordenado)"
++    (List.length casos = 34 && List.length unicos = 34 && envs_ordenados)
+     (lazy
+       (Printf.sprintf "%d casos, %d nomes unicos" (List.length casos)
+          (List.length unicos)));
+diff -ruN -x _build -x dist-newstyle -x __pycache__ -x resultados base/referencia/gerador.py novo/referencia/gerador.py
+--- base/referencia/gerador.py	2026-11-09 20:36:58.000000000 +0000
++++ novo/referencia/gerador.py	2026-11-09 20:59:14.075546179 +0000
+@@ -26,7 +26,7 @@
+ 
+ Serialização canônica (para o hash): "(Num 5)", "(Num -5)", "(Var v3)",
+ "(Add A B)", "(Mul A B)", "(Div A B)", "(Let x E B)", "(Seq A B)",
+-"(Print E)"; uma expressão por linha, cada linha terminada por "\\n".
++"(Print E)", "(Read)"; uma expressão por linha, cada linha terminada por "\\n".
+ Hash: FNV-1a de 64 bits sobre os bytes UTF-8, em hexadecimal minúsculo.
+ 
+ Uso:
+@@ -115,6 +115,8 @@
+ 
+ def sexp(e):
+     tag = e[0]
++    if tag == "Read":
++        return "(Read)"
+     if tag == "Num":
+         return f"(Num {e[1]})"
+     if tag == "Var":
+diff -ruN -x _build -x dist-newstyle -x __pycache__ -x resultados base/referencia/semantica.py novo/referencia/semantica.py
+--- base/referencia/semantica.py	2026-11-09 20:36:20.000000000 +0000
++++ novo/referencia/semantica.py	2026-11-09 20:58:59.558660486 +0000
+@@ -3,8 +3,9 @@
+ 
+ Implementa, regra por regra, a semântica especificada em docs/semantica.md:
+ contextos de avaliação com ordem fixada à esquerda, regras de redução (Var,
+-Var-err, Add, Mul, Div, Div-zero, Let, Seq, Print), congruência (Cong) e
+-propagação de erro (Err-prop). Não é otimizada: existe para ser lida contra a
++Var-err, Add, Mul, Div, Div-zero, Let, Seq, Print, Read, Read-err),
++congruência (Cong) e propagação de erro (Err-prop). As configurações carregam
++o fluxo de entrada ι, consumido da esquerda para a direita por Read. Não é otimizada: existe para ser lida contra a
+ especificação e servir de referência independente das quatro implementações.
+ 
+ Uso:
+@@ -18,7 +19,7 @@
+ 
+ Representação: expressões são listas JSON, ["Num", n], ["Var", "x"],
+ ["Add", e1, e2], ["Mul", e1, e2], ["Div", e1, e2], ["Let", "x", e, b],
+-["Seq", e1, e2], ["Print", e].
++["Seq", e1, e2], ["Print", e], ["Read"].
+ """
+ 
+ import json
+@@ -33,6 +34,7 @@
+ MENSAGENS = {
+     "variavel_nao_vinculada": "variavel nao vinculada: {x}",
+     "divisao_por_zero": "divisao por zero",
++    "entrada_esgotada": "entrada esgotada",
+ }
+ 
+ 
+@@ -60,55 +62,60 @@
+     return MENSAGENS["variavel_nao_vinculada"].replace("{x}", x)
+ 
+ 
+-def passo(e, sigma, omega):
+-    """Um passo de ⇒ a partir de ⟨e, σ, ω⟩.
++def passo(e, sigma, omega, iota):
++    """Um passo de ⇒ a partir de ⟨e, σ, ω, ι⟩.
+ 
+-    Devolve ("ok", e', σ', ω') ou ("erro", m, σ', ω'). Pressupõe que e não é
+-    valor (configurações de valor e de erro são terminais).
++    Devolve ("ok", e', σ', ω', ι') ou ("erro", m, σ', ω', ι'). Pressupõe que e
++    não é valor (configurações de valor e de erro são terminais).
+     """
+     tag = e[0]
+ 
++    if tag == "Read":
++        if iota:                                         # (Read)
++            return ("ok", num(iota[0]), sigma, omega, iota[1:])
++        return ("erro", MENSAGENS["entrada_esgotada"], sigma, omega, iota)  # (Read-err)
++
+     # --- Regras de redução (o redex está na raiz) e contextos -------------
+     if tag == "Var":
+         x = e[1]
+         if x in sigma:                                   # (Var)
+-            return ("ok", num(sigma[x]), sigma, omega)
+-        return ("erro", msg_nao_vinculada(x), sigma, omega)  # (Var-err)
++            return ("ok", num(sigma[x]), sigma, omega, iota)
++        return ("erro", msg_nao_vinculada(x), sigma, omega, iota)  # (Var-err)
+ 
+     if tag in ("Add", "Mul", "Div"):
+         e1, e2 = e[1], e[2]
+         if not eh_valor(e1):                             # contexto Op E e
+-            return congruencia(passo(e1, sigma, omega), lambda h: [tag, h, e2])
++            return congruencia(passo(e1, sigma, omega, iota), lambda h: [tag, h, e2])
+         if not eh_valor(e2):                             # contexto Op v E
+-            return congruencia(passo(e2, sigma, omega), lambda h: [tag, e1, h])
++            return congruencia(passo(e2, sigma, omega, iota), lambda h: [tag, e1, h])
+         n1, n2 = e1[1], e2[1]
+         if tag == "Add":                                 # (Add)
+-            return ("ok", num(n1 + n2), sigma, omega)
++            return ("ok", num(n1 + n2), sigma, omega, iota)
+         if tag == "Mul":                                 # (Mul)
+-            return ("ok", num(n1 * n2), sigma, omega)
++            return ("ok", num(n1 * n2), sigma, omega, iota)
+         if n2 == 0:                                      # (Div-zero)
+-            return ("erro", MENSAGENS["divisao_por_zero"], sigma, omega)
+-        return ("ok", num(div_trunc(n1, n2)), sigma, omega)  # (Div)
++            return ("erro", MENSAGENS["divisao_por_zero"], sigma, omega, iota)
++        return ("ok", num(div_trunc(n1, n2)), sigma, omega, iota)  # (Div)
+ 
+     if tag == "Let":
+         x, ex, b = e[1], e[2], e[3]
+         if not eh_valor(ex):                             # contexto Let x E b
+-            return congruencia(passo(ex, sigma, omega), lambda h: ["Let", x, h, b])
++            return congruencia(passo(ex, sigma, omega, iota), lambda h: ["Let", x, h, b])
+         novo = dict(sigma)                               # (Let)
+         novo[x] = ex[1]
+-        return ("ok", b, novo, omega)
++        return ("ok", b, novo, omega, iota)
+ 
+     if tag == "Seq":
+         e1, e2 = e[1], e[2]
+         if not eh_valor(e1):                             # contexto Seq E e
+-            return congruencia(passo(e1, sigma, omega), lambda h: ["Seq", h, e2])
+-        return ("ok", e2, sigma, omega)                  # (Seq)
++            return congruencia(passo(e1, sigma, omega, iota), lambda h: ["Seq", h, e2])
++        return ("ok", e2, sigma, omega, iota)                  # (Seq)
+ 
+     if tag == "Print":
+         ex = e[1]
+         if not eh_valor(ex):                             # contexto Print E
+-            return congruencia(passo(ex, sigma, omega), lambda h: ["Print", h])
+-        return ("ok", ex, sigma, omega + [ex[1]])        # (Print)
++            return congruencia(passo(ex, sigma, omega, iota), lambda h: ["Print", h])
++        return ("ok", ex, sigma, omega + [ex[1]], iota)        # (Print)
+ 
+     raise ValueError(f"construtor desconhecido: {tag}")
+ 
+@@ -117,21 +124,22 @@
+     """(Cong) reconstrói E[e']; (Err-prop) propaga a configuração de erro."""
+     if resultado[0] == "erro":
+         return resultado
+-    _, e_novo, sigma, omega = resultado
+-    return ("ok", contexto(e_novo), sigma, omega)
++    _, e_novo, sigma, omega, iota = resultado
++    return ("ok", contexto(e_novo), sigma, omega, iota)
+ 
+ 
+-def reduzir(e, sigma=None):
++def reduzir(e, sigma=None, entrada=None):
+     """⇒* até configuração terminal. Devolve (resultado, σ', ω, passos)."""
+     sigma = dict(sigma or {})
+     omega = []
++    iota = list(entrada or [])
+     passos = 0
+     while not eh_valor(e):
+-        r = passo(e, sigma, omega)
++        r = passo(e, sigma, omega, iota)
+         passos += 1
+         if r[0] == "erro":
+             return ({"erro": r[1]}, r[2], r[3], passos)
+-        _, e, sigma, omega = r
++        _, e, sigma, omega, iota = r
+     return ({"ok": e[1]}, sigma, omega, passos)
+ 
+ 
+@@ -150,7 +158,7 @@
+     falhas = 0
+     for caso in dados["casos"]:
+         sigma0 = {k: v for k, v in caso["env_inicial"]}
+-        res, sigma, omega, passos = reduzir(caso["expr"], sigma0)
++        res, sigma, omega, passos = reduzir(caso["expr"], sigma0, caso.get("entrada", []))
+         obtido = {"resultado": res, "env": ambiente_ordenado(sigma), "saida": omega}
+         esperado = caso["esperado"]
+         if obtido != esperado:
+diff -ruN -x _build -x dist-newstyle -x __pycache__ -x resultados base/shared/conformance.json novo/shared/conformance.json
+--- base/shared/conformance.json	2026-11-09 20:37:45.000000000 +0000
++++ novo/shared/conformance.json	2026-11-09 20:59:14.057198975 +0000
+@@ -2,7 +2,8 @@
+  "descricao": "Artefatos comuns as duas linguagens (Secao 5 do artigo). 'mensagens' e 'casos' sao lidos pelas suites de OCaml e de Haskell; 'geracao' e produzida por referencia/gerador.py e conferida pelas duas.",
+  "mensagens": {
+   "variavel_nao_vinculada": "variavel nao vinculada: {x}",
+-  "divisao_por_zero": "divisao por zero"
++  "divisao_por_zero": "divisao por zero",
++  "entrada_esgotada": "entrada esgotada"
+  },
+  "casos": [
+   {
+@@ -772,6 +773,169 @@
+     "env": [],
+     "saida": []
+    }
++  },
++  {
++   "nome": "leitura",
++   "expr": [
++    "Read"
++   ],
++   "env_inicial": [],
++   "entrada": [
++    7
++   ],
++   "esperado": {
++    "resultado": {
++     "ok": 7
++    },
++    "env": [],
++    "saida": []
++   }
++  },
++  {
++   "nome": "leitura em ordem",
++   "expr": [
++    "Div",
++    [
++     "Read"
++    ],
++    [
++     "Read"
++    ]
++   ],
++   "env_inicial": [],
++   "entrada": [
++    8,
++    2
++   ],
++   "esperado": {
++    "resultado": {
++     "ok": 4
++    },
++    "env": [],
++    "saida": []
++   },
++   "trava": "ordem de avaliacao: o operando esquerdo le primeiro"
++  },
++  {
++   "nome": "entrada esgotada",
++   "expr": [
++    "Read"
++   ],
++   "env_inicial": [],
++   "entrada": [],
++   "esperado": {
++    "resultado": {
++     "erro": "entrada esgotada"
++    },
++    "env": [],
++    "saida": []
++   }
++  },
++  {
++   "nome": "esgotamento preserva estado e saida",
++   "expr": [
++    "Let",
++    "x",
++    [
++     "Num",
++     5
++    ],
++    [
++     "Seq",
++     [
++      "Print",
++      [
++       "Var",
++       "x"
++      ]
++     ],
++     [
++      "Read"
++     ]
++    ]
++   ],
++   "env_inicial": [],
++   "entrada": [],
++   "esperado": {
++    "resultado": {
++     "erro": "entrada esgotada"
++    },
++    "env": [
++     [
++      "x",
++      5
++     ]
++    ],
++    "saida": [
++     5
++    ]
++   },
++   "trava": "interacao com o efeito de excecao: aborta preservando estado e saida"
++  },
++  {
++   "nome": "leitura vincula",
++   "expr": [
++    "Let",
++    "x",
++    [
++     "Read"
++    ],
++    [
++     "Add",
++     [
++      "Var",
++      "x"
++     ],
++     [
++      "Read"
++     ]
++    ]
++   ],
++   "env_inicial": [],
++   "entrada": [
++    3,
++    4
++   ],
++   "esperado": {
++    "resultado": {
++     "ok": 7
++    },
++    "env": [
++     [
++      "x",
++      3
++     ]
++    ],
++    "saida": []
++   }
++  },
++  {
++   "nome": "esgotamento no segundo operando",
++   "expr": [
++    "Add",
++    [
++     "Print",
++     [
++      "Read"
++     ]
++    ],
++    [
++     "Read"
++    ]
++   ],
++   "env_inicial": [],
++   "entrada": [
++    1
++   ],
++   "esperado": {
++    "resultado": {
++     "erro": "entrada esgotada"
++    },
++    "env": [],
++    "saida": [
++     1
++    ]
++   }
+   }
+  ],
+  "geracao": {

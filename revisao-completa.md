@@ -28,6 +28,37 @@ Números de linha referem-se ao `artigo.tex` **depois** das correções.
 
 ---
 
+## Atualização (09/11/2026): o código foi implementado
+
+O código completo está em [`codigo/`](codigo/README.md), compilado e testado
+(`make testar-completo`: semântica 28/28, oráculos 61/61 e 61/61, mutantes 8/8,
+quarto efeito 73/73 e 73/73). Itens desta revisão que o código **resolve**:
+
+| Item | Como |
+|---|---|
+| C1 (QP1–QP3 sem resposta) | `make metricas` dá QP1; `make quarto-efeito` dá QP2; QP3 depende só da dupla contagem (planilhas geradas) |
+| C2 (repositório inexistente) | `codigo/` neste repositório público; falta citar a URL no texto |
+| C4 (leitura da alocação) | o resumo da campanha traz alocação **absoluta** por expressão, em bytes nas duas linguagens |
+| G3 (tempos absolutos) | o resumo da campanha traz ns por expressão de base e mecanismo |
+| G5 (aninhamento sem definição) | `docs/protocolo-metricas.md`, seção 2, aplicado por AST |
+| G8 (assimetria de QP3) | continua: a emissão por referência não é o idioma mtl; declarar como limitação |
+| G10 (conformidade só de Arith) | o teste confere os *hashes* das 12 cargas, com três réplicas (Python, OCaml, Haskell) |
+| G11 (flags e ambiente) | `-O3` em todas as bibliotecas OCaml; `scripts/registrar-ambiente.sh` grava CPU, SO, *governor*, *turbo*, afinidade e versões |
+| Seção 5.3 ("cada caso trava uma decisão") | comprovado por testes de mutação (8/8) |
+
+**Achado novo, relevante para o texto:** no OCaml 5.2, abandonar a
+continuação do efeito de exceção **vaza o segmento de pilha** (~1,2 GB contra
+~6 MB em 2 milhões de erros; `make experimento`). O código usa `discontinue`.
+Se a campanha antiga abandonava a continuação, a razão de Exn pode ter
+incluído o vazamento.
+
+**Ao adotar o código, todos os números de desempenho do artigo precisam vir de
+uma nova campanha** (`make campanha`). A lista do que muda no texto está em
+`codigo/README.md`, seção "Impacto no artigo". Os guias de defesa foram
+reescritos para a versão atual, e há um guia 04 que explica o código.
+
+---
+
 ## 1. Resumo executivo
 
 **A versão nova avançou bastante.** Coube em 16 páginas (com Times), tem a

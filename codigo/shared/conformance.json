@@ -1,0 +1,836 @@
+{
+ "descricao": "Artefatos comuns as duas linguagens (Secao 5 do artigo). 'mensagens' e 'casos' sao lidos pelas suites de OCaml e de Haskell; 'geracao' e produzida por referencia/gerador.py e conferida pelas duas.",
+ "mensagens": {
+  "variavel_nao_vinculada": "variavel nao vinculada: {x}",
+  "divisao_por_zero": "divisao por zero"
+ },
+ "casos": [
+  {
+   "nome": "literal",
+   "expr": [
+    "Num",
+    42
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "ok": 42
+    },
+    "env": [],
+    "saida": []
+   }
+  },
+  {
+   "nome": "literal negativo",
+   "expr": [
+    "Num",
+    -7
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "ok": -7
+    },
+    "env": [],
+    "saida": []
+   }
+  },
+  {
+   "nome": "adicao",
+   "expr": [
+    "Add",
+    [
+     "Num",
+     2
+    ],
+    [
+     "Num",
+     3
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "ok": 5
+    },
+    "env": [],
+    "saida": []
+   }
+  },
+  {
+   "nome": "erro no operando esquerdo impede o direito",
+   "expr": [
+    "Add",
+    [
+     "Var",
+     "z"
+    ],
+    [
+     "Print",
+     [
+      "Num",
+      9
+     ]
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "erro": "variavel nao vinculada: z"
+    },
+    "env": [],
+    "saida": []
+   },
+   "trava": "ordem de avaliacao: o operando direito nao e avaliado"
+  },
+  {
+   "nome": "multiplicacao",
+   "expr": [
+    "Mul",
+    [
+     "Num",
+     4
+    ],
+    [
+     "Num",
+     5
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "ok": 20
+    },
+    "env": [],
+    "saida": []
+   }
+  },
+  {
+   "nome": "multiplicacao com negativo",
+   "expr": [
+    "Mul",
+    [
+     "Num",
+     -3
+    ],
+    [
+     "Num",
+     4
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "ok": -12
+    },
+    "env": [],
+    "saida": []
+   }
+  },
+  {
+   "nome": "divisao exata",
+   "expr": [
+    "Div",
+    [
+     "Num",
+     20
+    ],
+    [
+     "Num",
+     4
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "ok": 5
+    },
+    "env": [],
+    "saida": []
+   }
+  },
+  {
+   "nome": "divisao truncada, numerador negativo",
+   "expr": [
+    "Div",
+    [
+     "Num",
+     -7
+    ],
+    [
+     "Num",
+     2
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "ok": -3
+    },
+    "env": [],
+    "saida": []
+   },
+   "trava": "quot e nao div: div (-7) 2 = -4"
+  },
+  {
+   "nome": "divisao truncada, divisor negativo",
+   "expr": [
+    "Div",
+    [
+     "Num",
+     7
+    ],
+    [
+     "Num",
+     -2
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "ok": -3
+    },
+    "env": [],
+    "saida": []
+   },
+   "trava": "quot e nao div: div 7 (-2) = -4"
+  },
+  {
+   "nome": "divisao truncada, ambos negativos",
+   "expr": [
+    "Div",
+    [
+     "Num",
+     -7
+    ],
+    [
+     "Num",
+     -2
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "ok": 3
+    },
+    "env": [],
+    "saida": []
+   }
+  },
+  {
+   "nome": "divisao por zero",
+   "expr": [
+    "Div",
+    [
+     "Num",
+     1
+    ],
+    [
+     "Num",
+     0
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "erro": "divisao por zero"
+    },
+    "env": [],
+    "saida": []
+   }
+  },
+  {
+   "nome": "divisao por zero em subexpressao",
+   "expr": [
+    "Add",
+    [
+     "Num",
+     1
+    ],
+    [
+     "Div",
+     [
+      "Num",
+      5
+     ],
+     [
+      "Mul",
+      [
+       "Num",
+       2
+      ],
+      [
+       "Num",
+       0
+      ]
+     ]
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "erro": "divisao por zero"
+    },
+    "env": [],
+    "saida": []
+   }
+  },
+  {
+   "nome": "variavel do estado inicial",
+   "expr": [
+    "Var",
+    "x"
+   ],
+   "env_inicial": [
+    [
+     "x",
+     10
+    ]
+   ],
+   "esperado": {
+    "resultado": {
+     "ok": 10
+    },
+    "env": [
+     [
+      "x",
+      10
+     ]
+    ],
+    "saida": []
+   }
+  },
+  {
+   "nome": "variavel nao vinculada",
+   "expr": [
+    "Var",
+    "y"
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "erro": "variavel nao vinculada: y"
+    },
+    "env": [],
+    "saida": []
+   }
+  },
+  {
+   "nome": "variavel nao vinculada com estado nao vazio",
+   "expr": [
+    "Var",
+    "y"
+   ],
+   "env_inicial": [
+    [
+     "x",
+     1
+    ]
+   ],
+   "esperado": {
+    "resultado": {
+     "erro": "variavel nao vinculada: y"
+    },
+    "env": [
+     [
+      "x",
+      1
+     ]
+    ],
+    "saida": []
+   }
+  },
+  {
+   "nome": "let simples",
+   "expr": [
+    "Let",
+    "x",
+    [
+     "Num",
+     5
+    ],
+    [
+     "Add",
+     [
+      "Var",
+      "x"
+     ],
+     [
+      "Num",
+      1
+     ]
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "ok": 6
+    },
+    "env": [
+     [
+      "x",
+      5
+     ]
+    ],
+    "saida": []
+   }
+  },
+  {
+   "nome": "let persiste apos o corpo",
+   "expr": [
+    "Seq",
+    [
+     "Let",
+     "x",
+     [
+      "Num",
+      1
+     ],
+     [
+      "Num",
+      0
+     ]
+    ],
+    [
+     "Var",
+     "x"
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "ok": 1
+    },
+    "env": [
+     [
+      "x",
+      1
+     ]
+    ],
+    "saida": []
+   },
+   "trava": "ambiente global: falha sob restauracao de escopo"
+  },
+  {
+   "nome": "let revincula",
+   "expr": [
+    "Let",
+    "x",
+    [
+     "Num",
+     1
+    ],
+    [
+     "Let",
+     "x",
+     [
+      "Num",
+      2
+     ],
+     [
+      "Var",
+      "x"
+     ]
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "ok": 2
+    },
+    "env": [
+     [
+      "x",
+      2
+     ]
+    ],
+    "saida": []
+   },
+   "trava": "ambiente global: falha sob restauracao de escopo"
+  },
+  {
+   "nome": "let revincula o estado inicial",
+   "expr": [
+    "Let",
+    "x",
+    [
+     "Num",
+     1
+    ],
+    [
+     "Var",
+     "x"
+    ]
+   ],
+   "env_inicial": [
+    [
+     "x",
+     9
+    ]
+   ],
+   "esperado": {
+    "resultado": {
+     "ok": 1
+    },
+    "env": [
+     [
+      "x",
+      1
+     ]
+    ],
+    "saida": []
+   }
+  },
+  {
+   "nome": "let usa o valor anterior",
+   "expr": [
+    "Let",
+    "x",
+    [
+     "Add",
+     [
+      "Var",
+      "x"
+     ],
+     [
+      "Num",
+      1
+     ]
+    ],
+    [
+     "Var",
+     "x"
+    ]
+   ],
+   "env_inicial": [
+    [
+     "x",
+     3
+    ]
+   ],
+   "esperado": {
+    "resultado": {
+     "ok": 4
+    },
+    "env": [
+     [
+      "x",
+      4
+     ]
+    ],
+    "saida": []
+   }
+  },
+  {
+   "nome": "sequencia descarta o primeiro valor",
+   "expr": [
+    "Seq",
+    [
+     "Num",
+     1
+    ],
+    [
+     "Num",
+     2
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "ok": 2
+    },
+    "env": [],
+    "saida": []
+   }
+  },
+  {
+   "nome": "impressao",
+   "expr": [
+    "Print",
+    [
+     "Num",
+     7
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "ok": 7
+    },
+    "env": [],
+    "saida": [
+     7
+    ]
+   }
+  },
+  {
+   "nome": "impressao aninhada",
+   "expr": [
+    "Print",
+    [
+     "Print",
+     [
+      "Num",
+      3
+     ]
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "ok": 3
+    },
+    "env": [],
+    "saida": [
+     3,
+     3
+    ]
+   }
+  },
+  {
+   "nome": "ordem de avaliacao",
+   "expr": [
+    "Add",
+    [
+     "Print",
+     [
+      "Num",
+      1
+     ]
+    ],
+    [
+     "Print",
+     [
+      "Num",
+      2
+     ]
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "ok": 3
+    },
+    "env": [],
+    "saida": [
+     1,
+     2
+    ]
+   },
+   "trava": "ordem de avaliacao fixada a esquerda"
+  },
+  {
+   "nome": "ordem de avaliacao na divisao",
+   "expr": [
+    "Div",
+    [
+     "Print",
+     [
+      "Num",
+      8
+     ]
+    ],
+    [
+     "Print",
+     [
+      "Num",
+      2
+     ]
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "ok": 4
+    },
+    "env": [],
+    "saida": [
+     8,
+     2
+    ]
+   },
+   "trava": "ordem de avaliacao fixada a esquerda"
+  },
+  {
+   "nome": "estado e saida sobrevivem ao erro",
+   "expr": [
+    "Let",
+    "x",
+    [
+     "Num",
+     5
+    ],
+    [
+     "Seq",
+     [
+      "Print",
+      [
+       "Var",
+       "x"
+      ]
+     ],
+     [
+      "Div",
+      [
+       "Num",
+       1
+      ],
+      [
+       "Num",
+       0
+      ]
+     ]
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "erro": "divisao por zero"
+    },
+    "env": [
+     [
+      "x",
+      5
+     ]
+    ],
+    "saida": [
+     5
+    ]
+   },
+   "trava": "falha se a pilha monadica for invertida (StateT externo)"
+  },
+  {
+   "nome": "erro interrompe a saida posterior",
+   "expr": [
+    "Seq",
+    [
+     "Print",
+     [
+      "Num",
+      1
+     ]
+    ],
+    [
+     "Seq",
+     [
+      "Div",
+      [
+       "Num",
+       1
+      ],
+      [
+       "Num",
+       0
+      ]
+     ],
+     [
+      "Print",
+      [
+       "Num",
+       2
+      ]
+     ]
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "erro": "divisao por zero"
+    },
+    "env": [],
+    "saida": [
+     1
+    ]
+   }
+  },
+  {
+   "nome": "erro no valor do let nao vincula",
+   "expr": [
+    "Let",
+    "x",
+    [
+     "Div",
+     [
+      "Num",
+      1
+     ],
+     [
+      "Num",
+      0
+     ]
+    ],
+    [
+     "Num",
+     0
+    ]
+   ],
+   "env_inicial": [],
+   "esperado": {
+    "resultado": {
+     "erro": "divisao por zero"
+    },
+    "env": [],
+    "saida": []
+   }
+  }
+ ],
+ "geracao": {
+  "lcg": {
+   "semente": 42,
+   "primeiros_valores": [
+    176754203,
+    42560440,
+    1000676753,
+    594932982,
+    908095735,
+    71666532,
+    896336333,
+    662989442,
+    241247635,
+    461502928,
+    391441865,
+    34778318,
+    133072879,
+    534045436,
+    901094789,
+    238077914,
+    340112395,
+    705377000,
+    397905153,
+    367232934
+   ]
+  },
+  "arith_primeiras_expressoes": {
+   "semente": 42,
+   "expressoes": [
+    "(Add (Div (Mul (Num 76) (Num 38)) (Num 1)) (Add (Add (Num 90) (Num 44)) (Div (Num 51) (Num 3))))",
+    "(Mul (Mul (Div (Num 77) (Num 8)) (Div (Num 97) (Num 3))) (Mul (Div (Num 54) (Num 8)) (Add (Num 93) (Num 26))))",
+    "(Div (Mul (Mul (Num 65) (Num 75)) (Div (Num 16) (Num 4))) (Num 2))",
+    "(Mul (Div (Div (Num 15) (Num 2)) (Num 5)) (Mul (Div (Num 45) (Num 2)) (Mul (Num 93) (Num 60))))",
+    "(Mul (Add (Mul (Num 71) (Num 22)) (Mul (Num 11) (Num 54))) (Add (Div (Num 46) (Num 8)) (Add (Num 7) (Num 52))))"
+   ]
+  },
+  "hashes_cargas": {
+   "arith": {
+    "42": "0db8f84887587542",
+    "43": "0f7d4b2973a8989c",
+    "44": "94194bb69e7c2cbf"
+   },
+   "state": {
+    "42": "c33b3c66fd6f08b2",
+    "43": "4a770d53cac0e66f",
+    "44": "1845a65ee949870f"
+   },
+   "exn": {
+    "42": "e2f316439ed5cd6b",
+    "43": "a0948a0197b1c2a9",
+    "44": "1c0c111f9dba5c41"
+   },
+   "output": {
+    "42": "25b0d3a269fdda2b",
+    "43": "049ab61da9081b30",
+    "44": "72604de3404c0abd"
+   }
+  }
+ }
+}

@@ -1,0 +1,10 @@
+# artefatos de compilacao
+ocaml/_build/
+haskell/dist-newstyle/
+metricas-hs/dist-newstyle/
+*.hi
+*.o
+# saidas brutas de execucoes locais (os resumos em resultados/ podem ser versionados)
+resultados/*
+!resultados/README.md
+__pycache__/
