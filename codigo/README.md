@@ -1,4 +1,4 @@
-# Código do TCC — mônadas × efeitos algébricos
+# Código do TCC: mônadas × efeitos algébricos
 
 Implementações, testes, *harnesses* de *benchmark* e scripts de métricas do
 artigo *Mônadas e Efeitos Algébricos em Linguagens Funcionais* (TCC II,
@@ -48,9 +48,9 @@ tabelas e ambiente em `../artigo.tex` e confere as afirmações do texto) →
 | `metricas-hs/` | 4.2 | métricas por AST para Haskell (`ghc-lib-parser`) |
 | `docs/protocolo-metricas.md` | 4.2 | definições operacionais e critério de *boilerplate* |
 | `quarto-efeito/` | 4.2, 5.3 | o quarto efeito (`Input`) como *patch*, e a medição de QP2 |
-| `scripts/` | — | testes, normalização, métricas, mutantes, campanha, repetição por R², resumo, sensibilidade |
+| `scripts/` | geral | testes, normalização, métricas, mutantes, campanha, repetição por R², resumo, sensibilidade |
 | `scripts/atualizar_artigo.py` | 1, 4–7 | gera os números, as Tabelas 1 e 2 e o ambiente do artigo e confere as frases marcadas `AFIRMACAO` |
-| `scripts/figuras.py` | — | figuras da apresentação (SVG, sem dependências) |
+| `scripts/figuras.py` | apresentação | figuras da apresentação (SVG, sem dependências) |
 | `resultados/` | 6 | métricas, campanha citada, sensibilidade e figuras (versionados) |
 
 ## Instalação

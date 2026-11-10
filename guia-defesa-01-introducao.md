@@ -1,4 +1,4 @@
-# Guia de defesa — Parte 1: Introdução
+# Guia de defesa, parte 1: Introdução
 
 *Reescrito em 09/11/2026 e atualizado em 10/11/2026 com os resultados da campanha final.*
 Cobre o título, os resumos e a Seção 1. Para cada bloco: o que o texto afirma,
@@ -47,7 +47,7 @@ semântica, gerador replicado; LOC se mostrou sensível ao estilo; sobrecusto me
 
 ---
 
-## 1º parágrafo — Contexto
+## 1º parágrafo: contexto
 
 ### O que o texto afirma
 
@@ -214,7 +214,7 @@ avisa se alguma frase qualitativa deixar de valer (Guia 04, seção 8).
 
 ---
 
-## Pontos frágeis — leia antes de apresentar
+## Pontos frágeis: leia antes de apresentar
 
 1. **Resumos acima de 10 linhas e com marca "I.A.?".** Reescreva com as suas
    palavras.

@@ -1,4 +1,4 @@
-# Revisão intensiva do TCC — 2ª rodada (09/11/2026)
+# Revisão intensiva do TCC, 2ª rodada (09/11/2026)
 
 **O que foi revisado:** a versão do artigo e da bibliografia que você enviou
 hoje, gravada **sem alteração** no commit `f1f1949`. As correções desta
@@ -101,7 +101,8 @@ reescritos para a versão atual, e há um guia 04 que explica o código.
 **O que só você pode fazer (antes do 4º PC, 23/11):**
 
 1. Reescrever **Abstract e Resumo** com as suas palavras, até 10 linhas cada
-   (`VOZ`); os números já são macros. Ao reescrever o 1º parágrafo da
+   (`VOZ`); os números já são macros, e as frases com padrão de IA estão
+   marcadas em `marcacoes-estilo.md`. Ao reescrever o 1º parágrafo da
    Introdução, decida se reintroduz Hughes (para modularidade).
 2. Preencher a **versão do modelo** em `[PREENCHER]` (Agradecimentos), com a
    versão informada na conversa desta rodada e as das rodadas anteriores.
@@ -158,12 +159,12 @@ instalação por expressão e a frase sobre a ambiente global.
 | Art. 3º | LaTeX, padrão SBC | ⚠️ `lmodern` voltou e trocava a Times por Latin Modern | ✅ removido |
 | Modelo SBC | *Abstract* e Resumo com até 10 linhas, ambos na 1ª página | ❌ ~12 e ~14 linhas; o Resumo cai na pág. 2 | **Você**, ao reescrever os trechos `VOZ` (~120 palavras cada) |
 | Art. 4º | 10 a 16 páginas | ✅ 16 com Times (17 com Latin Modern) | Cuidado ao acrescentar texto (Seção 6) |
-| Art. 4º §1 I | Introdução completa | ✅ | — |
+| Art. 4º §1 I | Introdução completa | ✅ | nenhuma |
 | Tab. 2, 4º PC | Introdução com síntese do que foi feito e principais resultados | ⚠️ não diz que QP1–QP3 estão abertas | C1 |
 | Art. 4º §1 III | Metodologia **com diagramas, fluxogramas, figuras** | ⚠️ o artigo não tem **nenhuma** figura (a Figura 1 saiu) | Considerar um diagrama compacto do *pipeline* (G12) |
 | Art. 4º §1 IV e Art. 5º §3 | Resultados comentados e analisados | ❌ só desempenho; a Tabela 1 está vazia | C1 |
 | Art. 4º §1 V e Art. 5º §3 | Conclusões com contribuições, resultados frente à literatura e trabalhos futuros | ✅ estrutura; ⚠️ contribuição metodológica sobredeclarada (C3) | C3 |
-| Art. 4º §1 VI | ≥ 10 referências | ✅ 31 citadas | — |
+| Art. 4º §1 VI | ≥ 10 referências | ✅ 31 citadas | nenhuma |
 | Art. 5º §3 | Produto reprodutível | ❌ repositório inexistente | C2 |
 | Arts. 7º e 8º | Ferramenta, finalidade, seções, **versão** | ❌ "[PREENCHER]" impresso; ⚠️ finalidade | C6 |
 | Arts. 9º e 10 | Veracidade; sem fabricação | ⚠️ "legibilidade medida" sem medição (C1); hipóteses omitidas (G4) | C1, G4 |

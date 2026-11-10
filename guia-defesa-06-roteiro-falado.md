@@ -1,4 +1,4 @@
-# Guia de defesa — Parte 6: Roteiro falado
+# Guia de defesa, parte 6: Roteiro falado
 
 *Escrito em 10/11/2026 para a apresentação de 16 slides (Guia 05).* Este é o
 texto do que dizer, slide a slide, para os 20 minutos de apresentação, mais as
@@ -45,7 +45,7 @@ apresentação do PowerPoint ou no Present da própria página.
 
 ## O que dizer, slide a slide
 
-### Slide 1 — Capa (0:20 · acumulado 0:20)
+### Slide 1: Capa (0:20 · acumulado 0:20)
 
 **Âncora:** comparei mônadas e efeitos algébricos no mesmo programa, em quatro
 dimensões.
@@ -58,7 +58,7 @@ dimensões.
 *Olhe para a câmera, não para a tela. Fale devagar: é o momento em que a banca
 forma a primeira impressão.*
 
-### Slide 2 — Dois mecanismos para efeitos (1:20 · 1:40)
+### Slide 2: Dois mecanismos para efeitos (1:20 · 1:40)
 
 **Âncora:** a teoria diz que os dois expressam o mesmo; ninguém mediu quanto
 custam para escrever e para executar.
@@ -84,7 +84,7 @@ custam para escrever e para executar.
 
 *Aponte o código laranja ao falar da pilha e o azul ao falar do perform.*
 
-### Slide 3 — Comparação por razões intralinguagem (1:30 · 3:10)
+### Slide 3: Comparação por razões intralinguagem (1:30 · 3:10)
 
 **Âncora:** cada mecanismo contra uma base na própria linguagem; razão = 1 + Δ
 sobre a base.
@@ -111,7 +111,7 @@ sobre a base.
 *Pause meio segundo antes de “esta fórmula” e aponte para ela. É a ideia que
 amarra a discussão dos slides 11 e 12.*
 
-### Slide 4 — Questões de pesquisa (1:20 · 4:30)
+### Slide 4: Questões de pesquisa (1:20 · 4:30)
 
 **Âncora:** quatro questões; código só se compara dentro da mesma linguagem.
 
@@ -135,7 +135,7 @@ amarra a discussão dos slides 11 e 12.*
 > Uma regra vale para todas as métricas de código: eu só comparo versões da
 > mesma linguagem, porque cada linguagem tem o seu próprio idioma.
 
-### Slide 5 — Um interpretador com três efeitos (1:20 · 5:50)
+### Slide 5: Um interpretador com três efeitos (1:20 · 5:50)
 
 **Âncora:** semântica formal primeiro; equivalência é mesmo valor, estado,
 traço e erro.
@@ -156,7 +156,7 @@ traço e erro.
 > As simplificações estão assumidas desde o início: ambiente global, exceção
 > que só aborta e um único caso de uso.
 
-### Slide 6 — Quatro versões e a verificação (1:30 · 7:20)
+### Slide 6: Quatro versões e a verificação (1:30 · 7:20)
 
 **Âncora:** 61 de 61, 8 de 8, 12 hashes: nada é medido antes de provar
 equivalência.
@@ -186,7 +186,7 @@ equivalência.
 (Arts. 6º a 9º), a banca vai lê-la, e dizê-la você mesmo, ligada à
 verificação, transforma uma possível desconfiança num ponto forte.*
 
-### Slide 7 — O mesmo braço de eval, com e sem handlers (1:10 · 8:30)
+### Slide 7: O mesmo braço de eval, com e sem handlers (1:10 · 8:30)
 
 **Âncora:** cada operação direta virou exatamente uma operação de efeito.
 
@@ -207,7 +207,7 @@ verificação, transforma uma possível desconfiança num ponto forte.*
 
 *Passe o cursor pelas partes em destaque enquanto fala delas.*
 
-### Slide 8 — Legibilidade de eval (0:50 · 9:20)
+### Slide 8: Legibilidade de eval (0:50 · 9:20)
 
 **Âncora:** o eval empata; o mecanismo não pesa na leitura do avaliador.
 
@@ -219,7 +219,7 @@ verificação, transforma uma possível desconfiança num ponto forte.*
 > Então, a resposta à QP1: pelos três proxies, o mecanismo não pesa na leitura
 > do avaliador. Se há diferença no custo de escrita, ela está em outro lugar.
 
-### Slide 9 — Composabilidade e boilerplate (1:40 · 11:00)
+### Slide 9: Composabilidade e boilerplate (1:40 · 11:00)
 
 **Âncora:** o custo de escrita está na infraestrutura; para o quarto efeito,
 só os mecanismos mudaram declarações.
@@ -245,7 +245,7 @@ só os mecanismos mudaram declarações.
 > instâncias. É o que permite trocar a interpretação da saída sem tocar no
 > avaliador.
 
-### Slide 10 — Destaque: 45 ns (0:40 · 11:40)
+### Slide 10: Destaque: 45 ns (0:40 · 11:40)
 
 **Âncora:** 45 ns só para instalar três handlers, sem nenhum efeito.
 
@@ -260,7 +260,7 @@ só os mecanismos mudaram declarações.
 *Fale este slide mais devagar que os outros e deixe uma pausa depois de
 “quarenta e cinco nanossegundos”. É o número que você quer que a banca leve.*
 
-### Slide 11 — Custo de tempo por expressão (1:40 · 13:20)
+### Slide 11: Custo de tempo por expressão (1:40 · 13:20)
 
 **Âncora:** no OCaml, custo fixo por instalação e por operação; no Haskell,
 quase apagado pelo compilador.
@@ -291,7 +291,7 @@ refizer a campanha no seu computador, troque a segunda frase por: “Eu medi no
 meu computador, com afinidade fixa num núcleo e três sementes; o protocolo
 completo está no apêndice.”*
 
-### Slide 12 — Alocação por expressão (1:20 · 14:40)
+### Slide 12: Alocação por expressão (1:20 · 14:40)
 
 **Âncora:** a razão de alocação mede a base: excedentes parecidos, bases
 diferentes.
@@ -313,7 +313,7 @@ diferentes.
 
 *Aponte o pequeno trecho cinza da barra do OCaml ao dizer “quinze bytes”.*
 
-### Slide 13 — Achados não previstos (1:40 · 16:20)
+### Slide 13: Achados não previstos (1:40 · 16:20)
 
 **Âncora:** continuação abandonada vaza 1,2 GB; R² bom não garante a
 estimativa.
@@ -334,7 +334,7 @@ estimativa.
 > configuração de amostragem é, ela mesma, uma ameaça à validade, e isso só
 > apareceu porque eu fiz o teste.
 
-### Slide 14 — Frente à literatura e ao TCC I (1:20 · 17:40)
+### Slide 14: Frente à literatura e ao TCC I (1:20 · 17:40)
 
 **Âncora:** mesma ordem de grandeza da literatura; a hipótese do TCC I se
 inverteu.
@@ -361,7 +361,7 @@ inverteu.
 *Diga a última frase com tranquilidade, sem tom de desculpa. Uma previsão
 refutada é resultado, e o orientador conhece essa previsão.*
 
-### Slide 15 — Conclusões e trabalhos futuros (1:40 · 19:20)
+### Slide 15: Conclusões e trabalhos futuros (1:40 · 19:20)
 
 **Âncora:** escrita, custo na infraestrutura; execução, handlers cobram por
 instalação e mônadas quase nada.
@@ -391,7 +391,7 @@ instalação e mônadas quase nada.
 *O parágrafo “Para quem precisa escolher” é a sua opinião fundamentada: é o
 que diferencia uma conclusão de um resumo. Diga olhando para a câmera.*
 
-### Slide 16 — Obrigado (0:10 · 19:30)
+### Slide 16: Obrigado (0:10 · 19:30)
 
 **Âncora:** obrigado; tudo reproduzível com um comando.
 
