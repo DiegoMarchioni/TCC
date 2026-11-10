@@ -1,0 +1,23 @@
+linha,rotulo,motivo,declaracao,texto
+12,B,infraestrutura: sem marcador semântico,module,module Interp.Monadic
+13,B,infraestrutura: sem marcador semântico,module,"  ( Env,"
+14,B,infraestrutura: sem marcador semântico,module,"    Interp,"
+15,B,infraestrutura: sem marcador semântico,module,"    eval,"
+16,B,infraestrutura: sem marcador semântico,module,"    emit,"
+17,B,infraestrutura: sem marcador semântico,module,"    run,"
+18,B,infraestrutura: sem marcador semântico,module,  )
+19,B,infraestrutura: sem marcador semântico,module,where
+21,B,infraestrutura: sem marcador semântico,import Control.Monad,import Control.Monad (when)
+22,B,infraestrutura: sem marcador semântico,import Control.Monad.Except,"import Control.Monad.Except (ExceptT, runExceptT, throwError)"
+23,B,infraestrutura: sem marcador semântico,import Control.Monad.IO.Class,import Control.Monad.IO.Class (liftIO)
+24,B,infraestrutura: sem marcador semântico,import Control.Monad.State.Strict,"import Control.Monad.State.Strict (StateT, get, modify', runStateT)"
+25,B,infraestrutura: sem marcador semântico,import Data.IORef,import Data.IORef (readIORef)
+26,B,infraestrutura: sem marcador semântico,import Data.Map.Strict,import Data.Map.Strict (Map)
+27,B,infraestrutura: sem marcador semântico,import Data.Map.Strict,import qualified Data.Map.Strict as Map
+28,B,infraestrutura: sem marcador semântico,import Expr,import Expr
+30,N,domínio do estado (type Env),type Env,type Env = Map String Int
+32,B,infraestrutura: sem marcador semântico,type Interp,type Interp a = ExceptT String (StateT Env IO) a
+35,B,infraestrutura: sem marcador semântico,emit,emit :: Int -> Interp ()
+36,N,uso da referência de emissão ou de entrada,emit,emit v = liftIO (readIORef emitRef >>= \f -> f v)
+68,B,infraestrutura: sem marcador semântico,run,"run :: Env -> Expr -> IO (Either String Int, Env)"
+69,B,infraestrutura: sem marcador semântico,run,run env e = runStateT (runExceptT (eval e)) env

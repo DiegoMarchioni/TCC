@@ -1,0 +1,79 @@
+linha,rotulo,motivo,declaracao,texto
+13,B,infraestrutura: sem marcador semântico,open Effect,open Effect
+14,B,infraestrutura: sem marcador semântico,open Effect.Deep,open Effect.Deep
+15,B,infraestrutura: sem marcador semântico,open Expr,open Expr
+17,B,infraestrutura: sem marcador semântico,type+= Effect.t,type _ Effect.t +=
+18,N,declaração de uma operação de efeito,type+= Effect.t,  | Get : string -> int option Effect.t
+19,N,declaração de uma operação de efeito,type+= Effect.t,  | Set : string * int -> unit Effect.t
+20,N,declaração de uma operação de efeito,type+= Effect.t,  | Fail : string -> 'a Effect.t
+21,N,declaração de uma operação de efeito,type+= Effect.t,  | Output : int -> unit Effect.t
+54,B,infraestrutura: sem marcador semântico,run_state,"let run_state (tbl : (string, int) Hashtbl.t) (main : unit -> 'a) : 'a ="
+55,B,infraestrutura: sem marcador semântico,run_state,  match_with main ()
+56,B,infraestrutura: sem marcador semântico,run_state,    {
+57,B,infraestrutura: sem marcador semântico,run_state,      retc = (fun v -> v);
+58,B,infraestrutura: sem marcador semântico,run_state,      exnc = raise;
+59,B,infraestrutura: sem marcador semântico,run_state,      effc =
+60,B,infraestrutura: sem marcador semântico,run_state,        (fun (type a) (eff : a Effect.t) ->
+61,B,infraestrutura: sem marcador semântico,run_state,          match eff with
+62,B,infraestrutura: sem marcador semântico,run_state,          | Get x ->
+63,B,infraestrutura: sem marcador semântico,run_state,              Some
+64,B,infraestrutura: sem marcador semântico,run_state,"                (fun (k : (a, _) continuation) ->"
+65,N,operação sobre a tabela de estado (Hashtbl.*),run_state,                  continue k (Hashtbl.find_opt tbl x))
+66,B,infraestrutura: sem marcador semântico,run_state,"          | Set (x, v) ->"
+67,B,infraestrutura: sem marcador semântico,run_state,              Some
+68,B,infraestrutura: sem marcador semântico,run_state,"                (fun (k : (a, _) continuation) ->"
+69,N,operação sobre a tabela de estado (Hashtbl.*),run_state,                  Hashtbl.replace tbl x v;
+70,B,infraestrutura: sem marcador semântico,run_state,                  continue k ())
+71,B,infraestrutura: sem marcador semântico,run_state,          | _ -> None);
+72,B,infraestrutura: sem marcador semântico,run_state,    }
+80,B,infraestrutura: sem marcador semântico,exception Abortar,exception Abortar of string
+82,B,infraestrutura: sem marcador semântico,run_exn,"let run_exn (main : unit -> int) : (int, string) result ="
+83,B,infraestrutura: sem marcador semântico,run_exn,  match_with main ()
+84,B,infraestrutura: sem marcador semântico,run_exn,    {
+85,N,resultado do efeito de exceção (Ok/Error),run_exn,      retc = (fun v -> Ok v);
+86,N,resultado do efeito de exceção (Ok/Error),run_exn,      exnc = (function Abortar msg -> Error msg | e -> raise e);
+87,B,infraestrutura: sem marcador semântico,run_exn,      effc =
+88,B,infraestrutura: sem marcador semântico,run_exn,        (fun (type a) (eff : a Effect.t) ->
+89,B,infraestrutura: sem marcador semântico,run_exn,          match eff with
+90,B,infraestrutura: sem marcador semântico,run_exn,          | Fail msg ->
+91,B,infraestrutura: sem marcador semântico,run_exn,              Some
+92,N,decisão de não retomar a continuação,run_exn,"                (fun (k : (a, _) continuation) -> discontinue k (Abortar msg))"
+93,B,infraestrutura: sem marcador semântico,run_exn,          | _ -> None);
+94,B,infraestrutura: sem marcador semântico,run_exn,    }
+98,B,infraestrutura: sem marcador semântico,run_output_emit,let run_output_emit (main : unit -> 'a) : 'a =
+99,B,infraestrutura: sem marcador semântico,run_output_emit,  match_with main ()
+100,B,infraestrutura: sem marcador semântico,run_output_emit,    {
+101,B,infraestrutura: sem marcador semântico,run_output_emit,      retc = (fun v -> v);
+102,B,infraestrutura: sem marcador semântico,run_output_emit,      exnc = raise;
+103,B,infraestrutura: sem marcador semântico,run_output_emit,      effc =
+104,B,infraestrutura: sem marcador semântico,run_output_emit,        (fun (type a) (eff : a Effect.t) ->
+105,B,infraestrutura: sem marcador semântico,run_output_emit,          match eff with
+106,B,infraestrutura: sem marcador semântico,run_output_emit,          | Output v ->
+107,B,infraestrutura: sem marcador semântico,run_output_emit,              Some
+108,B,infraestrutura: sem marcador semântico,run_output_emit,"                (fun (k : (a, _) continuation) ->"
+109,N,uso da referência de emissão ou de entrada,run_output_emit,                  !emit v;
+110,B,infraestrutura: sem marcador semântico,run_output_emit,                  continue k ())
+111,B,infraestrutura: sem marcador semântico,run_output_emit,          | _ -> None);
+112,B,infraestrutura: sem marcador semântico,run_output_emit,    }
+116,B,infraestrutura: sem marcador semântico,run_output_acc,let run_output_acc (acc : int list ref) (main : unit -> 'a) : 'a =
+117,B,infraestrutura: sem marcador semântico,run_output_acc,  match_with main ()
+118,B,infraestrutura: sem marcador semântico,run_output_acc,    {
+119,B,infraestrutura: sem marcador semântico,run_output_acc,      retc = (fun v -> v);
+120,B,infraestrutura: sem marcador semântico,run_output_acc,      exnc = raise;
+121,B,infraestrutura: sem marcador semântico,run_output_acc,      effc =
+122,B,infraestrutura: sem marcador semântico,run_output_acc,        (fun (type a) (eff : a Effect.t) ->
+123,B,infraestrutura: sem marcador semântico,run_output_acc,          match eff with
+124,B,infraestrutura: sem marcador semântico,run_output_acc,          | Output v ->
+125,B,infraestrutura: sem marcador semântico,run_output_acc,              Some
+126,B,infraestrutura: sem marcador semântico,run_output_acc,"                (fun (k : (a, _) continuation) ->"
+127,N,atualização de acumulador ou de fluxo,run_output_acc,                  acc := v :: !acc;
+128,B,infraestrutura: sem marcador semântico,run_output_acc,                  continue k ())
+129,B,infraestrutura: sem marcador semântico,run_output_acc,          | _ -> None);
+130,B,infraestrutura: sem marcador semântico,run_output_acc,    }
+134,B,infraestrutura: sem marcador semântico,run,"let run (tbl : (string, int) Hashtbl.t) (e : expr) : (int, string) result ="
+135,B,infraestrutura: sem marcador semântico,run,  run_state tbl (fun () ->
+136,B,infraestrutura: sem marcador semântico,run,      run_output_emit (fun () -> run_exn (fun () -> eval e)))
+139,B,infraestrutura: sem marcador semântico,run_acc,"let run_acc (tbl : (string, int) Hashtbl.t) (acc : int list ref) (e : expr) :"
+140,B,infraestrutura: sem marcador semântico,run_acc,"    (int, string) result ="
+141,B,infraestrutura: sem marcador semântico,run_acc,  run_state tbl (fun () ->
+142,B,infraestrutura: sem marcador semântico,run_acc,      run_output_acc acc (fun () -> run_exn (fun () -> eval e)))

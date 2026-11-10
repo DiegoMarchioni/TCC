@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-labelledby="t d" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<title id="t">Excedente de tempo do mecanismo sobre a base</title><desc id="d">Barras horizontais agrupadas: nanossegundos a mais por expressão avaliada, por cenário, OCaml (handlers sobre imperativa) e Haskell (mônadas sobre IORef).</desc>
+<rect width="1600" height="900" fill="#fcfcfb"/>
+<text x="80.0" y="70.0" font-size="40" fill="#0b0b0b" font-weight="600" text-anchor="start" dominant-baseline="auto">Quanto o mecanismo custa a mais, por expressão avaliada</text>
+<text x="80.0" y="116.0" font-size="24" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="auto">Excedente Δ de tempo sobre a base da mesma linguagem, em ns (mediana das sementes)</text>
+<rect x="80.0" y="162.0" width="16" height="16" rx="3" fill="#2a78d6"/>
+<text x="104.0" y="170.0" font-size="20" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">OCaml: handlers sobre imperativa</text>
+<rect x="472.8" y="162.0" width="16" height="16" rx="3" fill="#eb6834"/>
+<text x="496.8" y="170.0" font-size="20" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">Haskell: mônadas sobre IORef</text>
+<line x1="450.1" y1="220.0" x2="450.1" y2="810.0" stroke="#c3c2b7" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="450.1" y="836.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">0</text>
+<line x1="646.1" y1="220.0" x2="646.1" y2="810.0" stroke="#e1e0d9" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="646.1" y="836.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">25</text>
+<line x1="842.0" y1="220.0" x2="842.0" y2="810.0" stroke="#e1e0d9" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="842.0" y="836.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">50</text>
+<line x1="1038.0" y1="220.0" x2="1038.0" y2="810.0" stroke="#e1e0d9" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="1038.0" y="836.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">75</text>
+<line x1="1234.0" y1="220.0" x2="1234.0" y2="810.0" stroke="#e1e0d9" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="1234.0" y="836.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">100</text>
+<line x1="1430.0" y1="220.0" x2="1430.0" y2="810.0" stroke="#e1e0d9" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="1430.0" y="836.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">125</text>
+<text x="270.0" y="275.0" font-size="28" fill="#0b0b0b" font-weight="600" text-anchor="end" dominant-baseline="middle">Arith</text>
+<path d="M450.1,250.0 H801.3 Q805.3,250.0 805.3,254.0 V270.0 Q805.3,274.0 801.3,274.0 H450.1 Z" fill="#2a78d6"/>
+<text x="815.3" y="262.0" font-size="22" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">45 ns</text>
+<path d="M450.1,276.0 H524.5 Q528.5,276.0 528.5,280.0 V296.0 Q528.5,300.0 524.5,300.0 H450.1 Z" fill="#eb6834"/>
+<text x="538.5" y="288.0" font-size="22" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">10 ns</text>
+<text x="270.0" y="425.0" font-size="28" fill="#0b0b0b" font-weight="600" text-anchor="end" dominant-baseline="middle">State</text>
+<path d="M450.1,400.0 H1107.2 Q1111.2,400.0 1111.2,404.0 V420.0 Q1111.2,424.0 1107.2,424.0 H450.1 Z" fill="#2a78d6"/>
+<text x="1121.2" y="412.0" font-size="22" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">84 ns</text>
+<path d="M450.1,426.0 H421.6 Q417.6,426.0 417.6,430.0 V446.0 Q417.6,450.0 421.6,450.0 H450.1 Z" fill="#eb6834"/>
+<text x="407.6" y="438.0" font-size="22" fill="#52514e" font-weight="400" text-anchor="end" dominant-baseline="middle">−4 ns</text>
+<text x="270.0" y="575.0" font-size="28" fill="#0b0b0b" font-weight="600" text-anchor="end" dominant-baseline="middle">Exn</text>
+<path d="M450.1,550.0 H830.6 Q834.6,550.0 834.6,554.0 V570.0 Q834.6,574.0 830.6,574.0 H450.1 Z" fill="#2a78d6"/>
+<text x="844.6" y="562.0" font-size="22" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">49 ns</text>
+<path d="M450.1,576.0 H483.4 Q487.4,576.0 487.4,580.0 V596.0 Q487.4,600.0 483.4,600.0 H450.1 Z" fill="#eb6834"/>
+<text x="497.4" y="588.0" font-size="22" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">5 ns</text>
+<text x="270.0" y="725.0" font-size="28" fill="#0b0b0b" font-weight="600" text-anchor="end" dominant-baseline="middle">Output</text>
+<path d="M450.1,700.0 H1314.0 Q1318.0,700.0 1318.0,704.0 V720.0 Q1318.0,724.0 1314.0,724.0 H450.1 Z" fill="#2a78d6"/>
+<text x="1328.0" y="712.0" font-size="22" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">111 ns</text>
+<path d="M450.1,726.0 H436.5 Q432.5,726.0 432.5,730.0 V746.0 Q432.5,750.0 436.5,750.0 H450.1 Z" fill="#eb6834"/>
+<text x="422.5" y="738.0" font-size="22" fill="#52514e" font-weight="400" text-anchor="end" dominant-baseline="middle">−2 ns</text>
+<text x="270.0" y="309.0" font-size="18" fill="#898781" font-weight="400" text-anchor="end" dominant-baseline="middle">sem operação de efeito:</text>
+<text x="270.0" y="331.0" font-size="18" fill="#898781" font-weight="400" text-anchor="end" dominant-baseline="middle">no OCaml, só instalação</text>
+</svg>

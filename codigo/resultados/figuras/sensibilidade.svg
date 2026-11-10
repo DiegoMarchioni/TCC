@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-labelledby="t d" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<title id="t">Sensibilidade à configuração de amostragem</title><desc id="d">Haltere por cenário: razão de tempo na campanha e na corrida subdimensionada, mesma semente.</desc>
+<rect width="1600" height="900" fill="#fcfcfb"/>
+<text x="80.0" y="70.0" font-size="40" fill="#0b0b0b" font-weight="600" text-anchor="start" dominant-baseline="auto">R² aceitável não garante a estimativa</text>
+<text x="80.0" y="116.0" font-size="24" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="auto">Razão de tempo, mesma semente: campanha completa × corrida subdimensionada (todos os R² ≥ 0,95)</text>
+<rect x="80.0" y="162.0" width="16" height="16" rx="3" fill="#2a78d6"/>
+<text x="104.0" y="170.0" font-size="20" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">campanha (cota 20 s)</text>
+<rect x="348.0" y="162.0" width="16" height="16" rx="3" fill="#86b6ef"/>
+<text x="372.0" y="170.0" font-size="20" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">subdimensionada (cota 5 s)</text>
+<line x1="330.0" y1="220.0" x2="330.0" y2="768.0" stroke="#e1e0d9" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="330.0" y="794.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">0,0</text>
+<line x1="540.0" y1="220.0" x2="540.0" y2="768.0" stroke="#e1e0d9" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="540.0" y="794.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">1,0</text>
+<line x1="750.0" y1="220.0" x2="750.0" y2="768.0" stroke="#e1e0d9" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="750.0" y="794.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">2,0</text>
+<line x1="960.0" y1="220.0" x2="960.0" y2="768.0" stroke="#e1e0d9" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="960.0" y="794.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">3,0</text>
+<line x1="1170.0" y1="220.0" x2="1170.0" y2="768.0" stroke="#e1e0d9" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="1170.0" y="794.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">4,0</text>
+<line x1="1380.0" y1="220.0" x2="1380.0" y2="768.0" stroke="#e1e0d9" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="1380.0" y="794.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">5,0</text>
+<line x1="540.0" y1="220.0" x2="540.0" y2="768.0" stroke="#c3c2b7" stroke-width="2" shape-rendering="crispEdges"/>
+<text x="300.0" y="263.0" font-size="22" fill="#0b0b0b" font-weight="600" text-anchor="end" dominant-baseline="middle">OCaml · Arith</text>
+<line x1="664.3" y1="263.0" x2="709.8" y2="263.0" stroke="#c3c2b7" stroke-width="2" shape-rendering="crispEdges"/>
+<circle cx="664.3" cy="263.0" r="9" fill="#fcfcfb"/>
+<circle cx="664.3" cy="263.0" r="7" fill="#2a78d6"/>
+<circle cx="709.8" cy="263.0" r="9" fill="#fcfcfb"/>
+<circle cx="709.8" cy="263.0" r="7" fill="#86b6ef"/>
+<text x="1420.0" y="263.0" font-size="22" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">+14%</text>
+<text x="300.0" y="329.0" font-size="22" fill="#0b0b0b" font-weight="600" text-anchor="end" dominant-baseline="middle">OCaml · State</text>
+<line x1="730.7" y1="329.0" x2="842.9" y2="329.0" stroke="#c3c2b7" stroke-width="2" shape-rendering="crispEdges"/>
+<circle cx="730.7" cy="329.0" r="9" fill="#fcfcfb"/>
+<circle cx="730.7" cy="329.0" r="7" fill="#2a78d6"/>
+<circle cx="842.9" cy="329.0" r="9" fill="#fcfcfb"/>
+<circle cx="842.9" cy="329.0" r="7" fill="#86b6ef"/>
+<text x="1420.0" y="329.0" font-size="22" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">+28%</text>
+<text x="300.0" y="395.0" font-size="22" fill="#0b0b0b" font-weight="600" text-anchor="end" dominant-baseline="middle">OCaml · Exn</text>
+<line x1="686.3" y1="395.0" x2="724.7" y2="395.0" stroke="#c3c2b7" stroke-width="2" shape-rendering="crispEdges"/>
+<circle cx="686.3" cy="395.0" r="9" fill="#fcfcfb"/>
+<circle cx="686.3" cy="395.0" r="7" fill="#2a78d6"/>
+<circle cx="724.7" cy="395.0" r="9" fill="#fcfcfb"/>
+<circle cx="724.7" cy="395.0" r="7" fill="#86b6ef"/>
+<text x="1420.0" y="395.0" font-size="22" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">+11%</text>
+<text x="300.0" y="461.0" font-size="22" fill="#0b0b0b" font-weight="600" text-anchor="end" dominant-baseline="middle">OCaml · Output</text>
+<line x1="1245.8" y1="461.0" x2="1291.9" y2="461.0" stroke="#c3c2b7" stroke-width="2" shape-rendering="crispEdges"/>
+<circle cx="1245.8" cy="461.0" r="9" fill="#fcfcfb"/>
+<circle cx="1245.8" cy="461.0" r="7" fill="#2a78d6"/>
+<circle cx="1291.9" cy="461.0" r="9" fill="#fcfcfb"/>
+<circle cx="1291.9" cy="461.0" r="7" fill="#86b6ef"/>
+<text x="1420.0" y="461.0" font-size="22" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">+5%</text>
+<text x="300.0" y="527.0" font-size="22" fill="#0b0b0b" font-weight="600" text-anchor="end" dominant-baseline="middle">Haskell · Arith</text>
+<line x1="557.6" y1="527.0" x2="562.1" y2="527.0" stroke="#c3c2b7" stroke-width="2" shape-rendering="crispEdges"/>
+<circle cx="557.6" cy="527.0" r="9" fill="#fcfcfb"/>
+<circle cx="557.6" cy="527.0" r="7" fill="#2a78d6"/>
+<circle cx="562.1" cy="527.0" r="9" fill="#fcfcfb"/>
+<circle cx="562.1" cy="527.0" r="7" fill="#86b6ef"/>
+<text x="1420.0" y="527.0" font-size="22" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">+2%</text>
+<text x="300.0" y="593.0" font-size="22" fill="#0b0b0b" font-weight="600" text-anchor="end" dominant-baseline="middle">Haskell · State</text>
+<line x1="538.8" y1="593.0" x2="522.4" y2="593.0" stroke="#c3c2b7" stroke-width="2" shape-rendering="crispEdges"/>
+<circle cx="538.8" cy="593.0" r="9" fill="#fcfcfb"/>
+<circle cx="538.8" cy="593.0" r="7" fill="#2a78d6"/>
+<circle cx="522.4" cy="593.0" r="9" fill="#fcfcfb"/>
+<circle cx="522.4" cy="593.0" r="7" fill="#86b6ef"/>
+<text x="1420.0" y="593.0" font-size="22" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">−8%</text>
+<text x="300.0" y="659.0" font-size="22" fill="#0b0b0b" font-weight="600" text-anchor="end" dominant-baseline="middle">Haskell · Exn</text>
+<line x1="550.4" y1="659.0" x2="530.4" y2="659.0" stroke="#c3c2b7" stroke-width="2" shape-rendering="crispEdges"/>
+<circle cx="550.4" cy="659.0" r="9" fill="#fcfcfb"/>
+<circle cx="550.4" cy="659.0" r="7" fill="#2a78d6"/>
+<circle cx="530.4" cy="659.0" r="9" fill="#fcfcfb"/>
+<circle cx="530.4" cy="659.0" r="7" fill="#86b6ef"/>
+<text x="1420.0" y="659.0" font-size="22" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">−9%</text>
+<text x="300.0" y="725.0" font-size="22" fill="#0b0b0b" font-weight="600" text-anchor="end" dominant-baseline="middle">Haskell · Output</text>
+<line x1="534.1" y1="725.0" x2="532.9" y2="725.0" stroke="#c3c2b7" stroke-width="2" shape-rendering="crispEdges"/>
+<circle cx="534.1" cy="725.0" r="9" fill="#fcfcfb"/>
+<circle cx="534.1" cy="725.0" r="7" fill="#2a78d6"/>
+<circle cx="532.9" cy="725.0" r="9" fill="#fcfcfb"/>
+<circle cx="532.9" cy="725.0" r="7" fill="#86b6ef"/>
+<text x="1420.0" y="725.0" font-size="22" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">−1%</text>
+<text x="1420.0" y="206.0" font-size="18" fill="#898781" font-weight="400" text-anchor="start" dominant-baseline="middle">desvio</text>
+</svg>

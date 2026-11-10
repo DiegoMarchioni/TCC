@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-labelledby="t d" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<title id="t">Alocação em Arith: base e excedente</title><desc id="d">Barras empilhadas horizontais: bytes alocados por expressão em Arith, base em cinza e excedente do mecanismo na cor da linguagem, com a razão ao lado.</desc>
+<rect width="1600" height="900" fill="#fcfcfb"/>
+<text x="80.0" y="70.0" font-size="40" fill="#0b0b0b" font-weight="600" text-anchor="start" dominant-baseline="auto">A razão de alocação mede sobretudo a base</text>
+<text x="80.0" y="116.0" font-size="24" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="auto">Bytes alocados por expressão em Arith: base + excedente Δ do mecanismo</text>
+<rect x="80.0" y="162.0" width="16" height="16" rx="3" fill="#c3c2b7"/>
+<text x="104.0" y="170.0" font-size="20" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">base (imperativa / IORef)</text>
+<rect x="400.0" y="162.0" width="16" height="16" rx="3" fill="#2a78d6"/>
+<text x="424.0" y="170.0" font-size="20" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">Δ handlers (OCaml)</text>
+<rect x="647.2" y="162.0" width="16" height="16" rx="3" fill="#eb6834"/>
+<text x="671.2" y="170.0" font-size="20" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">Δ mônadas (Haskell)</text>
+<line x1="300.0" y1="270.0" x2="300.0" y2="680.0" stroke="#c3c2b7" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="300.0" y="710.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">0</text>
+<line x1="623.3" y1="270.0" x2="623.3" y2="680.0" stroke="#e1e0d9" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="623.3" y="710.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">100</text>
+<line x1="946.7" y1="270.0" x2="946.7" y2="680.0" stroke="#e1e0d9" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="946.7" y="710.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">200</text>
+<line x1="1270.0" y1="270.0" x2="1270.0" y2="680.0" stroke="#e1e0d9" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="1270.0" y="710.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">300</text>
+<text x="785.0" y="750.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">bytes por expressão</text>
+<text x="270.0" y="352.0" font-size="28" fill="#0b0b0b" font-weight="600" text-anchor="end" dominant-baseline="middle">OCaml</text>
+<rect x="300.0" y="340.0" width="49.4" height="24.0" fill="#c3c2b7"/>
+<path d="M351.4,340.0 H888.0 Q892.0,340.0 892.0,344.0 V360.0 Q892.0,364.0 888.0,364.0 H351.4 Z" fill="#2a78d6"/>
+<text x="906.0" y="352.0" font-size="26" fill="#0b0b0b" font-weight="600" text-anchor="start" dominant-baseline="middle">razão 12,0×</text>
+<text x="300.0" y="394.0" font-size="20" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">base 15 B</text>
+<text x="892.0" y="394.0" font-size="20" fill="#52514e" font-weight="400" text-anchor="end" dominant-baseline="middle">Δ 168 B</text>
+<text x="270.0" y="542.0" font-size="28" fill="#0b0b0b" font-weight="600" text-anchor="end" dominant-baseline="middle">Haskell</text>
+<rect x="300.0" y="530.0" width="411.8" height="24.0" fill="#c3c2b7"/>
+<path d="M713.8,530.0 H1193.0 Q1197.0,530.0 1197.0,534.0 V550.0 Q1197.0,554.0 1193.0,554.0 H713.8 Z" fill="#eb6834"/>
+<text x="1211.0" y="542.0" font-size="26" fill="#0b0b0b" font-weight="600" text-anchor="start" dominant-baseline="middle">razão 2,2×</text>
+<text x="300.0" y="584.0" font-size="20" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">base 127 B</text>
+<text x="1197.0" y="584.0" font-size="20" fill="#52514e" font-weight="400" text-anchor="end" dominant-baseline="middle">Δ 150 B</text>
+</svg>

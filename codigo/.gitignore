@@ -4,7 +4,6 @@ haskell/dist-newstyle/
 metricas-hs/dist-newstyle/
 *.hi
 *.o
-# saidas brutas de execucoes locais (os resumos em resultados/ podem ser versionados)
-resultados/*
-!resultados/README.md
+# resultados/ e versionado: o artigo e gerado a partir dele (make artigo), e a
+# campanha que ele cita precisa estar no repositorio (Art. 5o, par. 3o).
 __pycache__/
