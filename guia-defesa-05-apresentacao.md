@@ -30,6 +30,10 @@ PNG 2×, e se regeneram com `make figuras`. Os números de cada figura estão em
 
 ## Roteiro, slide a slide
 
+O **texto completo do que dizer**, palavra por palavra, com as respostas da
+arguição e um plano de ensaio, está no **Guia 06** ([`guia-defesa-06-roteiro-falado.md`](guia-defesa-06-roteiro-falado.md)) e
+nas notas do apresentador de cada slide. Abaixo, o mapa de tempos.
+
 | # | Slide | Tempo | Acumulado |
 |---|---|---:|---:|
 | 1 | Capa | 0:20 | 0:20 |
