@@ -83,17 +83,20 @@ faixa _ = (0, -1)
 normalizar :: [String] -> [(Int, Int, Int, Int)] -> SrcSpan -> String
 normalizar linhas ts (RealSrcSpan r _) =
   unwords
-    [ textoToken t
+    [ textoToken linhas t
       | t@(a, _, c, _) <- ts,
         (a, c) >= (srcSpanStartLine r, srcSpanStartCol r),
         dentroFim t
     ]
   where
     dentroFim (_, b, _, d) = (b, d) <= (srcSpanEndLine r, srcSpanEndCol r)
-    textoToken (a, b, c, d)
-      | a == b = take (d - c) (drop (c - 1) (linhas !! (a - 1)))
-      | otherwise = unwords (map (linhas !!) [a - 1 .. b - 1])
 normalizar _ _ _ = ""
+
+-- | Texto de um token a partir do seu span.
+textoToken :: [String] -> (Int, Int, Int, Int) -> String
+textoToken linhas (a, b, c, d)
+  | a == b = take (d - c) (drop (c - 1) (linhas !! (a - 1)))
+  | otherwise = unwords (map (linhas !!) [a - 1 .. b - 1])
 
 -- Operações de efeito e aninhamento -----------------------------------------------
 
@@ -232,6 +235,16 @@ main = do
           | le@(L _ eq) <- equacoes
         ]
       fora = sortOn id (filter (not . dentroEval) (Set.toList efetivas))
+      -- declaração de topo que contém a linha (insumo da classificação
+      -- mecânica de boilerplate); importações e cabeçalho do módulo inclusos
+      declaracaoDaLinha l =
+        maybe
+          (if l <= cabecalhoAte then "module" else "")
+          itemNome
+          (listToMaybe [it | it <- itens, any (\(a, b) -> l >= a && l <= b) (map faixa (itemSpans it))])
+      cabecalhoAte = case [fst (faixa (itemSpans it !! 0)) | it <- itens] of
+        [] -> 0
+        xs -> minimum xs - 1
       jsonDecl it =
         object
           ( [ "nome" .= itemNome it,
@@ -257,7 +270,15 @@ main = do
                   "bracos" .= objetoDe [(k, toJSON (normalizar linhas ts s)) | (k, s) <- bracos]
                 ],
             "loc_fora_de_eval" .= length fora,
-            "linhas_fora_de_eval" .= [object ["linha" .= l, "texto" .= (linhas !! (l - 1))] | l <- fora],
+            "linhas_fora_de_eval"
+              .= [ object
+                     [ "linha" .= l,
+                       "texto" .= (linhas !! (l - 1)),
+                       "tokens" .= [textoToken linhas t | t@(a, _, _, _) <- ts, a == l],
+                       "declaracao" .= declaracaoDaLinha l
+                     ]
+                   | l <- fora
+                 ],
             "declaracoes" .= map jsonDecl itens
           ]
   BL.putStrLn (A.encode json)
