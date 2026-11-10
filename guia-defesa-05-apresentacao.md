@@ -5,13 +5,26 @@ prevê 20 minutos de apresentação e 20 de arguição; as bancas vão de 02 a
 10/12/2026, e a entrega à banca (4º PC, já revisada pelo orientador) é até
 23/11/2026.
 
-As figuras estão em `codigo/resultados/figuras/`, em SVG (fonte) e PNG 2×
-(para Google Slides ou PowerPoint), e se regeneram com `make figuras`. Os
-números de cada figura estão em `dados.md`, na mesma pasta.
+**Os slides** foram montados como uma apresentação no Claude (link enviado na
+conversa), com 16 slides para os 20 minutos e 5 de apêndice para a arguição.
+Pelo menu da própria página, a apresentação baixa como **PDF** (o mais seguro
+para apresentar online) ou **PPTX** (editável: os gráficos são formas nativas,
+não imagens). Não existe modelo oficial de slides da SBC, e o Regulamento só
+exige o formato SBC para o artigo (Art. 3º); o visual é próprio, com o mesmo
+código de cores das figuras: azul para OCaml/*handlers*, laranja para
+Haskell/mônadas, cinza para as bases.
+
+> **Os números dos slides são texto fixo.** Se você refizer a campanha com
+> `make tudo`, confira os slides 10 a 14 e os apêndices A1 e A4 contra
+> `codigo/resultados/campanha-*/resumo.md` (ou peça para regenerá-los).
+
+As figuras do artigo estão em `codigo/resultados/figuras/`, em SVG (fonte) e
+PNG 2×, e se regeneram com `make figuras`. Os números de cada figura estão em
+`dados.md`, na mesma pasta.
 
 > **Fale com as suas palavras.** As notas abaixo são o que cada slide precisa
 > transmitir, não um texto para ler. Ensaie com cronômetro pelo menos duas
-> vezes; 14 slides em 20 minutos dá cerca de 1min25s por slide.
+> vezes; 16 slides em 20 minutos dá cerca de 1min15s por slide.
 
 ---
 
@@ -19,27 +32,33 @@ números de cada figura estão em `dados.md`, na mesma pasta.
 
 | # | Slide | Tempo | Acumulado |
 |---|---|---:|---:|
-| 1 | Título | 0:20 | 0:20 |
-| 2 | O problema: efeitos computacionais | 1:20 | 1:40 |
-| 3 | Por que não dá para medir direto | 1:30 | 3:10 |
-| 4 | Questões de pesquisa e métricas | 1:30 | 4:40 |
-| 5 | Caso de uso e semântica | 1:30 | 6:10 |
-| 6 | Quatro implementações e o oráculo | 1:40 | 7:50 |
-| 7 | O mesmo braço de `eval` nas quatro versões | 1:20 | 9:10 |
-| 8 | QP1: `eval` empata | 1:00 | 10:10 |
-| 9 | QP2 e QP3: o custo de escrita está fora | 1:40 | 11:50 |
-| 10 | QP4: quanto custa a mais por expressão | 2:00 | 13:50 |
-| 11 | A razão de alocação mede a base | 1:30 | 15:20 |
-| 12 | Achados não previstos | 1:40 | 17:00 |
-| 13 | Frente à literatura e ao TCC I | 1:20 | 18:20 |
-| 14 | Conclusões, limitações e trabalhos futuros | 1:40 | 20:00 |
+| 1 | Capa | 0:20 | 0:20 |
+| 2 | Dois mecanismos para efeitos | 1:20 | 1:40 |
+| 3 | Comparação por razões intralinguagem | 1:30 | 3:10 |
+| 4 | Questões de pesquisa | 1:20 | 4:30 |
+| 5 | Um interpretador com três efeitos | 1:20 | 5:50 |
+| 6 | Quatro versões e a verificação | 1:30 | 7:20 |
+| 7 | O mesmo braço de eval, com e sem handlers | 1:10 | 8:30 |
+| 8 | Legibilidade de eval (QP1) | 0:50 | 9:20 |
+| 9 | Composabilidade e boilerplate (QP2, QP3) | 1:40 | 11:00 |
+| 10 | Destaque: 45 ns | 0:40 | 11:40 |
+| 11 | Custo de tempo por expressão (QP4) | 1:40 | 13:20 |
+| 12 | Alocação por expressão (QP4) | 1:20 | 14:40 |
+| 13 | Achados não previstos | 1:40 | 16:20 |
+| 14 | Frente à literatura e ao TCC I | 1:20 | 17:40 |
+| 15 | Conclusões e trabalhos futuros | 1:40 | 19:20 |
+| 16 | Obrigado / perguntas | 0:10 | 19:30 |
+| A1–A5 | Apêndice: Tabela 2 completa, protocolo, quarto efeito, sensibilidade, uso de IA | arguição | |
 
-### 1. Título (0:20)
+Sobram 30 segundos de folga. Os apêndices não entram na fala: abra-os só se a
+banca perguntar.
+
+### 1. Capa (0:20)
 Título, autor, orientador, PUC Minas. Uma frase: "comparo duas formas de
 lidar com efeitos em linguagens funcionais, em quatro dimensões, sobre o mesmo
 programa".
 
-### 2. O problema (1:20)
+### 2. Dois mecanismos para efeitos (1:20)
 - Programas reais têm efeitos (estado, exceções, saída); linguagens funcionais
   precisam de um mecanismo para eles.
 - Duas respostas: **mônadas** compostas por *transformers* (Haskell) e
@@ -48,7 +67,7 @@ programa".
   pergunta prática, "qual escolher e a que custo", não tem evidência que junte
   custo de escrita e custo de execução.
 
-### 3. Por que não dá para medir direto (1:30)
+### 3. Comparação por razões intralinguagem (1:30)
 - O mecanismo não se separa do *runtime*: mônadas rodam no GHC, *handlers* no
   OCaml. Comparar tempos absolutos é comparar duas variáveis de uma vez.
 - Solução: **cada mecanismo contra uma base imperativa na própria linguagem**
@@ -57,7 +76,7 @@ programa".
 - Fórmula para guardar: razão = 1 + Δ / T_base. Uma base cara *deflaciona* a
   razão (vai voltar no slide 11).
 
-### 4. Questões de pesquisa e métricas (1:30)
+### 4. Questões de pesquisa (1:20)
 - QP1 legibilidade: LOC, operações de efeito e aninhamento de `eval`
   (*proxies* estruturais, não legibilidade percebida).
 - QP2 composabilidade: pontos de modificação para inserir um 4º efeito
@@ -66,7 +85,7 @@ programa".
 - QP4 desempenho: tempo e alocação, Bechamel e Criterion, 3 sementes.
 - Toda comparação de código é **dentro da mesma linguagem**.
 
-### 5. Caso de uso e semântica (1:30)
+### 5. Um interpretador com três efeitos (1:20)
 - Interpretador de 8 construtores (`Num`, `Var`, `Add`, `Mul`, `Div`, `Let`,
   `Seq`, `Print`), três efeitos.
 - Semântica *small-step* com contextos de avaliação: determinismo, progresso,
@@ -74,7 +93,7 @@ programa".
   mensagem de erro.
 - Limitações assumidas: ambiente global, exceção só abortiva, n = 1.
 
-### 6. Quatro implementações e o oráculo (1:40)
+### 6. Quatro versões e a verificação (1:30)
 - *Handlers* × imperativa (OCaml); mônadas × `IORef` (Haskell).
 - Oráculo: 28 casos × 2 versões + 5 conferências = **61/61 nas duas
   linguagens**; é pré-condição da medição.
@@ -83,7 +102,7 @@ programa".
 - Gerador replicado em OCaml, Haskell e Python: os *hashes* das 12 cargas batem
   nas três.
 
-### 7. O mesmo braço de `eval` nas quatro versões (1:20)
+### 7. O mesmo braço de `eval`, com e sem *handlers* (1:10)
 Mostre o braço `Var` lado a lado (é o slide de código; mantenha curto):
 
 ```ocaml
@@ -97,13 +116,13 @@ Mostre o braço `Var` lado a lado (é o slide de código; mantenha curto):
 "Cada operação direta da base virou exatamente uma operação de efeito. A
 diferença não está aqui."
 
-### 8. QP1: `eval` empata (1:00)
+### 8. Legibilidade de `eval` (0:50)
 Tabela pequena: 29/5/2 (OCaml, nas duas) e 27/18/1 (Haskell, nas duas), igual
 também construtor a construtor. **Pelos *proxies*, o mecanismo não pesa na
 leitura do avaliador.**
 
-### 9. QP2 e QP3: o custo de escrita está fora (1:40)
-Figura `boilerplate.png`.
+### 9. Composabilidade e *boilerplate* (1:40)
+Gráfico de barras do *boilerplate* e os pontos de modificação ao lado.
 - *Handlers*: 67 linhas de *boilerplate* contra 3 da base (registros de
   `match_with`, repasses `| _ -> None`, `continue`, composições); 18 delas só
   servem ao oráculo.
@@ -115,8 +134,12 @@ Figura `boilerplate.png`.
 - Reutilização: só os *handlers* (2): o preço do *boilerplate* compra a troca
   de interpretação sem tocar no avaliador.
 
-### 10. QP4: quanto custa a mais por expressão (2:00)
-Figura `excedente-tempo.png`. **Este é o slide central.**
+### 10. Destaque: 45 ns (0:40)
+Slide azul, um número só. Fale devagar: "no OCaml, só instalar três *handlers*
+em cada expressão custa 45 ns, sem nenhuma operação de efeito". Avance.
+
+### 11. Custo de tempo por expressão (1:40)
+Gráfico de barras do excedente por cenário. **Este é o slide central.**
 - Arith no OCaml não faz operação de efeito nenhuma: os **45 ns** por expressão
   são só instalar três *handlers*. É o número mais limpo do trabalho.
 - As operações somam a isso: 84 ns em State, 111 em Output.
@@ -124,8 +147,8 @@ Figura `excedente-tempo.png`. **Este é o slide central.**
   intervalos de confiança incluem 1. O GHC quase apaga a pilha.
 - Razões: OCaml 1,59 a 4,26; Haskell 0,97 a 1,08.
 
-### 11. A razão de alocação mede a base (1:30)
-Figura `alocacao-arith.png`.
+### 12. Alocação por expressão (1:20)
+Barras empilhadas: base em cinza, excedente na cor de cada linguagem.
 - 12× contra 2,2× parece uma ordem de grandeza.
 - Em bytes, o excedente é parecido: 168 contra 150 B por expressão.
 - A diferença é a base: a imperativa do OCaml aloca 15 B (só o resultado), a do
@@ -133,8 +156,8 @@ Figura `alocacao-arith.png`.
 - Ressalva honesta: as pilhas das *fibers* ficam fora do *heap* e fora dessa
   coluna.
 
-### 12. Achados não previstos (1:40)
-Figura `sensibilidade.png` e dois números.
+### 13. Achados não previstos (1:40)
+Dois cartões com os números; o detalhe da sensibilidade está no apêndice A4.
 - **Vazamento:** abandonar a continuação (em vez de `discontinue`) vaza o
   segmento de pilha: 2 milhões de erros → ~1,2 GB contra ~6 MB. Nenhuma métrica
   de alocação vê isso (`make experimento` reproduz).
@@ -142,7 +165,7 @@ Figura `sensibilidade.png` e dois números.
   deslocou as razões em até 28%. Configuração de amostragem é ameaça à
   validade.
 
-### 13. Frente à literatura e ao TCC I (1:20)
+### 14. Frente à literatura e ao TCC I (1:20)
 - Sivaramakrishnan et al. 2021: 1% é para programas *sem* *handlers*; 6,7–12,3×
   é recursão não-*tail* sob *handler*. As razões daqui ficam abaixo, e os
   45 ns são da mesma ordem dos 23 ns que eles medem por *fiber*.
@@ -151,7 +174,7 @@ Figura `sensibilidade.png` e dois números.
 - **TCC I:** previa *handlers* < 1,5× e mônadas > 2×. Falhou nas duas metades.
   Diga sem rodeio.
 
-### 14. Conclusões, limitações, trabalhos futuros (1:40)
+### 15. Conclusões e trabalhos futuros (1:40)
 - Escrita: o custo dos mecanismos está na **infraestrutura**, não no avaliador;
   nos *handlers*, localizado e pago uma vez; nas mônadas, cresce com a pilha.
 - Execução: *handlers* têm custo fixo por instalação e por operação; mônadas,
@@ -161,6 +184,10 @@ Figura `sensibilidade.png` e dois números.
 - Futuro: comparar na mesma linguagem, efeitos escopados e não determinismo,
   segurança de efeitos (Koka), estudo com pessoas.
 - Feche com uma frase sua sobre o que você recomendaria a quem vai escolher.
+
+### 16. Obrigado / perguntas (0:10)
+Agradeça e passe a palavra à banca. Deixe este slide aberto durante a
+arguição; os apêndices A1 a A5 estão logo depois, para responder com números.
 
 ---
 
@@ -223,4 +250,5 @@ Respostas mais longas: Guias 01 a 04.
 - [ ] Opcional, mas recomendável: `make tudo` no seu computador, para trocar a
       VM por uma máquina física; o script avisa se alguma frase mudar de
       sentido.
-- [ ] Ensaiar duas vezes com cronômetro; levar o PDF e os PNGs num pendrive.
+- [ ] Baixar a apresentação em PDF (e em PPTX, de reserva) e ensaiar duas vezes
+      com cronômetro, em chamada de vídeo com a câmera ligada (Art. 18, § 1º).
