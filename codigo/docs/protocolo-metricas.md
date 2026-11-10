@@ -1,10 +1,15 @@
 # Protocolo de contagem das métricas de código
 
-Este documento fixa, antes da coleta, as definições operacionais das métricas
-de código da Seção 4.2 do artigo. As ferramentas de AST
-(`ocaml/tools/metricas_ocaml.ml`, `metricas-hs/MetricasHs.hs`) aplicam
-mecanicamente as definições das seções 1 a 3; a seção 4 é aplicada por pessoas,
-em dupla contagem independente.
+Este documento fixa as definições operacionais das métricas de código da
+Seção 4.2 do artigo. As ferramentas de AST (`ocaml/tools/metricas_ocaml.ml`,
+`metricas-hs/MetricasHs.hs`) e `scripts/metricas.py` aplicam todas elas
+mecanicamente.
+
+Histórico: as seções 1 a 3 foram fixadas em 09/11/2026, antes da primeira
+contagem. A regra mecânica de *boilerplate* (seção 4.1) foi fixada em
+10/11/2026, junto com a sua implementação, e substitui a dupla contagem
+humana prevista antes; a dupla contagem permanece como validação opcional
+(seção 4.2).
 
 ## 0. Condições de validade
 
@@ -72,38 +77,62 @@ Medida sobre duas árvores do código: a de três efeitos e a do quarto efeito
 
 Ferramenta: `python3 scripts/metricas.py pontos BASE NOVO`.
 
-## 4. Poder de abstração (QP3): classificação de *boilerplate*
+## 4. Poder de abstração (QP3): *boilerplate* e reutilização
 
-`python3 scripts/metricas.py tabela` gera `resultados/boilerplate/<impl>.csv`
-com todas as linhas efetivas fora de `eval`. Duas pessoas (o autor e o
-orientador) preenchem **de forma independente** as colunas `autor` e `segundo`,
-com `B` (*boilerplate*) ou `N` (não *boilerplate*), sem ver a classificação
-uma da outra.
+### 4.1 Classificação mecânica de *boilerplate*
 
-**Critério.** Uma linha é *boilerplate* (`B`) se existe apenas para fazer o
-mecanismo funcionar, e não para dar significado a um efeito da linguagem
-interpretada. Em caso de dúvida, pergunte: "se o mecanismo fizesse isso
-sozinho, esta linha desapareceria sem que a semântica de algum efeito
-deixasse de estar escrita em algum lugar?" Se sim, `B`.
+Universo: as linhas efetivas fora de `eval` no arquivo do avaliador. Cada linha
+é classificada **mecanicamente**, pelos *tokens* do léxico do compilador
+(emitidos pelas ferramentas de AST), e não pelo texto bruto:
 
-| Tipicamente `B` | Tipicamente `N` |
-|---|---|
-| `open`/`import` | o que um efeito *faz*: ler/gravar a tabela ou o `Map`, devolver o erro, emitir/acumular o valor |
-| registros e campos de `match_with` (`retc`, `exnc`, `effc`), `Some (fun k -> …)`, `continue k`, `discontinue k`, `| _ -> None` | a decisão de retomar ou não a continuação, quando ela expressa a semântica do efeito |
-| anotações de tipo locais exigidas pelo mecanismo (`(type a)`, `(k : (a, _) continuation)`) | a declaração das operações de efeito (`Get`, `Set`, `Fail`, `Output`), que é a interface do efeito |
-| sinônimos de tipo da pilha, `liftIO`, `lift`, `runStateT`/`runExceptT` e outros executores | mensagens e políticas de erro |
-| composição de *handlers*/camadas (`run`, `run_acc`) | |
-| declaração de exceção e instâncias exigidas só pelo mecanismo de erro da linha de base | |
+- **N** (expressa a semântica de um efeito) se contém ao menos um marcador
+  semântico:
 
-**Divergências.** Depois das duas classificações, as linhas divergentes são
-discutidas e o resultado vai para a coluna `consenso`. O script
-`python3 scripts/metricas.py concordancia` reporta, por implementação, o total
-de cada avaliador, a concordância percentual, o **kappa de Cohen** e o total
-consensual, que é o número que entra na Tabela 1 do artigo.
+  | OCaml | Haskell |
+  |---|---|
+  | operação sobre a tabela de estado: `Hashtbl . f`, com `f ≠ t` (o tipo `Hashtbl.t` não conta) | operação sobre o ambiente: qualquer `Map.f` |
+  | uso da referência de emissão ou de entrada: `! emit`, `! input` | uso de `emitRef` ou `inputRef` |
+  | atualização de acumulador ou de fluxo: `:=` | leitura do fluxo de entrada: `state` |
+  | resultado do efeito de exceção: `Ok`, `Error` | resultado do efeito de exceção: `Left`, `Right` |
+  | decisão de não retomar a continuação: `discontinue` | definição do domínio do estado: a declaração `type Env` |
+  | declaração de uma operação de efeito: linha `| Op : …` de uma extensão `type _ Effect.t +=` | |
 
-**Instâncias de reutilização.** Conta-se o número de pontos de instalação, ou
-de execução, em que um mesmo *handler* ou camada é usado sem reescrita. No
-código atual: `run_state`, `run_exn` e `run_output_*` aparecem em `run` e em
-`run_acc` (dois pontos cada); a pilha monádica é executada num único ponto
-(`run`). Por discriminar pouco com um único caso de uso, a resposta a QP3
-apoia-se sobretudo na análise qualitativa (Seção 5.3 do artigo).
+- **B** (*boilerplate*: infraestrutura do mecanismo) em todos os outros casos:
+  cabeçalho de módulo e lista de exportação, `open`/`import`, registros e campos
+  de `match_with`, `Some (fun k -> …)`, `continue k`, `| _ -> None`, anotações
+  de tipo, sinônimos de tipo da pilha, `liftIO`, executores
+  (`runStateT`/`runExceptT`), composições de *handlers* (`run`, `run_acc`),
+  declarações de exceção e instâncias exigidas pelo mecanismo de erro.
+
+O volume de *boilerplate* é o número de linhas B. A classificação de cada linha,
+com o marcador (ou a ausência dele) que a decidiu, é gravada em
+`resultados/boilerplate-regra/<impl>.csv`, para auditoria.
+
+**Por que mecânica.** A classificação por regra fixada é reprodutível por
+terceiros e independe de quem a aplica. A regra materializa o critério "uma
+linha é *boilerplate* se existe apenas para fazer o mecanismo funcionar, e não
+para dar significado a um efeito da linguagem interpretada".
+
+### 4.2 Validação humana (opcional)
+
+`python3 scripts/metricas.py tabela` também gera
+`resultados/boilerplate/<impl>.csv`, com as mesmas linhas e **sem** a
+classificação da regra, para que duas pessoas (o autor e o orientador) as
+classifiquem de forma independente com `B` ou `N`, sem ver a classificação uma
+da outra nem a da regra. As linhas divergentes são discutidas e o resultado vai
+para a coluna `consenso`. `python3 scripts/metricas.py concordancia` reporta o
+kappa de Cohen entre os avaliadores e entre a regra e o consenso. Um kappa alto
+entre regra e consenso valida a regra; um kappa baixo indica que ela deve ser
+revista **antes** de se interpretar o resultado.
+
+### 4.3 Instâncias de reutilização
+
+Conta-se mecanicamente, para cada *handler* (OCaml: declaração de topo que chama
+`match_with`) ou camada (Haskell: executor de transformador, como `runStateT`),
+o número de pontos de instalação, isto é, declarações de topo que o usam
+(importações não contam). As instâncias de reutilização são a soma de
+(pontos − 1) sobre os que são instalados em mais de um ponto. No código atual,
+`run_state` e `run_exn` aparecem em `run` e em `run_acc`, o que dá 2 instâncias
+na versão com *handlers*; as demais versões têm 0. Com um único caso de uso, essa
+contagem discrimina pouco, e a leitura de QP3 apoia-se também na análise
+qualitativa (Seção 5.3 do artigo).

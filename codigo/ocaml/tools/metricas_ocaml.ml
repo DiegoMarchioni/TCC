@@ -278,6 +278,29 @@ let () =
       efetivas []
     |> List.sort compare
   in
+  (* Tokens de cada linha (atribuídos à linha em que começam) e a declaração
+     de topo que contém a linha: insumos da classificação mecânica de
+     boilerplate (docs/protocolo-metricas.md, seção 4). *)
+  let tokens_por_linha = Hashtbl.create 256 in
+  List.iter
+    (fun (t, ini, _) ->
+      let atuais =
+        Option.value ~default:[] (Hashtbl.find_opt tokens_por_linha ini)
+      in
+      Hashtbl.replace tokens_por_linha ini (t :: atuais))
+    (tokens_de src);
+  let tokens_da_linha l =
+    List.rev (Option.value ~default:[] (Hashtbl.find_opt tokens_por_linha l))
+  in
+  let declaracao_da_linha l =
+    List.find_map
+      (fun item ->
+        if linha_ini item.pstr_loc <= l && l <= linha_fim item.pstr_loc then
+          Some (nome_item item)
+        else None)
+      estrutura
+    |> Option.value ~default:""
+  in
   let declaracoes =
     List.map
       (fun item ->
@@ -323,7 +346,12 @@ let () =
                (fun l ->
                  `Assoc
                    [
-                     ("linha", `Int l); ("texto", `String linhas_texto.(l - 1));
+                     ("linha", `Int l);
+                     ("texto", `String linhas_texto.(l - 1));
+                     ( "tokens",
+                       `List (List.map (fun t -> `String t) (tokens_da_linha l))
+                     );
+                     ("declaracao", `String (declaracao_da_linha l));
                    ])
                fora) );
         ("declaracoes", `List declaracoes);

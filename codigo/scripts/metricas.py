@@ -9,10 +9,11 @@ resultados.
 Comandos (rodar a partir de codigo/, com o ambiente do opam ativo):
 
   python3 scripts/metricas.py tabela [--raiz DIR]
-      LOC de eval, operações de efeito (total e por construtor),
-      profundidade de aninhamento e LOC fora de eval das quatro
-      implementações. Grava resultados/metricas-codigo.{json,csv,md} e
-      prepara resultados/boilerplate/<impl>.csv para a dupla contagem
+      QP1 (LOC de eval, operações de efeito por construtor, aninhamento) e
+      QP3 (boilerplate pela regra mecânica, com auditoria linha a linha em
+      resultados/boilerplate-regra/, e instâncias de reutilização) das quatro
+      implementações. Grava resultados/metricas-codigo.{json,csv,md} e prepara
+      resultados/boilerplate/<impl>.csv para a validação humana opcional
       (não sobrescreve classificações já preenchidas).
 
   python3 scripts/metricas.py pontos BASE NOVO
@@ -21,9 +22,10 @@ Comandos (rodar a partir de codigo/, com o ambiente do opam ativo):
       resultados/pontos-modificacao.{json,md}.
 
   python3 scripts/metricas.py concordancia
-      Lê as classificações de resultados/boilerplate/*.csv, conta o
-      boilerplate por avaliador e calcula a concordância (percentual e kappa
-      de Cohen). Grava resultados/boilerplate.{json,md}.
+      Validação humana da regra: lê as classificações independentes de
+      resultados/boilerplate/*.csv e calcula a concordância entre os
+      avaliadores e entre a regra e o consenso (kappa de Cohen). Grava
+      resultados/boilerplate.{json,md}.
 
   python3 scripts/metricas.py latex
       Gera resultados/tabela-metricas.tex com as linhas da Tabela 1 do
@@ -83,7 +85,78 @@ def analisar(linguagem, arquivo):
     return json.loads(saida)
 
 
-# ---- QP1 e preparação de QP3 ---------------------------------------------------
+# ---- QP3: classificação mecânica de boilerplate e reutilização -----------------
+#
+# Regra fixada em docs/protocolo-metricas.md (seção 4): uma linha efetiva fora de
+# eval é N (expressa a semântica de um efeito) se contém um marcador semântico,
+# e B (boilerplate: infraestrutura do mecanismo) caso contrário. Os marcadores
+# são reconhecidos nos tokens do léxico do compilador, emitidos pelas
+# ferramentas de AST, e não no texto bruto.
+
+def classificar_linha(ling, tokens, declaracao):
+    """Devolve (rótulo, motivo) para uma linha efetiva fora de eval."""
+    if ling == "ocaml":
+        for i, t in enumerate(tokens):
+            prox = tokens[i + 1] if i + 1 < len(tokens) else ""
+            prox2 = tokens[i + 2] if i + 2 < len(tokens) else ""
+            if t == "Hashtbl" and prox == "." and prox2 not in ("", "t"):
+                return "N", "operação sobre a tabela de estado (Hashtbl.*)"
+            if t == "!" and prox in ("emit", "input"):
+                return "N", "uso da referência de emissão ou de entrada"
+            if t == ":=":
+                return "N", "atualização de acumulador ou de fluxo"
+            if t in ("Ok", "Error"):
+                return "N", "resultado do efeito de exceção (Ok/Error)"
+            if t == "discontinue":
+                return "N", "decisão de não retomar a continuação"
+        if declaracao.startswith("type+=") and len(tokens) >= 3 and tokens[0] == "|" and tokens[2] == ":":
+            return "N", "declaração de uma operação de efeito"
+        return "B", "infraestrutura: sem marcador semântico"
+    for t in tokens:
+        if t in ("emitRef", "inputRef"):
+            return "N", "uso da referência de emissão ou de entrada"
+        if t.startswith("Map."):
+            return "N", "operação sobre o ambiente (Map.*)"
+        if t in ("Left", "Right"):
+            return "N", "resultado do efeito de exceção (Left/Right)"
+        if t == "state":
+            return "N", "leitura do fluxo de entrada (state)"
+    if declaracao == "type Env":
+        return "N", "domínio do estado (type Env)"
+    return "B", "infraestrutura: sem marcador semântico"
+
+
+def boilerplate_por_regra(ling, d):
+    linhas = []
+    for item in d["linhas_fora_de_eval"]:
+        rot, motivo = classificar_linha(ling, item.get("tokens", []), item.get("declaracao", ""))
+        linhas.append({"linha": item["linha"], "rotulo": rot, "motivo": motivo,
+                       "declaracao": item.get("declaracao", ""), "texto": item["texto"]})
+    return {"B": sum(l["rotulo"] == "B" for l in linhas),
+            "N": sum(l["rotulo"] == "N" for l in linhas), "linhas": linhas}
+
+
+RUNNERS_HASKELL = ("runStateT", "runExceptT", "evalStateT", "execStateT",
+                   "runReaderT", "runWriterT", "execWriterT")
+
+
+def reutilizacao(ling, d):
+    """Instâncias de reutilização: para cada handler (OCaml: declaração que chama
+    match_with) ou camada (Haskell: executor de transformador), o número de
+    pontos de instalação (declarações de topo que o usam); reutilização =
+    soma de (pontos - 1) sobre os que são instalados em mais de um ponto."""
+    toks = {x["nome"]: x["texto"].split() for x in d["declaracoes"]
+            if not _eh_importacao(x["nome"])}
+    if ling == "ocaml":
+        alvos = [n for n, t in toks.items() if "match_with" in t]
+        pontos = {h: sum(1 for n, t in toks.items() if n != h and h in t) for h in alvos}
+    else:
+        pontos = {r: sum(1 for t in toks.values() if r in t) for r in RUNNERS_HASKELL}
+        pontos = {k: v for k, v in pontos.items() if v}
+    return {"instancias": sum(max(0, p - 1) for p in pontos.values()), "pontos": pontos}
+
+
+# ---- QP1 e QP3 --------------------------------------------------------------------
 
 def cmd_tabela(raiz):
     RESULTADOS.mkdir(exist_ok=True)
@@ -91,13 +164,16 @@ def cmd_tabela(raiz):
     dados = {}
     for chave, _, ling, papel, rel in IMPLEMENTACOES:
         d = analisar(ling, raiz / rel)
+        d["boilerplate_regra"] = boilerplate_por_regra(ling, d)
+        d["reutilizacao"] = reutilizacao(ling, d)
         dados[chave] = {"linguagem": ling, "papel": papel, "arquivo": rel, **d}
         preparar_boilerplate(chave, d)
+        gravar_auditoria(chave, d["boilerplate_regra"])
     (RESULTADOS / "metricas-codigo.json").write_text(
         json.dumps(dados, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
 
     campos = ["implementacao", "linguagem", "papel", "loc_eval", "operacoes", "profundidade",
-              "loc_fora_de_eval", "loc_arquivo"] + [f"oper_{c}" for c in CONSTRUTORES] + \
+              "loc_fora_de_eval", "boilerplate", "reutilizacao", "loc_arquivo"] + [f"oper_{c}" for c in CONSTRUTORES] + \
              [f"loc_{c}" for c in CONSTRUTORES] + [f"prof_{c}" for c in CONSTRUTORES]
     with open(RESULTADOS / "metricas-codigo.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
@@ -105,29 +181,48 @@ def cmd_tabela(raiz):
         for chave, d in dados.items():
             pc = d["eval"]["por_construtor"]
             w.writerow([chave, d["linguagem"], d["papel"], d["eval"]["loc"], d["eval"]["operacoes"],
-                        d["eval"]["profundidade"], d["loc_fora_de_eval"], d["loc_arquivo"]]
+                        d["eval"]["profundidade"], d["loc_fora_de_eval"], d["boilerplate_regra"]["B"],
+                        d["reutilizacao"]["instancias"], d["loc_arquivo"]]
                        + [pc.get(c, {}).get("operacoes", "") for c in CONSTRUTORES]
                        + [pc.get(c, {}).get("loc", "") for c in CONSTRUTORES]
                        + [pc.get(c, {}).get("profundidade", "") for c in CONSTRUTORES])
 
     linhas = ["# Métricas de código (gerado por scripts/metricas.py tabela)", "",
               "Comparação vertical: dentro de cada linguagem.", "",
-              "| Implementação | LOC eval | Operações | Aninhamento | LOC fora de eval | LOC arquivo |",
-              "|---|---:|---:|---:|---:|---:|"]
+              "| Implementação | LOC eval | Operações | Aninhamento | LOC fora de eval | Boilerplate (regra) | Reutilização | LOC arquivo |",
+              "|---|---:|---:|---:|---:|---:|---:|---:|"]
     for chave, d in dados.items():
         e = d["eval"]
         linhas.append(f"| {chave} | {e['loc']} | {e['operacoes']} | {e['profundidade']} | "
-                      f"{d['loc_fora_de_eval']} | {d['loc_arquivo']} |")
+                      f"{d['loc_fora_de_eval']} | {d['boilerplate_regra']['B']} | "
+                      f"{d['reutilizacao']['instancias']} | {d['loc_arquivo']} |")
     linhas += ["", "## Operações de efeito por construtor", "",
                "| Implementação | " + " | ".join(CONSTRUTORES) + " |",
                "|---|" + "---:|" * len(CONSTRUTORES)]
     for chave, d in dados.items():
         pc = d["eval"]["por_construtor"]
         linhas.append(f"| {chave} | " + " | ".join(str(pc.get(c, {}).get("operacoes", "-")) for c in CONSTRUTORES) + " |")
-    linhas += ["", "LOC fora de eval é o universo de linhas a classificar como boilerplate "
-               "(resultados/boilerplate/*.csv); não é, por si, o boilerplate."]
+    linhas += ["", "## Reutilização (pontos de instalação por handler ou camada)", ""]
+    for chave, d in dados.items():
+        linhas.append(f"- {chave}: {d['reutilizacao']['pontos'] or 'nenhum'} "
+                      f"-> {d['reutilizacao']['instancias']} instância(s)")
+    linhas += ["", "Boilerplate (regra): linhas fora de eval sem marcador semântico, pela regra "
+               "da seção 4 de docs/protocolo-metricas.md; a classificação de cada linha, com o "
+               "motivo, está em resultados/boilerplate-regra/<impl>.csv. As planilhas em "
+               "resultados/boilerplate/ servem à validação humana independente (comando "
+               "concordancia)."]
     (RESULTADOS / "metricas-codigo.md").write_text("\n".join(linhas) + "\n", encoding="utf-8")
     print("\n".join(linhas))
+
+
+def gravar_auditoria(chave, regra):
+    pasta = RESULTADOS / "boilerplate-regra"
+    pasta.mkdir(exist_ok=True)
+    with open(pasta / f"{chave}.csv", "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["linha", "rotulo", "motivo", "declaracao", "texto"])
+        for l in regra["linhas"]:
+            w.writerow([l["linha"], l["rotulo"], l["motivo"], l["declaracao"], l["texto"]])
 
 
 def preparar_boilerplate(chave, d):
@@ -246,8 +341,22 @@ def _rotulo(v):
     return v if v in ("B", "N") else None
 
 
+def _kappa(x, y):
+    """Concordância percentual e kappa de Cohen para rótulos B/N."""
+    n = len(x)
+    if n == 0:
+        return None, None
+    po = sum(a == b for a, b in zip(x, y)) / n
+    pe = (x.count("B") / n) * (y.count("B") / n) + (x.count("N") / n) * (y.count("N") / n)
+    kappa = (po - pe) / (1 - pe) if pe < 1 else 1.0
+    return round(po, 4), round(kappa, 4)
+
+
 def cmd_concordancia():
+    """Validação humana da regra: compara as classificações independentes do
+    autor e do segundo avaliador entre si e com a regra mecânica."""
     pasta = RESULTADOS / "boilerplate"
+    regra_dir = RESULTADOS / "boilerplate-regra"
     out = {}
     for chave, *_ in IMPLEMENTACOES:
         arq = pasta / f"{chave}.csv"
@@ -255,40 +364,41 @@ def cmd_concordancia():
             continue
         with open(arq, encoding="utf-8") as f:
             linhas = list(csv.DictReader(f))
+        regra = {}
+        if (regra_dir / f"{chave}.csv").exists():
+            with open(regra_dir / f"{chave}.csv", encoding="utf-8") as f:
+                regra = {r["linha"]: r["rotulo"] for r in csv.DictReader(f)}
         a = [_rotulo(r["autor"]) for r in linhas]
-        s = [_rotulo(r["segundo"]) for r in linhas]
+        s_ = [_rotulo(r["segundo"]) for r in linhas]
         c = [_rotulo(r.get("consenso")) for r in linhas]
-        completo = all(x is not None for x in a + s)
+        g = [regra.get(r["linha"]) for r in linhas]
+        completo = all(x is not None for x in a + s_)
         r = {"linhas": len(linhas), "completo": completo,
-             "boilerplate_autor": a.count("B"), "boilerplate_segundo": s.count("B")}
+             "boilerplate_regra": g.count("B"),
+             "boilerplate_autor": a.count("B"), "boilerplate_segundo": s_.count("B")}
         if completo and linhas:
-            n = len(linhas)
-            po = sum(x == y for x, y in zip(a, s)) / n
-            pb = (a.count("B") / n) * (s.count("B") / n)
-            pn = (a.count("N") / n) * (s.count("N") / n)
-            pe = pb + pn
-            r["concordancia"] = round(po, 4)
-            r["kappa"] = round((po - pe) / (1 - pe), 4) if pe < 1 else 1.0
-            divergentes = [i for i, (x, y) in enumerate(zip(a, s)) if x != y]
-            resolvidas = all(c[i] is not None for i in divergentes)
+            r["concordancia_humanos"], r["kappa_humanos"] = _kappa(a, s_)
+            divergentes = [i for i, (x, y) in enumerate(zip(a, s_)) if x != y]
             r["divergencias"] = len(divergentes)
-            if resolvidas:
-                final = [c[i] if i in divergentes else a[i] for i in range(n)]
+            if all(c[i] is not None for i in divergentes):
+                final = [c[i] if i in divergentes else a[i] for i in range(len(linhas))]
                 r["boilerplate_consenso"] = final.count("B")
+                if all(x is not None for x in g):
+                    r["concordancia_regra_consenso"], r["kappa_regra_consenso"] = _kappa(g, final)
         out[chave] = r
     (RESULTADOS / "boilerplate.json").write_text(json.dumps(out, indent=1) + "\n", encoding="utf-8")
-    linhas = ["# Boilerplate por dupla contagem (scripts/metricas.py concordancia)", "",
-              "| Implementação | Linhas | Autor | Segundo | Concordância | Kappa | Divergências | Consenso |",
-              "|---|---:|---:|---:|---:|---:|---:|---:|"]
+    linhas_md = ["# Validação humana do boilerplate (scripts/metricas.py concordancia)", "",
+                 "| Implementação | Linhas | Regra | Autor | Segundo | Kappa (humanos) | Consenso | Kappa (regra × consenso) |",
+                 "|---|---:|---:|---:|---:|---:|---:|---:|"]
     for chave, r in out.items():
-        linhas.append(f"| {chave} | {r['linhas']} | {r['boilerplate_autor']} | {r['boilerplate_segundo']} | "
-                      f"{r.get('concordancia', '-')} | {r.get('kappa', '-')} | {r.get('divergencias', '-')} | "
-                      f"{r.get('boilerplate_consenso', '-')} |")
+        linhas_md.append(f"| {chave} | {r['linhas']} | {r['boilerplate_regra']} | {r['boilerplate_autor']} | "
+                         f"{r['boilerplate_segundo']} | {r.get('kappa_humanos', '-')} | "
+                         f"{r.get('boilerplate_consenso', '-')} | {r.get('kappa_regra_consenso', '-')} |")
     if not all(r["completo"] for r in out.values()):
-        linhas += ["", "Classificação incompleta: preencha as colunas autor e segundo com B "
-                   "(boilerplate) ou N (não) em todas as linhas."]
-    (RESULTADOS / "boilerplate.md").write_text("\n".join(linhas) + "\n", encoding="utf-8")
-    print("\n".join(linhas))
+        linhas_md += ["", "Classificação humana incompleta: preencha as colunas autor e segundo com B "
+                      "(boilerplate) ou N (não) em todas as linhas, de forma independente."]
+    (RESULTADOS / "boilerplate.md").write_text("\n".join(linhas_md) + "\n", encoding="utf-8")
+    print("\n".join(linhas_md))
 
 
 # ---- Tabela 1 do artigo -------------------------------------------------------------
@@ -297,12 +407,13 @@ def cmd_latex():
     def ler(nome):
         p = RESULTADOS / nome
         return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
-    m, b, p = ler("metricas-codigo.json"), ler("boilerplate.json"), ler("pontos-modificacao.json")
+    m, p = ler("metricas-codigo.json"), ler("pontos-modificacao.json")
     linhas = ["% Gerado por scripts/metricas.py latex -- linhas da Tabela 1 (tab:metricas)"]
     for chave, rotulo, *_ in IMPLEMENTACOES:
-        e = m.get(chave, {}).get("eval", {})
+        d = m.get(chave, {})
+        e = d.get("eval", {})
         cel = [e.get("loc"), e.get("operacoes"), e.get("profundidade"),
-               b.get(chave, {}).get("boilerplate_consenso"),
+               d.get("boilerplate_regra", {}).get("B"),
                p.get(chave, {}).get("pontos_de_modificacao"), p.get(chave, {}).get("adicoes_puras")]
         cel = ["---" if x is None else str(x) for x in cel]
         linhas.append(f"    {rotulo:<27} & " + " & ".join(cel) + " \\\\")
