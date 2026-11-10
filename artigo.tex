@@ -236,30 +236,33 @@ Composabilidade, Poder de Abstração e Desempenho}
 
 %% ============================================================
 %% VOZ: o orientador circulou termos deste resumo e anotou "I.A.?" ao lado do
-%% trecho sobre o confundimento. Reescreva os periodos marcados com as suas
+%% trecho sobre o confundimento. Reescreva os dois resumos com as suas
 %% proprias palavras antes de entregar.
-%% CORRIJA TAMBEM, AO REESCREVER: o resumo diz que a contagem de linhas e
-%% sensivel "ao sequenciamento explicito exigido pelo OCaml". Nao bate com o
-%% codigo: no Monadic.hs o Add tambem ocupa tres linhas (x <- eval a; y <- eval
-%% b; return $! x+y), igual ao OCaml. E a restricao intralinguagem nao e o
-%% remedio da sensibilidade ao ESTILO -- disso cuida a normalizacao. Veja como
-%% a Secao 6.1 ficou e enuncie no mesmo sentido.
-%% O fecho ("contrariando a expectativa inicial...") foi retirado junto com a
-%% subsecao de expectativas.
-%% REVISAO (10/11): os numeros dos dois resumos agora sao macros geradas pela
-%% campanha (\FaixaRTenOcaml etc.); nao os digite a mao ao reescrever. Os
-%% achados mais fortes para fechar o resumo, com as SUAS palavras e nas duas
-%% linguas: (1) dentro de cada linguagem, o eval do mecanismo empata com o da
-%% base nas tres metricas de legibilidade, e o custo de escrita fica na
-%% infraestrutura (boilerplate e pontos de modificacao, que so os mecanismos
-%% exigiram para o quarto efeito); (2) no OCaml, o sobrecusto aparece mesmo
-%% sem operacao de efeito alguma (Arith): e o custo de instalar os handlers;
-%% no Haskell, a pilha custa quase nada. Atencao: a razao de alocacao do OCaml
-%% e alta sobretudo porque a base quase nao aloca (Secao 6.3), e os segmentos
-%% de pilha ficam fora do heap e fora dessa coluna (revisao-completa.md, C4).
-%% Os resumos precisam caber em ate 10 linhas cada, ambos na 1a pagina (hoje:
-%% ~12 e ~14 linhas; ~120 palavras cada). O resumo em ingles ainda diz que a
-%% LOC foi sensivel ao "explicit sequencing OCaml requires" -- ver acima.
+%% REVISAO FINAL (10/11): para a entrega nao sair com erro, fiz DUAS mudancas
+%% minimas aqui, sem acrescentar texto novo:
+%%  (1) retirei, dos dois resumos, o periodo "Counting lines of code proved
+%%      highly sensitive ... within-language pairs" / "A contagem de linhas de
+%%      codigo mostrou-se ... pares intralinguagem". Ele continha um erro de
+%%      fato (o sequenciamento explicito nao e exigencia so do OCaml: no
+%%      Monadic.hs o Add tambem ocupa tres linhas) e fazia os resumos passarem
+%%      de 10 linhas e da 1a pagina, o que o modelo SBC nao permite. O
+%%      conteudo correto esta na Secao 6.1.
+%%  (2) no ultimo periodo, troquei "overhead"/"sobrecusto" por "time
+%%      ratio"/"razao de tempo": com os numeros da campanha, o Haskell fica
+%%      abaixo de 1, e "sobrecusto de 0,97" seria impreciso.
+%% O que continua faltando, e e seu:
+%%  - TAMANHO: na replica do modelo, cada resumo ainda ocupa 12 linhas, e o
+%%    limite do modelo SBC e 10. Os dois ja cabem na 1a pagina. Para chegar a
+%%    10 so cortando: retire ", and the two ratios are then contrasted" e
+%%    ", together with a semantics-derived oracle test suite and a
+%%    deterministic cross-language workload generator" (e os trechos
+%%    equivalentes em portugues), ou encurte o primeiro periodo.
+%%  - CONTEUDO: os resumos nao dizem nada sobre QP1 a QP3. Ao reescrever,
+%%    cabe uma frase com o achado principal: dentro de cada linguagem, o eval
+%%    do mecanismo empata com o da base, e o custo de escrita fica na
+%%    infraestrutura (boilerplate e pontos de modificacao).
+%% Os numeros sao macros geradas pela campanha (\FaixaRTenOcaml etc.): nao os
+%% digite a mao. Padroes de estilo a evitar: marcacoes-estilo.md.
 \begin{abstract}
 Managing computational effects is a central challenge in functional language
 design, and two approaches concentrate the attention of the literature:
@@ -270,10 +273,8 @@ is measured against an imperative baseline in its own language, and the two
 ratios are then contrasted. Four functionally equivalent implementations of an
 expression interpreter with mutable state, exceptions and output were built,
 together with a semantics-derived oracle test suite and a deterministic
-cross-language workload generator. Counting lines of code proved highly
-sensitive to formatting style and to the explicit sequencing OCaml requires,
-which led to restricting code-metric comparisons to within-language pairs. The
-measured overhead lies between \FaixaRTenOcaml{} times in OCaml and between
+cross-language workload generator. The time ratio between each mechanism and
+its baseline lies between \FaixaRTenOcaml{} in OCaml and between
 \FaixaRTenHaskell{} in Haskell.
 \end{abstract}
 
@@ -291,12 +292,9 @@ base imperativa na sua própria linguagem, e as duas razões são então
 confrontadas. Foram construídas quatro implementações funcionalmente
 equivalentes de um interpretador de expressões com estado mutável, exceções e
 saída, uma suíte de testes de oráculo derivada da semântica formal e um
-gerador determinístico de cargas replicado nas duas linguagens. A contagem de
-linhas de código mostrou-se fortemente sensível ao estilo de formatação e ao
-sequenciamento explícito exigido pelo OCaml, o que levou a restringir as
-comparações de métricas de código a pares intralinguagem. O sobrecusto medido
-situa-se entre \FaixaRTOcaml{} vezes em OCaml e entre \FaixaRTHaskell{} em
-Haskell.
+gerador determinístico de cargas replicado nas duas linguagens. A razão de
+tempo entre cada mecanismo e a sua base situa-se entre \FaixaRTOcaml{} em OCaml
+e entre \FaixaRTHaskell{} em Haskell.
 \end{resumo}
 
 \noindent\textbf{Palavras-chave:} efeitos algébricos; \textit{handlers};
@@ -375,11 +373,10 @@ implementações, a suíte de oráculo, o quarto efeito e os dois
 Em cada linguagem, o avaliador do mecanismo empata com o da base nas três
 métricas de legibilidade. A diferença de escrita está no \textit{boilerplate}
 e nos pontos de modificação, que só os mecanismos exigiram para o quarto
-efeito. O sobrecusto de execução, sobre a base de cada
-linguagem, ficou entre \FaixaRTOcaml{} vezes em tempo e entre \FaixaRAOcaml{}
-em alocação no OCaml; no Haskell, entre \FaixaRTHaskell{} em tempo e entre
-\FaixaRAHaskell{} em alocação. Mediu-se um único caso de uso, em
-\UmaMaquina{}.
+efeito. Em execução, a razão entre o mecanismo e a base de cada linguagem
+ficou entre \FaixaRTOcaml{} em tempo e entre \FaixaRAOcaml{} em alocação no
+OCaml; no Haskell, entre \FaixaRTHaskell{} em tempo e entre \FaixaRAHaskell{}
+em alocação. Mediu-se um único caso de uso, em \UmaMaquina{}.
 
 O restante do texto organiza-se como segue: a Seção~\ref{sec:fundamentacao}
 apresenta os dois mecanismos e a relação formal entre eles; a
@@ -409,7 +406,7 @@ naturais sujeitas às leis de unidade e associatividade; a contribuição centra
 é a separação entre valores, de tipo $A$, e computações, de tipo $TA$
 \cite{moggi:91}. A formulação equivalente como tripla de Kleisli é a que o
 programador manipula: $\eta$ é o \texttt{return}, e a extensão de Kleisli
-corresponde ao \texttt{>>=}, com os argumentos trocados. É satisfazendo
+corresponde ao \texttt{>{}>=}, com os argumentos trocados. É satisfazendo
 aquelas leis que uma instância de \texttt{Monad} preserva o raciocínio
 equacional sob efeitos \cite{wadler:90,wadler:92}.
 
@@ -462,7 +459,7 @@ expresso, apenas como se expressa e a que custo. Este trabalho mede esse
 resíduo, ergonômico e de desempenho. Terceiro, os três efeitos deste caso de
 uso estão na classe que essa correspondência cobre: cada um admite
 apresentação por assinatura e equações, com modelo livre, e corresponde a um
-transformador da classe: \texttt{StateT}, \texttt{ExceptT} e
+transformador da classe, respectivamente \texttt{StateT}, \texttt{ExceptT} e
 \texttt{WriterT}, cujas mônadas são $S\to(-\times S)$, $(-+E)$ e
 $(-\times V^*)$. O argumento recai sobre a classe dos efeitos, e não sobre os
 \textit{handlers} desta realização, que mantêm estado e traço fora do escopo
@@ -483,10 +480,10 @@ alternativa aos transformadores por meio de uniões abertas de funtores que
 evitam a rigidez da pilha ordenada; \textit{handlers} sobre mônadas livres
 mostraram a viabilidade do modelo em Haskell sem suporte nativo, já com
 medição de custo \cite{kammar:13}, e comparações posteriores na mesma
-linguagem refinam o quadro \cite{xie:20}. Trabalho recente percorre a direção
-inversa e traduz, por regras dirigidas pela sintaxe, código com efeitos
-inferidos para esse mesmo arcabouço, na formulação com mônadas \textit{freer}
-\cite{kiselyov:15}, \cite{joriatti:25}; a
+linguagem refinam o quadro \cite{xie:20}. Trabalho recente \cite{joriatti:25}
+percorre a direção inversa e traduz, por regras dirigidas pela sintaxe, código
+com efeitos inferidos para esse mesmo arcabouço, na formulação com mônadas
+\textit{freer} \cite{kiselyov:15}; a
 tradução cobre as operações e não os seus \textit{handlers}, é validada por
 exemplos e não por preservação de semântica, e não mede custo algum, de modo
 que o resíduo ergonômico e de desempenho entre as duas abordagens permanece
@@ -552,7 +549,7 @@ simplificação da linguagem interpretada, e não de uma imposição da teoria: 
 léxico seria exprimível salvando e repondo o vínculo no avaliador, com as
 mesmas operações de primeira ordem, e fica como limitação do caso de uso. E,
 não havendo condicional nem construto de captura de erro, o efeito de exceção
-é exercitado apenas no regime de abortagem total, com descarte da
+é exercitado apenas no regime de abortamento total, com descarte da
 continuação. A
 opção por um caso de uso único, recorrente na literatura
 \cite{liang:95,pretnar:15}, reduz a interferência de fatores externos, ao
@@ -568,15 +565,16 @@ cuja decomposição única dá o determinismo; este garante que a redução de c
 expressão é um só caminho; o progresso, que há transição enquanto não se chega
 a valor ou a erro; e, como cada passo reduz o número de nós que ainda não são
 valores, a redução termina. A função semântica
-$\mathcal{D}:\mathcal{E}_{64}\times\Sigma\to\mathcal{R}$ é, portanto,
-total sobre o domínio fixado a seguir. O domínio e as
-regras acompanham o repositório.
+$\mathcal{D}:\mathcal{E}\times\Sigma\to\mathcal{R}$, das expressões e dos
+estados iniciais nos resultados, é, portanto, total. O domínio e as regras
+acompanham o repositório.
 
-Seja $\mathcal{E}_{64}$ o conjunto das expressões cuja redução não produz
-valor fora da faixa comum às duas linguagens, que é a mais estreita das duas:
-o inteiro de 63 bits do OCaml, contra os 64 do Haskell. Uma implementação $I$ é \textit{funcionalmente equivalente} a
-$\mathcal{D}$ se, para toda $e\in\mathcal{E}_{64}$ e todo estado inicial
-$\sigma_0$, vale
+Seja $\mathcal{E}_{64}\subseteq\mathcal{E}\times\Sigma$ o conjunto dos pares
+$(e,\sigma_0)$ cuja redução não produz valor fora da faixa comum às duas
+linguagens, que é a mais estreita das duas: o inteiro de 63 bits do OCaml,
+contra os 64 do Haskell. Uma implementação $I$ é \textit{funcionalmente
+equivalente} a $\mathcal{D}$ se, para todo par
+$(e,\sigma_0)\in\mathcal{E}_{64}$, vale
 $\llbracket I \rrbracket(e,\sigma_0)=\mathcal{D}(e,\sigma_0)$, o que exige
 (i) o mesmo inteiro nos casos de sucesso, (ii) o mesmo estado final, (iii) o
 mesmo traço de saída, na mesma ordem, e (iv) a mesma mensagem de erro. As
@@ -742,8 +740,8 @@ operações de efeito. A base do Haskell usa um \texttt{IORef} contendo o mesmo
 sendo a estrutura idêntica, a razão entre as duas isola o custo do mecanismo,
 e não o da representação do ambiente. Nas três versões sem \textit{handlers},
 a emissão passa por uma referência a função que a suíte substitui temporariamente, o que dispensa
-capturar \texttt{stdout}, sensível ao \textit{buffering}, que observaria a
-renderização do traço, e não o traço $\omega$.
+capturar \texttt{stdout}: a captura é sensível ao \textit{buffering} e
+observaria a renderização do traço, e não o traço $\omega$.
 
 \subsection{Versão com Efeitos Algébricos}\label{sec:impl-efeitos}
 
@@ -925,8 +923,8 @@ A campanha correu em um Intel Xeon @ 2,10~GHz em máquina virtual de nuvem, com 
 %% de codigo/resultados/; revise com as suas palavras. Numeros sao macros
 %% geradas, e cada frase marcada com AFIRMACAO e conferida pelo script.
 O menor $R^2$ foi \RdoisMinOcaml{} no Bechamel e \RdoisMinHaskell{} no
-Criterion. \FraseRepeticoes{} A alocação foi praticamente invariante entre
-sementes, como grandeza determinística. Nenhum
+Criterion. \FraseRepeticoes{} A alocação praticamente não variou entre
+sementes, como se espera de uma grandeza determinística. Nenhum
 intervalo de 95\% da razão de tempo inclui~1 no OCaml; %% AFIRMACAO:ocaml-acima-de-1
 no Haskell, só o de \textsc{Arith} o exclui. %% AFIRMACAO:haskell-ic-so-arith-exclui-1
 Um resultado não previsto veio de uma corrida subdimensionada, com cota de
@@ -974,7 +972,7 @@ custo: no OCaml, fixo por instalação e por operação, visível mesmo sem efei
 no Haskell, proporcional às vinculações e diluído pelo compilador a ponto de
 três dos quatro intervalos incluírem~1. A expectativa do TCC~I
 \cite{marchioni:tcc1}, de sobrecusto abaixo de 1,5 vez nos \textit{handlers} e
-acima de 2 nas mônadas, falhou nas duas metades. %% AFIRMACAO:h4-ocaml-refutada %% AFIRMACAO:h4-haskell-refutada
+acima de 2 nas mônadas, não se confirmou em nenhuma das duas metades. %% AFIRMACAO:h4-ocaml-refutada %% AFIRMACAO:h4-haskell-refutada
 
 Quanto a QP1 a QP3, o avaliador do mecanismo é idêntico ao da base pelos três
 \textit{proxies}, e o custo de escrita está na infraestrutura. Nos
@@ -1022,7 +1020,7 @@ implementação do OCaml~5.2.1, que ainda evolui, mais do que os efeitos
 algébricos em si.
 
 As conclusões restringem-se a um caso de uso, a versões específicas de
-compilador, a \UmaMaquina{}, ao regime de abortagem total do efeito de exceção,
+compilador, a \UmaMaquina{}, ao regime de abortamento total do efeito de exceção,
 ao ambiente global sem escopo léxico e às quatro dimensões adotadas; a
 comparação entre as linguagens permanece exploratória; e a legibilidade medida
 é a estrutural, não a percebida. Houve ainda dois achados não previstos:

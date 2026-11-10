@@ -1,0 +1,6 @@
+-- Plano único para todos os comandos (build, test, bench, list-bin): a suíte
+-- de oráculo e o harness de desempenho fazem parte do plano desde o início,
+-- de modo que `cabal build all` compila também o executável do benchmark.
+packages: .
+tests: True
+benchmarks: True
