@@ -1,4 +1,4 @@
-# Guia de defesa — Parte 4: Metodologia, Implementações, Resultados e Conclusões
+# Guia de defesa, parte 4: Metodologia, Implementações, Resultados e Conclusões
 
 *Escrito em 09/11/2026; atualizado em 10/11/2026 com os resultados da campanha
 final.* Cobre as Seções 4 a 7 do `artigo.tex` e o código em `codigo/`. **O

@@ -1,4 +1,4 @@
-# TCC — Mônadas e Efeitos Algébricos em Linguagens Funcionais
+# TCC: Mônadas e Efeitos Algébricos em Linguagens Funcionais
 
 Diego Marchioni · orientador: Marco Rodrigo · Ciência da Computação, PUC Minas.
 
@@ -10,6 +10,7 @@ Diego Marchioni · orientador: Marco Rodrigo · Ciência da Computação, PUC Mi
 | `codigo/resultados/figuras/` | figuras da apresentação (SVG e PNG), com os números em `dados.md` |
 | `guia-defesa-0*.md` | guias de estudo para a banca: 01 Introdução, 02 Fundamentação, 03 Trabalhos Relacionados, 04 Metodologia, código e resultados, 05 Roteiro da apresentação e arguição, 06 Roteiro falado (o texto de cada slide e as respostas da arguição) |
 | `revisao-completa.md` | revisão do artigo, com a conformidade ao Regulamento e as pendências |
+| `marcacoes-estilo.md` | padrões de texto gerado por IA: o que foi tirado, o que você reescreve e como reconhecê-los |
 | `Regulamento_TCC_CC.pdf` | Regulamento Geral de TCC do curso |
 
 Para refazer tudo, do teste ao artigo: `cd codigo && make tudo` (ver o

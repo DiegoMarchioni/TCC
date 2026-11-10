@@ -1,4 +1,4 @@
-# Guia de defesa — Parte 5: Apresentação (20 min) e arguição (20 min)
+# Guia de defesa, parte 5: Apresentação (20 min) e arguição (20 min)
 
 *Escrito em 10/11/2026, com os resultados da campanha final.* O Regulamento
 prevê 20 minutos de apresentação e 20 de arguição; as bancas vão de 02 a

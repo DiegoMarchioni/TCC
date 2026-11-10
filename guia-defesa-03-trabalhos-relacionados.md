@@ -1,4 +1,4 @@
-# Guia de defesa — Parte 3: Trabalhos Relacionados
+# Guia de defesa, parte 3: Trabalhos Relacionados
 
 *Reescrito em 09/11/2026 e atualizado em 10/11/2026.* Cobre a Seção 3:
 o parágrafo de abertura, 3.1 (custo de execução dos *handlers*) e 3.2
