@@ -6,8 +6,11 @@ Uso: python3 scripts/resumir_campanha.py resultados/campanha-AAAAMMDD-HHMMSS
 Lê brutos/*.csv (uma linha por linguagem, cenário, versão e semente) e grava:
 
   resumo.csv / resumo.md     razões mecanismo/base por cenário e linguagem
-  tabela-desempenho.tex      linhas da Tabela 2 do artigo (razões)
-  tabela-absolutos.tex       linhas de uma tabela de valores absolutos
+  tabela-desempenho.tex      linhas auxiliares só com as razões
+  tabela-absolutos.tex       linhas auxiliares com os valores absolutos
+
+A Tabela 2 do artigo (base, Δ e razão) é gerada a partir de resumo.csv por
+scripts/atualizar_artigo.py; os dois .tex acima são auxiliares.
 
 Para cada semente: razão = M/B; IC conservador da razão = [M_inf/B_sup,
 M_sup/B_inf], a partir dos IC de 95% de cada medição. Entre sementes: a

@@ -1,0 +1,3 @@
+linguagem,cenario,implementacao,papel,semente,n_expressoes,amostras,tempo_ns,tempo_ic_inf,tempo_ic_sup,tempo_r2,alocacao,alocacao_ic_inf,alocacao_ic_sup,alocacao_r2,unidade_alocacao
+ocaml,state,efeitos,mecanismo,43,10001,153,1675231.4,1646534.6,1707437.4,0.97221,536257.88,536097.36,536404.65,0.99998,palavras
+ocaml,state,imperativa,base,43,10001,207,890303.9,873567.0,909469.7,0.94879,59051.72,58940.79,59154.78,0.99923,palavras

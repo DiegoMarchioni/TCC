@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-labelledby="t d" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<title id="t">Boilerplate fora de eval, por versão</title><desc id="d">Barras horizontais: linhas de boilerplate fora de eval em cada versão; mecanismo na cor da linguagem, base em cinza.</desc>
+<rect width="1600" height="900" fill="#fcfcfb"/>
+<text x="80.0" y="70.0" font-size="40" fill="#0b0b0b" font-weight="600" text-anchor="start" dominant-baseline="auto">O custo de escrita está fora do avaliador</text>
+<text x="80.0" y="116.0" font-size="24" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="auto">Linhas de boilerplate fora de eval (regra mecânica); eval é idêntico dentro de cada linguagem</text>
+<rect x="80.0" y="162.0" width="16" height="16" rx="3" fill="#2a78d6"/>
+<text x="104.0" y="170.0" font-size="20" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">handlers (OCaml)</text>
+<rect x="306.4" y="162.0" width="16" height="16" rx="3" fill="#eb6834"/>
+<text x="330.4" y="170.0" font-size="20" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">mônadas (Haskell)</text>
+<rect x="543.2" y="162.0" width="16" height="16" rx="3" fill="#c3c2b7"/>
+<text x="567.2" y="170.0" font-size="20" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">base</text>
+<line x1="330.0" y1="250.0" x2="330.0" y2="650.0" stroke="#c3c2b7" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="330.0" y="680.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">0</text>
+<line x1="597.5" y1="250.0" x2="597.5" y2="650.0" stroke="#e1e0d9" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="597.5" y="680.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">20</text>
+<line x1="865.0" y1="250.0" x2="865.0" y2="650.0" stroke="#e1e0d9" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="865.0" y="680.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">40</text>
+<line x1="1132.5" y1="250.0" x2="1132.5" y2="650.0" stroke="#e1e0d9" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="1132.5" y="680.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">60</text>
+<line x1="1400.0" y1="250.0" x2="1400.0" y2="650.0" stroke="#e1e0d9" stroke-width="1" shape-rendering="crispEdges"/>
+<text x="1400.0" y="680.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">80</text>
+<text x="300.0" y="260.0" font-size="22" fill="#898781" font-weight="600" text-anchor="end" dominant-baseline="middle">OCaml</text>
+<text x="300.0" y="480.0" font-size="22" fill="#898781" font-weight="600" text-anchor="end" dominant-baseline="middle">Haskell</text>
+<text x="300.0" y="302.0" font-size="26" fill="#0b0b0b" font-weight="600" text-anchor="end" dominant-baseline="middle">Handlers</text>
+<path d="M330.0,290.0 H1222.1 Q1226.1,290.0 1226.1,294.0 V310.0 Q1226.1,314.0 1222.1,314.0 H330.0 Z" fill="#2a78d6"/>
+<text x="1238.1" y="302.0" font-size="22" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">67 linhas</text>
+<text x="300.0" y="372.0" font-size="26" fill="#0b0b0b" font-weight="600" text-anchor="end" dominant-baseline="middle">Imperativa</text>
+<path d="M330.0,360.0 H366.1 Q370.1,360.0 370.1,364.0 V380.0 Q370.1,384.0 366.1,384.0 H330.0 Z" fill="#c3c2b7"/>
+<text x="382.1" y="372.0" font-size="22" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">3 linhas</text>
+<text x="300.0" y="522.0" font-size="26" fill="#0b0b0b" font-weight="600" text-anchor="end" dominant-baseline="middle">Mônadas</text>
+<path d="M330.0,510.0 H593.5 Q597.5,510.0 597.5,514.0 V530.0 Q597.5,534.0 593.5,534.0 H330.0 Z" fill="#eb6834"/>
+<text x="609.5" y="522.0" font-size="22" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">20 linhas</text>
+<text x="300.0" y="592.0" font-size="26" fill="#0b0b0b" font-weight="600" text-anchor="end" dominant-baseline="middle">IORef</text>
+<path d="M330.0,580.0 H620.2 Q624.2,580.0 624.2,584.0 V600.0 Q624.2,604.0 620.2,604.0 H330.0 Z" fill="#c3c2b7"/>
+<text x="636.2" y="592.0" font-size="22" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">22 linhas</text>
+<text x="80.0" y="790.0" font-size="24" fill="#0b0b0b" font-weight="600" text-anchor="start" dominant-baseline="middle">Pontos de modificação para inserir o quarto efeito (QP2):</text>
+<text x="80.0" y="830.0" font-size="24" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">Handlers 2 · Imperativa 0 · Mônadas 2 · IORef 0</text>
+</svg>

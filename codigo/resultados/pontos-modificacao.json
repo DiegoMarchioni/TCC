@@ -1,0 +1,95 @@
+{
+ "handlers": {
+  "linguagem": "ocaml",
+  "papel": "mecanismo",
+  "pontos_de_modificacao": 2,
+  "pontos": [
+   {
+    "declaracao": "run",
+    "detalhe": ""
+   },
+   {
+    "declaracao": "run_acc",
+    "detalhe": ""
+   }
+  ],
+  "removidas": [],
+  "adicoes_puras": 2,
+  "adicoes": [
+   "type+= Effect.t#2",
+   "run_input"
+  ],
+  "bracos_novos_em_eval_excluidos": [
+   "Read"
+  ],
+  "importacoes_alteradas_ou_removidas": [],
+  "importacoes_acrescentadas": []
+ },
+ "imperativa": {
+  "linguagem": "ocaml",
+  "papel": "base",
+  "pontos_de_modificacao": 0,
+  "pontos": [],
+  "removidas": [],
+  "adicoes_puras": 1,
+  "adicoes": [
+   "ler"
+  ],
+  "bracos_novos_em_eval_excluidos": [
+   "Read"
+  ],
+  "importacoes_alteradas_ou_removidas": [],
+  "importacoes_acrescentadas": []
+ },
+ "monadas": {
+  "linguagem": "haskell",
+  "papel": "mecanismo",
+  "pontos_de_modificacao": 2,
+  "pontos": [
+   {
+    "declaracao": "type Interp",
+    "detalhe": ""
+   },
+   {
+    "declaracao": "run",
+    "detalhe": ""
+   }
+  ],
+  "removidas": [],
+  "adicoes_puras": 1,
+  "adicoes": [
+   "ler"
+  ],
+  "bracos_novos_em_eval_excluidos": [
+   "Read"
+  ],
+  "importacoes_alteradas_ou_removidas": [
+   "import Control.Monad.State.Strict ( StateT , get , modify' , runStateT )",
+   "import Data.IORef ( readIORef )"
+  ],
+  "importacoes_acrescentadas": [
+   "import Control.Monad.State.Strict ( StateT , get , lift , modify' , runStateT , state )",
+   "import Data.IORef ( readIORef , writeIORef )"
+  ]
+ },
+ "ioref": {
+  "linguagem": "haskell",
+  "papel": "base",
+  "pontos_de_modificacao": 0,
+  "pontos": [],
+  "removidas": [],
+  "adicoes_puras": 1,
+  "adicoes": [
+   "ler"
+  ],
+  "bracos_novos_em_eval_excluidos": [
+   "Read"
+  ],
+  "importacoes_alteradas_ou_removidas": [
+   "import Data.IORef ( IORef , modifyIORef' , readIORef )"
+  ],
+  "importacoes_acrescentadas": [
+   "import Data.IORef ( IORef , modifyIORef' , readIORef , writeIORef )"
+  ]
+ }
+}

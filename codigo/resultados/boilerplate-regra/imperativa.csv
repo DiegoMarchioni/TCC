@@ -1,0 +1,5 @@
+linha,rotulo,motivo,declaracao,texto
+10,B,infraestrutura: sem marcador semântico,open Expr,open Expr
+12,B,infraestrutura: sem marcador semântico,exception Runtime_error,exception Runtime_error of string
+45,B,infraestrutura: sem marcador semântico,run,"let run (env : (string, int) Hashtbl.t) (e : expr) : (int, string) result ="
+46,N,resultado do efeito de exceção (Ok/Error),run,  match eval env e with v -> Ok v | exception Runtime_error m -> Error m

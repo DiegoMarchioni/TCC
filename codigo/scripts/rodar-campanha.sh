@@ -6,7 +6,8 @@
 # Passos: registra o ambiente; compila as duas linguagens; roda as duas suítes
 # de oráculo (pré-condição: a campanha aborta se qualquer verificação falhar);
 # mede os quatro cenários com as três sementes, em corridas estritamente
-# sequenciais; e resume tudo com scripts/resumir_campanha.py.
+# sequenciais; remede em par o que tiver R² < 0,95 (scripts/repetir_r2.py,
+# com registro em ambiente.md); e resume tudo com scripts/resumir_campanha.py.
 #
 # Variáveis de ambiente (padrões = protocolo do artigo):
 #   SEMENTES       "42 43 44"
@@ -59,6 +60,9 @@ for s in $SEMENTES; do
   # shellcheck disable=SC2086
   TCC_SEED="$s" TCC_SAIDA="$destino/brutos/haskell-$s.csv" $TASKSET "$BENCH_HASKELL"
 done
+
+echo "== repetições (protocolo: R² do tempo >= 0,95; até 3 tentativas por par)"
+python3 scripts/repetir_r2.py "$destino" || echo "atenção: há medição abaixo do limiar; veja o resumo"
 
 echo "== resumo"
 python3 scripts/resumir_campanha.py "$destino"

@@ -26,7 +26,7 @@
 --   vez por expressão ('B.run').
 -- * A alocação vem da regressão allocated:iters, que exige +RTS -T (já
 --   embutido no executável por -with-rtsopts).
--- * A ordem alterna entre cenários, como no harness OCaml.
+-- * A ordem alterna entre cenários, como no harness OCaml (fixa por cenário).
 -- * Antes de medir, confere-se que as duas versões produzem a mesma soma, o
 --   mesmo número de erros e o mesmo traço.
 module Main (main) where
@@ -44,7 +44,7 @@ import Criterion.Types
     Verbosity (..),
   )
 import Data.IORef
-import Data.List (find)
+import Data.List (elemIndex, find)
 import qualified Data.Map.Strict as Map
 import Data.Maybe (fromMaybe)
 import Expr
@@ -152,7 +152,10 @@ main = do
   hPutStrLn hSaida cabecalho
   acc <- newIORef ([] :: [Int])
   writeIORef emitRef (\v -> modifyIORef' acc (v :))
-  forM_ (zip [0 :: Int ..] cens) $ \(idx, sc) -> do
+  forM_ cens $ \sc -> do
+    -- Posição na lista completa: a ordem entre as versões é fixa por cenário,
+    -- também quando TCC_CENARIOS seleciona só alguns (repetições).
+    let idx = fromMaybe 0 (elemIndex sc scenarios)
     exprs <- evaluate (force (workload sc semente))
     let nomeSc = scenarioName sc
     -- Pré-condição: mesmo desfecho e mesmo traço nas duas versões.

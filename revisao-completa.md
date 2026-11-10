@@ -59,6 +59,62 @@ reescritos para a versão atual, e há um guia 04 que explica o código.
 
 ---
 
+## Atualização (10/11/2026): resultados medidos, artigo e apresentação
+
+**Feito nesta rodada:**
+
+- **Campanha final** (`codigo/resultados/campanha-20261110-005710/`): Intel Xeon
+  @ 2,10 GHz, 4 vCPU, **máquina virtual de nuvem**, OCaml 5.2.1+flambda, GHC
+  9.4.7, afinidade fixa, 3 sementes, cota de 20 s. **Executada pela ferramenta
+  de IA**: o artigo e `ambiente.md` dizem isso. Um par com R² 0,949 foi remedido
+  pelo protocolo (agora automático: `scripts/repetir_r2.py`).
+- **QP3 por regra mecânica** de *boilerplate* (auditável linha a linha), em vez
+  da dupla contagem, que fica como validação opcional.
+- **O artigo é gerado dos resultados:** 137 macros, as Tabelas 1 e 2 e o
+  parágrafo do ambiente vêm de `codigo/scripts/atualizar_artigo.py`, e 20 frases
+  qualitativas marcadas `%% AFIRMACAO:` são conferidas contra os dados (todas
+  valem). `make tudo` refaz tudo, do teste ao artigo.
+- **Texto atualizado:** síntese da Introdução, Seções 4.2, 4.3, 5 (URL do
+  código, conformidade das 12 cargas, `discontinue` e o vazamento, mutação 8/8,
+  quarto efeito no passado), 6.1 (leitura da Tabela 1), 6.2 (ambiente, Tabela 2
+  com base, Δ e razão, R², sensibilidade), 6.3 (discussão nova, com a hipótese
+  do TCC I), 7 (literatura e limitações) e a declaração de IA.
+- **Itens desta revisão resolvidos:** C1, C2, C4, G2, G3, G4, G5, G10, G11, M6 e
+  G1 (citação de Hughes retirada do 1º parágrafo; o restante do parágrafo é seu).
+- **Páginas:** 16 na réplica, com ~8 linhas de folga, mais o que sobrar quando
+  os resumos forem para 10 linhas.
+- **Apresentação:** figuras em `codigo/resultados/figuras/` (SVG e PNG 2×) e
+  roteiro de 20 min com a arguição no Guia 05; Guias 01 a 04 atualizados.
+
+**Resultados, em uma linha cada:**
+
+- QP1: `eval` do mecanismo e da base empatam dentro de cada linguagem.
+- QP2: só os mecanismos exigiram pontos de modificação (2 e 2; bases 0 e 0).
+- QP3: *boilerplate* 67 × 3 (OCaml), 20 × 22 (Haskell); reutilização só nos
+  *handlers* (2).
+- QP4: *handlers* 1,59–4,26× em tempo (45 ns por expressão só de instalação, em
+  Arith); mônadas 0,97–1,08×; razão de alocação do OCaml alta porque a base
+  quase não aloca (168 × 150 B de excedente em Arith).
+- Achados: vazamento ao abandonar a continuação; R² ≥ 0,95 com razões
+  deslocadas em até 28% numa corrida subdimensionada.
+
+**O que só você pode fazer (antes do 4º PC, 23/11):**
+
+1. Reescrever **Abstract e Resumo** com as suas palavras, até 10 linhas cada
+   (`VOZ`); os números já são macros. Ao reescrever o 1º parágrafo da
+   Introdução, decida se reintroduz Hughes (para modularidade).
+2. Preencher a **versão do modelo** em `[PREENCHER]` (Agradecimentos), com a
+   versão informada na conversa desta rodada e as das rodadas anteriores.
+3. Revisar com as suas palavras os trechos marcados `%% NOVO (10/11)`.
+4. Conferir o ano de `marchioni:tcc1` (a nota "CONFERIR" sai impressa) e o
+   e-mail do orientador.
+5. Integrar o ramo à `main` (a URL do código no texto aponta para ela).
+6. Compilar no Overleaf com o modelo oficial e conferir as 16 páginas.
+7. Recomendável: `make tudo` no seu computador, para a campanha não depender de
+   máquina virtual; o script avisa se alguma frase mudar de sentido.
+
+---
+
 ## 1. Resumo executivo
 
 **A versão nova avançou bastante.** Coube em 16 páginas (com Times), tem a
@@ -394,10 +450,13 @@ Vale regerar os guias depois que o texto final estiver fechado.
 
 ## 8. Cronograma sugerido até 23/11
 
+*Revisto em 10/11: código, métricas, campanha e texto de resultados estão
+prontos.*
+
 | Datas | O quê |
 |---|---|
-| 10–12/11 | Publicar o código (C2); normalizar e contar (QP1/QP3); decidir se o `Input` cabe no prazo |
-| 12–14/11 | Preencher a Tabela 1 e escrever os dois parágrafos; tempos absolutos e alocação por expressão (G3, C4) |
-| 14–16/11 | Reescrever os trechos `VOZ` (resumos com até 10 linhas, Hughes); C3, G4; completar a declaração |
-| 17–21/11 | Revisão do orientador (o 4º PC exige o artigo já revisado por ele) |
+| 10–13/11 | Reescrever os trechos `VOZ` (resumos com até 10 linhas); revisar os trechos `NOVO (10/11)`; preencher a declaração; opcional: `make tudo` no seu computador |
+| 13–14/11 | Compilar no Overleaf (16 páginas), integrar o ramo à `main` e enviar ao orientador |
+| 15–21/11 | Revisão do orientador (o 4º PC exige o artigo já revisado por ele) |
 | até 23/11 | Entrega à banca |
+| até 01/12 | Slides (figuras prontas, roteiro no Guia 05) e dois ensaios cronometrados |

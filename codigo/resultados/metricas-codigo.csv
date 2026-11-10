@@ -1,0 +1,5 @@
+implementacao,linguagem,papel,loc_eval,operacoes,profundidade,loc_fora_de_eval,boilerplate,reutilizacao,loc_arquivo,oper_Num,oper_Var,oper_Add,oper_Mul,oper_Div,oper_Let,oper_Seq,oper_Print,loc_Num,loc_Var,loc_Add,loc_Mul,loc_Div,loc_Let,loc_Seq,loc_Print,prof_Num,prof_Var,prof_Add,prof_Mul,prof_Div,prof_Let,prof_Seq,prof_Print
+handlers,ocaml,mecanismo,29,5,2,78,67,2,107,0,2,0,0,1,1,0,1,1,4,4,4,4,4,3,4,1,2,1,1,2,1,1,1
+imperativa,ocaml,base,29,5,2,4,3,0,33,0,2,0,0,1,1,0,1,1,4,4,4,4,4,3,4,1,2,1,1,2,1,1,1
+monadas,haskell,mecanismo,27,18,1,22,20,0,49,0,3,2,2,4,3,1,3,1,3,4,4,5,4,1,4,1,1,1,1,1,1,1,1
+ioref,haskell,base,27,18,1,26,22,0,53,0,3,2,2,4,3,1,3,1,3,4,4,5,4,1,4,1,1,1,1,1,1,1,1

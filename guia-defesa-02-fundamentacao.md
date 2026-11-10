@@ -1,6 +1,6 @@
 # Guia de defesa — Parte 2: Fundamentação Teórica
 
-*Reescrito em 09/11/2026 para a versão atual do `artigo.tex`.* Cobre a Seção 2:
+*Reescrito em 09/11/2026 para a versão atual do `artigo.tex` (sem mudanças na Seção 2 em 10/11).* Cobre a Seção 2:
 2.1 Mônadas e Transformadores, 2.2 Efeitos Algébricos e *Handlers*, 2.3
 Relação Formal.
 

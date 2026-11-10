@@ -1,0 +1,27 @@
+linha,rotulo,motivo,declaracao,texto
+9,B,infraestrutura: sem marcador semântico,module,module Interp.IORefBase
+10,B,infraestrutura: sem marcador semântico,module,"  ( Env,"
+11,B,infraestrutura: sem marcador semântico,module,"    RuntimeError (..),"
+12,B,infraestrutura: sem marcador semântico,module,"    eval,"
+13,B,infraestrutura: sem marcador semântico,module,"    emit,"
+14,B,infraestrutura: sem marcador semântico,module,"    run,"
+15,B,infraestrutura: sem marcador semântico,module,  )
+16,B,infraestrutura: sem marcador semântico,module,where
+18,B,infraestrutura: sem marcador semântico,import Control.Exception,"import Control.Exception (Exception, throwIO, try)"
+19,B,infraestrutura: sem marcador semântico,import Control.Monad,import Control.Monad (when)
+20,B,infraestrutura: sem marcador semântico,import Data.IORef,"import Data.IORef (IORef, modifyIORef', readIORef)"
+21,B,infraestrutura: sem marcador semântico,import Data.Map.Strict,import Data.Map.Strict (Map)
+22,B,infraestrutura: sem marcador semântico,import Data.Map.Strict,import qualified Data.Map.Strict as Map
+23,B,infraestrutura: sem marcador semântico,import Expr,import Expr
+25,N,domínio do estado (type Env),type Env,type Env = Map String Int
+27,B,infraestrutura: sem marcador semântico,data RuntimeError,newtype RuntimeError = RuntimeError String
+28,B,infraestrutura: sem marcador semântico,data RuntimeError,  deriving (Show)
+30,B,infraestrutura: sem marcador semântico,instance@30,instance Exception RuntimeError
+33,B,infraestrutura: sem marcador semântico,emit,emit :: Int -> IO ()
+34,N,uso da referência de emissão ou de entrada,emit,emit v = readIORef emitRef >>= \f -> f v
+65,B,infraestrutura: sem marcador semântico,run,run :: IORef Env -> Expr -> IO (Either String Int)
+66,B,infraestrutura: sem marcador semântico,run,run ref e = do
+67,B,infraestrutura: sem marcador semântico,run,  r <- try (eval ref e)
+68,B,infraestrutura: sem marcador semântico,run,  return $ case r of
+69,N,resultado do efeito de exceção (Left/Right),run,    Left (RuntimeError m) -> Left m
+70,N,resultado do efeito de exceção (Left/Right),run,    Right v -> Right v

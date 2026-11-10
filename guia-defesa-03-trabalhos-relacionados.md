@@ -1,6 +1,6 @@
 # Guia de defesa — Parte 3: Trabalhos Relacionados
 
-*Reescrito em 09/11/2026 para a versão atual do `artigo.tex`.* Cobre a Seção 3:
+*Reescrito em 09/11/2026 e atualizado em 10/11/2026.* Cobre a Seção 3:
 o parágrafo de abertura, 3.1 (custo de execução dos *handlers*) e 3.2
 (perspectiva comparativa e lacuna).
 
@@ -15,7 +15,7 @@ o parágrafo de abertura, 3.1 (custo de execução dos *handlers*) e 3.2
 
 | Parte | Trabalhos | Função |
 |---|---|---|
-| Abertura | `kiselyov:13`, `kammar:13`, `xie:20`, `joriatti:25`, `wu:14` | alternativas em Haskell; por que não comparar na mesma linguagem |
+| Abertura | `kiselyov:13`, `kammar:13`, `xie:20`, `kiselyov:15`, `joriatti:25` | alternativas em Haskell; por que não comparar na mesma linguagem |
 | 3.1 Custo | `karachalias:21`, `gaissert:25`, `sivaramakrishnan:21`, `ocaml:manual` | por que reportar razões, e não tempos absolutos |
 | 3.2 Lacuna | fundamentos, expressividade, desempenho; os mais próximos: `kammar:13`, `xie:20`, `liang:95` | onde este trabalho entra |
 
@@ -35,8 +35,8 @@ o parágrafo de abertura, 3.1 (custo de execução dos *handlers*) e 3.2
   validada por exemplos e não por preservação de semântica, e que não mede custo.
   **As quatro afirmações conferem com o artigo** (Conclusão: "limita-se à
   tradução das funções e efeitos, não podendo gerar os códigos equivalentes aos
-  handlers"; Resultados por testes; nenhuma medição). A biblioteca alvo é
-  `kiselyov:15`, que vale citar ali.
+  handlers"; Resultados por testes; nenhuma medição). A biblioteca alvo é a de
+  mônadas *freer* de `kiselyov:15`, citada ali desde 10/11.
 - **A pergunta que o próprio texto levanta:** por que não comparar as duas
   abordagens na mesma linguagem? Resposta: comparar cada mecanismo **como é
   suportado em produção**; *handlers* nativos com *runtime* dedicado no OCaml 5,

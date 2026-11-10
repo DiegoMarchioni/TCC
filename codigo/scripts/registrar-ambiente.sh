@@ -26,6 +26,12 @@ grep -E '^MemTotal' /proc/meminfo 2>/dev/null || true
 secao "Sistema"
 uname -srm
 grep -E '^(PRETTY_NAME)=' /etc/os-release 2>/dev/null || true
+if grep -qw hypervisor /proc/cpuinfo 2>/dev/null; then
+  echo "virtualização: sim (flag hypervisor em /proc/cpuinfo)"
+else
+  echo "virtualização: não detectada"
+fi
+echo "executor: ${TCC_EXECUTOR:-autor}"
 
 secao "Controle de frequência"
 echo "governor: $(cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor 2>/dev/null | sort | uniq -c | tr '\n' ' ')"
@@ -42,12 +48,27 @@ command -v ocamlfind >/dev/null && ocamlfind ocamlopt -version 2>/dev/null | sed
 ocamlopt -config 2>/dev/null | grep -E '^(version|flambda):'
 echo "dune $(dune --version 2>/dev/null)"
 command -v opam >/dev/null && opam list --short --columns=name,version bechamel yojson 2>/dev/null
-echo "flags do projeto (ocaml/dune):"; grep -E 'ocamlopt_flags' ocaml/dune | sed 's/^/  /'
+echo "flags do projeto (ocaml/dune):"; grep -A1 -E 'ocamlopt_flags' ocaml/dune | tr -s ' \n' ' ' | sed 's/^/  /'; echo
 
 secao "Haskell"
 ghc --version 2>/dev/null
 cabal --version 2>/dev/null | head -1
-ghc-pkg list --simple-output criterion mtl containers 2>/dev/null
+# Versões efetivamente usadas na compilação (plano do cabal), e não as do
+# banco global de pacotes, onde as dependências do projeto não ficam.
+if [ -f haskell/dist-newstyle/cache/plan.json ]; then
+  python3 - haskell/dist-newstyle/cache/plan.json <<'PY'
+import json, sys
+plano = json.load(open(sys.argv[1], encoding="utf-8"))["install-plan"]
+vistos = {}
+for p in plano:
+    if p.get("pkg-name") in ("criterion", "statistics", "mtl", "containers", "base"):
+        vistos[p["pkg-name"]] = p["pkg-version"]
+for nome in sorted(vistos):
+    print(f"{nome}-{vistos[nome]}")
+PY
+else
+  ghc-pkg list --simple-output criterion mtl containers 2>/dev/null
+fi
 echo "flags (tcc-efeitos.cabal):"; grep -E 'ghc-options' haskell/tcc-efeitos.cabal | sed 's/^/  /'
 
 secao "Formatadores"

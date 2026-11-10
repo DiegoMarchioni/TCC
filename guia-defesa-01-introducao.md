@@ -1,6 +1,6 @@
 # Guia de defesa — Parte 1: Introdução
 
-*Reescrito em 09/11/2026 para a versão atual do `artigo.tex` (entrega à banca).*
+*Reescrito em 09/11/2026 e atualizado em 10/11/2026 com os resultados da campanha final.*
 Cobre o título, os resumos e a Seção 1. Para cada bloco: o que o texto afirma,
 o que cada citação sustenta, os termos que você precisa definir de cabeça e as
 perguntas prováveis, com resposta. A última seção lista os pontos frágeis.
@@ -64,18 +64,17 @@ operações, com semântica fixada por *handlers*).
 | Citação | Sustenta |
 |---|---|
 | `strachey:67` | a definição de transparência referencial (o `.bib` traz 2000 porque a versão citável é a republicação das notas de 1967) |
-| `hughes:89` | **modularidade** por funções de alta ordem e avaliação preguiçosa |
 | `moggi:91`, `wadler:92` | mônadas como estrutura semântica e como técnica de programação |
 | `liang:95` | *monad transformers* |
 | `plotkin:03` | efeitos como **operações** algébricas (não trata de *handlers*) |
 | `plotkin:09` | ***handlers*** de efeitos algébricos |
 
-> **Atenção com `hughes:89`.** O texto atual o cita para "facilita o raciocínio
-> equacional e a verificação formal". Hughes argumenta o **contrário**: abre o
-> artigo criticando quem defende a programação funcional pelo que ela não tem
-> (sem efeitos, sem atribuição) e põe o valor na modularidade. Ao reescrever o
-> parágrafo, cite Hughes para modularidade ou retire a citação desse ponto. Se
-> a frase ficar como está, a pergunta "Hughes diz isso?" tem resposta "não".
+> **`hughes:89` saiu do texto em 10/11.** O 1º parágrafo o citava para
+> "facilita o raciocínio equacional e a verificação formal", e Hughes argumenta
+> pela **modularidade** (funções de alta ordem e avaliação preguiçosa), abrindo
+> o artigo justamente contra quem defende a programação funcional pelo que ela
+> não tem. A citação foi retirada; se você a reintroduzir ao reescrever o
+> parágrafo, cite-o para a modularidade.
 
 ### Termos
 
@@ -144,7 +143,7 @@ as duas coisas. Diga isso antes que perguntem.
 |---|---|---|
 | QP1 | menos carga estrutural de leitura? | LOC de `eval`, operações de efeito (por construtor), aninhamento |
 | QP2 | menos pontos de modificação para compor/estender? | pontos de modificação ao inserir o quarto efeito |
-| QP3 | menos *boilerplate*, mais reuso? | *boilerplate* por dupla contagem; instâncias de reutilização |
+| QP3 | menos *boilerplate*, mais reuso? | *boilerplate* por regra mecânica sobre os *tokens*; instâncias de reutilização |
 | QP4 | qual o custo de execução, em tempo e memória? | razões de tempo e de alocação |
 
 **Fora do escopo:** legibilidade **percebida** (exigiria estudo com pessoas); as
@@ -177,10 +176,20 @@ num artefato isolado:
 > disser que a normalização por base é inédita, a resposta da banca é "Kammar,
 > 2013, Tabela 1".
 
-**Síntese dos resultados:** os números desta subseção vêm da campanha de
-medição. Com o código novo, eles serão os da **sua** nova campanha (Guia 04,
-"Resultados"). Não apresente os números antigos (1,45–2,35 etc.) se o código e
-a campanha mudaram.
+**Síntese dos resultados (campanha de 10/11, máquina virtual de nuvem):**
+
+- **QP1:** dentro de cada linguagem, `eval` do mecanismo e da base empatam nas
+  três métricas (29/5/2 no OCaml, 27/18/1 no Haskell), também por construtor.
+- **QP2/QP3:** a diferença está fora de `eval`: *boilerplate* 67 × 3 linhas no
+  OCaml (*handlers* × imperativa) e 20 × 22 no Haskell (mônadas × `IORef`); só
+  os mecanismos exigiram pontos de modificação para o quarto efeito (2 e 2,
+  contra 0 e 0).
+- **QP4:** *handlers* custam 1,59 a 4,26 vezes a base em tempo e 6,7 a 13,2 em
+  alocação; mônadas, 0,97 a 1,08 e 1,1 a 2,2.
+
+Os números do texto são **macros geradas** pela campanha (`make artigo`): se
+você refizer a campanha no seu computador, eles mudam sozinhos, e o script
+avisa se alguma frase qualitativa deixar de valer (Guia 04, seção 8).
 
 ---
 
@@ -209,16 +218,17 @@ a campanha mudaram.
 
 1. **Resumos acima de 10 linhas e com marca "I.A.?".** Reescreva com as suas
    palavras.
-2. **As hipóteses saíram do texto.** O TCC I previa sobrecusto abaixo de 1,5× no
-   OCaml e acima de 2,0× no Haskell. O orientador, que está na banca, conhece
-   essas previsões. Recomendação: uma ou duas frases no texto dizendo o que se
-   esperava e o que se observou. Se não estiverem lá, tenha a resposta pronta e
-   **não esconda** o que deu errado: uma previsão refutada é um resultado.
-3. **QP1–QP3 dependem das contagens.** Com o código novo, elas podem ser feitas
-   (`make metricas`, `make quarto-efeito`); o *boilerplate* exige a dupla
-   contagem com o orientador.
-4. **Uso de IA.** As implementações deste repositório foram geradas com
-   assistência de IA, e isso precisa estar na declaração (Arts. 7º e 8º, com a
-   versão do modelo). Se perguntarem, responda com transparência e mostre que
-   entende cada decisão do código (Guia 04).
+2. **A hipótese do TCC I foi refutada, e o texto diz isso** (Seção 6.3, com
+   `marchioni:tcc1`): previa-se sobrecusto abaixo de 1,5× no OCaml e acima de
+   2,0× no Haskell; mediu-se 1,59–4,26 e 0,97–1,08. Apresente isso como
+   resultado, não como problema: uma previsão refutada é informação.
+3. **QP1–QP3 estão medidas por regra mecânica.** A classificação de cada linha
+   de *boilerplate* está em `codigo/resultados/boilerplate-regra/*.csv`. A dupla
+   contagem humana virou validação opcional (`metricas.py concordancia`); se o
+   orientador quiser fazê-la, as planilhas estão prontas.
+4. **Uso de IA.** O código, a execução da campanha (em máquina virtual de
+   nuvem) e a redação preliminar dos trechos de resultados foram feitos com a
+   ferramenta, e a declaração diz isso (Arts. 7º e 8º). Falta só a versão do
+   modelo no lugar de `[PREENCHER]`. Se perguntarem, responda com transparência
+   e mostre que entende cada decisão (Guia 04).
 5. **Um único caso de uso, uma máquina, versões específicas de compilador.**

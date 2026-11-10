@@ -1,0 +1,3220 @@
+{
+ "handlers": {
+  "linguagem": "ocaml",
+  "papel": "mecanismo",
+  "arquivo": "/home/user/TCC/codigo/ocaml/effects/interp_effects.ml",
+  "loc_arquivo": 107,
+  "eval": {
+   "loc": 29,
+   "operacoes": 5,
+   "profundidade": 2,
+   "por_construtor": {
+    "Num": {
+     "loc": 1,
+     "operacoes": 0,
+     "profundidade": 1
+    },
+    "Var": {
+     "loc": 4,
+     "operacoes": 2,
+     "profundidade": 2
+    },
+    "Add": {
+     "loc": 4,
+     "operacoes": 0,
+     "profundidade": 1
+    },
+    "Mul": {
+     "loc": 4,
+     "operacoes": 0,
+     "profundidade": 1
+    },
+    "Div": {
+     "loc": 4,
+     "operacoes": 1,
+     "profundidade": 2
+    },
+    "Let": {
+     "loc": 4,
+     "operacoes": 1,
+     "profundidade": 1
+    },
+    "Seq": {
+     "loc": 3,
+     "operacoes": 0,
+     "profundidade": 1
+    },
+    "Print": {
+     "loc": 4,
+     "operacoes": 1,
+     "profundidade": 1
+    }
+   },
+   "bracos": {
+    "Num": "Num n -> n",
+    "Var": "Var x -> ( match perform ( Get x ) with | Some v -> v | None -> perform ( Fail ( msg_unbound x ) ) )",
+    "Add": "Add ( a , b ) -> let x = eval a in let y = eval b in x + y",
+    "Mul": "Mul ( a , b ) -> let x = eval a in let y = eval b in x * y",
+    "Div": "Div ( a , b ) -> let x = eval a in let y = eval b in if y = 0 then perform ( Fail msg_div_zero ) else x / y",
+    "Let": "Let ( x , e , b ) -> let v = eval e in perform ( Set ( x , v ) ) ; eval b",
+    "Seq": "Seq ( a , b ) -> ignore ( eval a ) ; eval b",
+    "Print": "Print e -> let v = eval e in perform ( Output v ) ; v"
+   }
+  },
+  "loc_fora_de_eval": 78,
+  "linhas_fora_de_eval": [
+   {
+    "linha": 13,
+    "texto": "open Effect",
+    "tokens": [
+     "open",
+     "Effect"
+    ],
+    "declaracao": "open Effect"
+   },
+   {
+    "linha": 14,
+    "texto": "open Effect.Deep",
+    "tokens": [
+     "open",
+     "Effect",
+     ".",
+     "Deep"
+    ],
+    "declaracao": "open Effect.Deep"
+   },
+   {
+    "linha": 15,
+    "texto": "open Expr",
+    "tokens": [
+     "open",
+     "Expr"
+    ],
+    "declaracao": "open Expr"
+   },
+   {
+    "linha": 17,
+    "texto": "type _ Effect.t +=",
+    "tokens": [
+     "type",
+     "_",
+     "Effect",
+     ".",
+     "t",
+     "+="
+    ],
+    "declaracao": "type+= Effect.t"
+   },
+   {
+    "linha": 18,
+    "texto": "  | Get : string -> int option Effect.t",
+    "tokens": [
+     "|",
+     "Get",
+     ":",
+     "string",
+     "->",
+     "int",
+     "option",
+     "Effect",
+     ".",
+     "t"
+    ],
+    "declaracao": "type+= Effect.t"
+   },
+   {
+    "linha": 19,
+    "texto": "  | Set : string * int -> unit Effect.t",
+    "tokens": [
+     "|",
+     "Set",
+     ":",
+     "string",
+     "*",
+     "int",
+     "->",
+     "unit",
+     "Effect",
+     ".",
+     "t"
+    ],
+    "declaracao": "type+= Effect.t"
+   },
+   {
+    "linha": 20,
+    "texto": "  | Fail : string -> 'a Effect.t",
+    "tokens": [
+     "|",
+     "Fail",
+     ":",
+     "string",
+     "->",
+     "'",
+     "a",
+     "Effect",
+     ".",
+     "t"
+    ],
+    "declaracao": "type+= Effect.t"
+   },
+   {
+    "linha": 21,
+    "texto": "  | Output : int -> unit Effect.t",
+    "tokens": [
+     "|",
+     "Output",
+     ":",
+     "int",
+     "->",
+     "unit",
+     "Effect",
+     ".",
+     "t"
+    ],
+    "declaracao": "type+= Effect.t"
+   },
+   {
+    "linha": 54,
+    "texto": "let run_state (tbl : (string, int) Hashtbl.t) (main : unit -> 'a) : 'a =",
+    "tokens": [
+     "let",
+     "run_state",
+     "(",
+     "tbl",
+     ":",
+     "(",
+     "string",
+     ",",
+     "int",
+     ")",
+     "Hashtbl",
+     ".",
+     "t",
+     ")",
+     "(",
+     "main",
+     ":",
+     "unit",
+     "->",
+     "'",
+     "a",
+     ")",
+     ":",
+     "'",
+     "a",
+     "="
+    ],
+    "declaracao": "run_state"
+   },
+   {
+    "linha": 55,
+    "texto": "  match_with main ()",
+    "tokens": [
+     "match_with",
+     "main",
+     "(",
+     ")"
+    ],
+    "declaracao": "run_state"
+   },
+   {
+    "linha": 56,
+    "texto": "    {",
+    "tokens": [
+     "{"
+    ],
+    "declaracao": "run_state"
+   },
+   {
+    "linha": 57,
+    "texto": "      retc = (fun v -> v);",
+    "tokens": [
+     "retc",
+     "=",
+     "(",
+     "fun",
+     "v",
+     "->",
+     "v",
+     ")",
+     ";"
+    ],
+    "declaracao": "run_state"
+   },
+   {
+    "linha": 58,
+    "texto": "      exnc = raise;",
+    "tokens": [
+     "exnc",
+     "=",
+     "raise",
+     ";"
+    ],
+    "declaracao": "run_state"
+   },
+   {
+    "linha": 59,
+    "texto": "      effc =",
+    "tokens": [
+     "effc",
+     "="
+    ],
+    "declaracao": "run_state"
+   },
+   {
+    "linha": 60,
+    "texto": "        (fun (type a) (eff : a Effect.t) ->",
+    "tokens": [
+     "(",
+     "fun",
+     "(",
+     "type",
+     "a",
+     ")",
+     "(",
+     "eff",
+     ":",
+     "a",
+     "Effect",
+     ".",
+     "t",
+     ")",
+     "->"
+    ],
+    "declaracao": "run_state"
+   },
+   {
+    "linha": 61,
+    "texto": "          match eff with",
+    "tokens": [
+     "match",
+     "eff",
+     "with"
+    ],
+    "declaracao": "run_state"
+   },
+   {
+    "linha": 62,
+    "texto": "          | Get x ->",
+    "tokens": [
+     "|",
+     "Get",
+     "x",
+     "->"
+    ],
+    "declaracao": "run_state"
+   },
+   {
+    "linha": 63,
+    "texto": "              Some",
+    "tokens": [
+     "Some"
+    ],
+    "declaracao": "run_state"
+   },
+   {
+    "linha": 64,
+    "texto": "                (fun (k : (a, _) continuation) ->",
+    "tokens": [
+     "(",
+     "fun",
+     "(",
+     "k",
+     ":",
+     "(",
+     "a",
+     ",",
+     "_",
+     ")",
+     "continuation",
+     ")",
+     "->"
+    ],
+    "declaracao": "run_state"
+   },
+   {
+    "linha": 65,
+    "texto": "                  continue k (Hashtbl.find_opt tbl x))",
+    "tokens": [
+     "continue",
+     "k",
+     "(",
+     "Hashtbl",
+     ".",
+     "find_opt",
+     "tbl",
+     "x",
+     ")",
+     ")"
+    ],
+    "declaracao": "run_state"
+   },
+   {
+    "linha": 66,
+    "texto": "          | Set (x, v) ->",
+    "tokens": [
+     "|",
+     "Set",
+     "(",
+     "x",
+     ",",
+     "v",
+     ")",
+     "->"
+    ],
+    "declaracao": "run_state"
+   },
+   {
+    "linha": 67,
+    "texto": "              Some",
+    "tokens": [
+     "Some"
+    ],
+    "declaracao": "run_state"
+   },
+   {
+    "linha": 68,
+    "texto": "                (fun (k : (a, _) continuation) ->",
+    "tokens": [
+     "(",
+     "fun",
+     "(",
+     "k",
+     ":",
+     "(",
+     "a",
+     ",",
+     "_",
+     ")",
+     "continuation",
+     ")",
+     "->"
+    ],
+    "declaracao": "run_state"
+   },
+   {
+    "linha": 69,
+    "texto": "                  Hashtbl.replace tbl x v;",
+    "tokens": [
+     "Hashtbl",
+     ".",
+     "replace",
+     "tbl",
+     "x",
+     "v",
+     ";"
+    ],
+    "declaracao": "run_state"
+   },
+   {
+    "linha": 70,
+    "texto": "                  continue k ())",
+    "tokens": [
+     "continue",
+     "k",
+     "(",
+     ")",
+     ")"
+    ],
+    "declaracao": "run_state"
+   },
+   {
+    "linha": 71,
+    "texto": "          | _ -> None);",
+    "tokens": [
+     "|",
+     "_",
+     "->",
+     "None",
+     ")",
+     ";"
+    ],
+    "declaracao": "run_state"
+   },
+   {
+    "linha": 72,
+    "texto": "    }",
+    "tokens": [
+     "}"
+    ],
+    "declaracao": "run_state"
+   },
+   {
+    "linha": 80,
+    "texto": "exception Abortar of string",
+    "tokens": [
+     "exception",
+     "Abortar",
+     "of",
+     "string"
+    ],
+    "declaracao": "exception Abortar"
+   },
+   {
+    "linha": 82,
+    "texto": "let run_exn (main : unit -> int) : (int, string) result =",
+    "tokens": [
+     "let",
+     "run_exn",
+     "(",
+     "main",
+     ":",
+     "unit",
+     "->",
+     "int",
+     ")",
+     ":",
+     "(",
+     "int",
+     ",",
+     "string",
+     ")",
+     "result",
+     "="
+    ],
+    "declaracao": "run_exn"
+   },
+   {
+    "linha": 83,
+    "texto": "  match_with main ()",
+    "tokens": [
+     "match_with",
+     "main",
+     "(",
+     ")"
+    ],
+    "declaracao": "run_exn"
+   },
+   {
+    "linha": 84,
+    "texto": "    {",
+    "tokens": [
+     "{"
+    ],
+    "declaracao": "run_exn"
+   },
+   {
+    "linha": 85,
+    "texto": "      retc = (fun v -> Ok v);",
+    "tokens": [
+     "retc",
+     "=",
+     "(",
+     "fun",
+     "v",
+     "->",
+     "Ok",
+     "v",
+     ")",
+     ";"
+    ],
+    "declaracao": "run_exn"
+   },
+   {
+    "linha": 86,
+    "texto": "      exnc = (function Abortar msg -> Error msg | e -> raise e);",
+    "tokens": [
+     "exnc",
+     "=",
+     "(",
+     "function",
+     "Abortar",
+     "msg",
+     "->",
+     "Error",
+     "msg",
+     "|",
+     "e",
+     "->",
+     "raise",
+     "e",
+     ")",
+     ";"
+    ],
+    "declaracao": "run_exn"
+   },
+   {
+    "linha": 87,
+    "texto": "      effc =",
+    "tokens": [
+     "effc",
+     "="
+    ],
+    "declaracao": "run_exn"
+   },
+   {
+    "linha": 88,
+    "texto": "        (fun (type a) (eff : a Effect.t) ->",
+    "tokens": [
+     "(",
+     "fun",
+     "(",
+     "type",
+     "a",
+     ")",
+     "(",
+     "eff",
+     ":",
+     "a",
+     "Effect",
+     ".",
+     "t",
+     ")",
+     "->"
+    ],
+    "declaracao": "run_exn"
+   },
+   {
+    "linha": 89,
+    "texto": "          match eff with",
+    "tokens": [
+     "match",
+     "eff",
+     "with"
+    ],
+    "declaracao": "run_exn"
+   },
+   {
+    "linha": 90,
+    "texto": "          | Fail msg ->",
+    "tokens": [
+     "|",
+     "Fail",
+     "msg",
+     "->"
+    ],
+    "declaracao": "run_exn"
+   },
+   {
+    "linha": 91,
+    "texto": "              Some",
+    "tokens": [
+     "Some"
+    ],
+    "declaracao": "run_exn"
+   },
+   {
+    "linha": 92,
+    "texto": "                (fun (k : (a, _) continuation) -> discontinue k (Abortar msg))",
+    "tokens": [
+     "(",
+     "fun",
+     "(",
+     "k",
+     ":",
+     "(",
+     "a",
+     ",",
+     "_",
+     ")",
+     "continuation",
+     ")",
+     "->",
+     "discontinue",
+     "k",
+     "(",
+     "Abortar",
+     "msg",
+     ")",
+     ")"
+    ],
+    "declaracao": "run_exn"
+   },
+   {
+    "linha": 93,
+    "texto": "          | _ -> None);",
+    "tokens": [
+     "|",
+     "_",
+     "->",
+     "None",
+     ")",
+     ";"
+    ],
+    "declaracao": "run_exn"
+   },
+   {
+    "linha": 94,
+    "texto": "    }",
+    "tokens": [
+     "}"
+    ],
+    "declaracao": "run_exn"
+   },
+   {
+    "linha": 98,
+    "texto": "let run_output_emit (main : unit -> 'a) : 'a =",
+    "tokens": [
+     "let",
+     "run_output_emit",
+     "(",
+     "main",
+     ":",
+     "unit",
+     "->",
+     "'",
+     "a",
+     ")",
+     ":",
+     "'",
+     "a",
+     "="
+    ],
+    "declaracao": "run_output_emit"
+   },
+   {
+    "linha": 99,
+    "texto": "  match_with main ()",
+    "tokens": [
+     "match_with",
+     "main",
+     "(",
+     ")"
+    ],
+    "declaracao": "run_output_emit"
+   },
+   {
+    "linha": 100,
+    "texto": "    {",
+    "tokens": [
+     "{"
+    ],
+    "declaracao": "run_output_emit"
+   },
+   {
+    "linha": 101,
+    "texto": "      retc = (fun v -> v);",
+    "tokens": [
+     "retc",
+     "=",
+     "(",
+     "fun",
+     "v",
+     "->",
+     "v",
+     ")",
+     ";"
+    ],
+    "declaracao": "run_output_emit"
+   },
+   {
+    "linha": 102,
+    "texto": "      exnc = raise;",
+    "tokens": [
+     "exnc",
+     "=",
+     "raise",
+     ";"
+    ],
+    "declaracao": "run_output_emit"
+   },
+   {
+    "linha": 103,
+    "texto": "      effc =",
+    "tokens": [
+     "effc",
+     "="
+    ],
+    "declaracao": "run_output_emit"
+   },
+   {
+    "linha": 104,
+    "texto": "        (fun (type a) (eff : a Effect.t) ->",
+    "tokens": [
+     "(",
+     "fun",
+     "(",
+     "type",
+     "a",
+     ")",
+     "(",
+     "eff",
+     ":",
+     "a",
+     "Effect",
+     ".",
+     "t",
+     ")",
+     "->"
+    ],
+    "declaracao": "run_output_emit"
+   },
+   {
+    "linha": 105,
+    "texto": "          match eff with",
+    "tokens": [
+     "match",
+     "eff",
+     "with"
+    ],
+    "declaracao": "run_output_emit"
+   },
+   {
+    "linha": 106,
+    "texto": "          | Output v ->",
+    "tokens": [
+     "|",
+     "Output",
+     "v",
+     "->"
+    ],
+    "declaracao": "run_output_emit"
+   },
+   {
+    "linha": 107,
+    "texto": "              Some",
+    "tokens": [
+     "Some"
+    ],
+    "declaracao": "run_output_emit"
+   },
+   {
+    "linha": 108,
+    "texto": "                (fun (k : (a, _) continuation) ->",
+    "tokens": [
+     "(",
+     "fun",
+     "(",
+     "k",
+     ":",
+     "(",
+     "a",
+     ",",
+     "_",
+     ")",
+     "continuation",
+     ")",
+     "->"
+    ],
+    "declaracao": "run_output_emit"
+   },
+   {
+    "linha": 109,
+    "texto": "                  !emit v;",
+    "tokens": [
+     "!",
+     "emit",
+     "v",
+     ";"
+    ],
+    "declaracao": "run_output_emit"
+   },
+   {
+    "linha": 110,
+    "texto": "                  continue k ())",
+    "tokens": [
+     "continue",
+     "k",
+     "(",
+     ")",
+     ")"
+    ],
+    "declaracao": "run_output_emit"
+   },
+   {
+    "linha": 111,
+    "texto": "          | _ -> None);",
+    "tokens": [
+     "|",
+     "_",
+     "->",
+     "None",
+     ")",
+     ";"
+    ],
+    "declaracao": "run_output_emit"
+   },
+   {
+    "linha": 112,
+    "texto": "    }",
+    "tokens": [
+     "}"
+    ],
+    "declaracao": "run_output_emit"
+   },
+   {
+    "linha": 116,
+    "texto": "let run_output_acc (acc : int list ref) (main : unit -> 'a) : 'a =",
+    "tokens": [
+     "let",
+     "run_output_acc",
+     "(",
+     "acc",
+     ":",
+     "int",
+     "list",
+     "ref",
+     ")",
+     "(",
+     "main",
+     ":",
+     "unit",
+     "->",
+     "'",
+     "a",
+     ")",
+     ":",
+     "'",
+     "a",
+     "="
+    ],
+    "declaracao": "run_output_acc"
+   },
+   {
+    "linha": 117,
+    "texto": "  match_with main ()",
+    "tokens": [
+     "match_with",
+     "main",
+     "(",
+     ")"
+    ],
+    "declaracao": "run_output_acc"
+   },
+   {
+    "linha": 118,
+    "texto": "    {",
+    "tokens": [
+     "{"
+    ],
+    "declaracao": "run_output_acc"
+   },
+   {
+    "linha": 119,
+    "texto": "      retc = (fun v -> v);",
+    "tokens": [
+     "retc",
+     "=",
+     "(",
+     "fun",
+     "v",
+     "->",
+     "v",
+     ")",
+     ";"
+    ],
+    "declaracao": "run_output_acc"
+   },
+   {
+    "linha": 120,
+    "texto": "      exnc = raise;",
+    "tokens": [
+     "exnc",
+     "=",
+     "raise",
+     ";"
+    ],
+    "declaracao": "run_output_acc"
+   },
+   {
+    "linha": 121,
+    "texto": "      effc =",
+    "tokens": [
+     "effc",
+     "="
+    ],
+    "declaracao": "run_output_acc"
+   },
+   {
+    "linha": 122,
+    "texto": "        (fun (type a) (eff : a Effect.t) ->",
+    "tokens": [
+     "(",
+     "fun",
+     "(",
+     "type",
+     "a",
+     ")",
+     "(",
+     "eff",
+     ":",
+     "a",
+     "Effect",
+     ".",
+     "t",
+     ")",
+     "->"
+    ],
+    "declaracao": "run_output_acc"
+   },
+   {
+    "linha": 123,
+    "texto": "          match eff with",
+    "tokens": [
+     "match",
+     "eff",
+     "with"
+    ],
+    "declaracao": "run_output_acc"
+   },
+   {
+    "linha": 124,
+    "texto": "          | Output v ->",
+    "tokens": [
+     "|",
+     "Output",
+     "v",
+     "->"
+    ],
+    "declaracao": "run_output_acc"
+   },
+   {
+    "linha": 125,
+    "texto": "              Some",
+    "tokens": [
+     "Some"
+    ],
+    "declaracao": "run_output_acc"
+   },
+   {
+    "linha": 126,
+    "texto": "                (fun (k : (a, _) continuation) ->",
+    "tokens": [
+     "(",
+     "fun",
+     "(",
+     "k",
+     ":",
+     "(",
+     "a",
+     ",",
+     "_",
+     ")",
+     "continuation",
+     ")",
+     "->"
+    ],
+    "declaracao": "run_output_acc"
+   },
+   {
+    "linha": 127,
+    "texto": "                  acc := v :: !acc;",
+    "tokens": [
+     "acc",
+     ":=",
+     "v",
+     "::",
+     "!",
+     "acc",
+     ";"
+    ],
+    "declaracao": "run_output_acc"
+   },
+   {
+    "linha": 128,
+    "texto": "                  continue k ())",
+    "tokens": [
+     "continue",
+     "k",
+     "(",
+     ")",
+     ")"
+    ],
+    "declaracao": "run_output_acc"
+   },
+   {
+    "linha": 129,
+    "texto": "          | _ -> None);",
+    "tokens": [
+     "|",
+     "_",
+     "->",
+     "None",
+     ")",
+     ";"
+    ],
+    "declaracao": "run_output_acc"
+   },
+   {
+    "linha": 130,
+    "texto": "    }",
+    "tokens": [
+     "}"
+    ],
+    "declaracao": "run_output_acc"
+   },
+   {
+    "linha": 134,
+    "texto": "let run (tbl : (string, int) Hashtbl.t) (e : expr) : (int, string) result =",
+    "tokens": [
+     "let",
+     "run",
+     "(",
+     "tbl",
+     ":",
+     "(",
+     "string",
+     ",",
+     "int",
+     ")",
+     "Hashtbl",
+     ".",
+     "t",
+     ")",
+     "(",
+     "e",
+     ":",
+     "expr",
+     ")",
+     ":",
+     "(",
+     "int",
+     ",",
+     "string",
+     ")",
+     "result",
+     "="
+    ],
+    "declaracao": "run"
+   },
+   {
+    "linha": 135,
+    "texto": "  run_state tbl (fun () ->",
+    "tokens": [
+     "run_state",
+     "tbl",
+     "(",
+     "fun",
+     "(",
+     ")",
+     "->"
+    ],
+    "declaracao": "run"
+   },
+   {
+    "linha": 136,
+    "texto": "      run_output_emit (fun () -> run_exn (fun () -> eval e)))",
+    "tokens": [
+     "run_output_emit",
+     "(",
+     "fun",
+     "(",
+     ")",
+     "->",
+     "run_exn",
+     "(",
+     "fun",
+     "(",
+     ")",
+     "->",
+     "eval",
+     "e",
+     ")",
+     ")",
+     ")"
+    ],
+    "declaracao": "run"
+   },
+   {
+    "linha": 139,
+    "texto": "let run_acc (tbl : (string, int) Hashtbl.t) (acc : int list ref) (e : expr) :",
+    "tokens": [
+     "let",
+     "run_acc",
+     "(",
+     "tbl",
+     ":",
+     "(",
+     "string",
+     ",",
+     "int",
+     ")",
+     "Hashtbl",
+     ".",
+     "t",
+     ")",
+     "(",
+     "acc",
+     ":",
+     "int",
+     "list",
+     "ref",
+     ")",
+     "(",
+     "e",
+     ":",
+     "expr",
+     ")",
+     ":"
+    ],
+    "declaracao": "run_acc"
+   },
+   {
+    "linha": 140,
+    "texto": "    (int, string) result =",
+    "tokens": [
+     "(",
+     "int",
+     ",",
+     "string",
+     ")",
+     "result",
+     "="
+    ],
+    "declaracao": "run_acc"
+   },
+   {
+    "linha": 141,
+    "texto": "  run_state tbl (fun () ->",
+    "tokens": [
+     "run_state",
+     "tbl",
+     "(",
+     "fun",
+     "(",
+     ")",
+     "->"
+    ],
+    "declaracao": "run_acc"
+   },
+   {
+    "linha": 142,
+    "texto": "      run_output_acc acc (fun () -> run_exn (fun () -> eval e)))",
+    "tokens": [
+     "run_output_acc",
+     "acc",
+     "(",
+     "fun",
+     "(",
+     ")",
+     "->",
+     "run_exn",
+     "(",
+     "fun",
+     "(",
+     ")",
+     "->",
+     "eval",
+     "e",
+     ")",
+     ")",
+     ")"
+    ],
+    "declaracao": "run_acc"
+   }
+  ],
+  "declaracoes": [
+   {
+    "nome": "open Effect",
+    "texto": "open Effect"
+   },
+   {
+    "nome": "open Effect.Deep",
+    "texto": "open Effect . Deep"
+   },
+   {
+    "nome": "open Expr",
+    "texto": "open Expr"
+   },
+   {
+    "nome": "type+= Effect.t",
+    "texto": "type _ Effect . t += | Get : string -> int option Effect . t | Set : string * int -> unit Effect . t | Fail : string -> ' a Effect . t | Output : int -> unit Effect . t",
+    "subitens": {
+     "Get": "| Get : string -> int option Effect . t",
+     "Set": "| Set : string * int -> unit Effect . t",
+     "Fail": "| Fail : string -> ' a Effect . t",
+     "Output": "| Output : int -> unit Effect . t"
+    }
+   },
+   {
+    "nome": "eval",
+    "texto": "let rec eval : expr -> int = function | Num n -> n | Var x -> ( match perform ( Get x ) with | Some v -> v | None -> perform ( Fail ( msg_unbound x ) ) ) | Add ( a , b ) -> let x = eval a in let y = eval b in x + y | Mul ( a , b ) -> let x = eval a in let y = eval b in x * y | Div ( a , b ) -> let x = eval a in let y = eval b in if y = 0 then perform ( Fail msg_div_zero ) else x / y | Let ( x , e , b ) -> let v = eval e in perform ( Set ( x , v ) ) ; eval b | Seq ( a , b ) -> ignore ( eval a ) ; eval b | Print e -> let v = eval e in perform ( Output v ) ; v"
+   },
+   {
+    "nome": "run_state",
+    "texto": "let run_state ( tbl : ( string , int ) Hashtbl . t ) ( main : unit -> ' a ) : ' a = match_with main ( ) { retc = ( fun v -> v ) ; exnc = raise ; effc = ( fun ( type a ) ( eff : a Effect . t ) -> match eff with | Get x -> Some ( fun ( k : ( a , _ ) continuation ) -> continue k ( Hashtbl . find_opt tbl x ) ) | Set ( x , v ) -> Some ( fun ( k : ( a , _ ) continuation ) -> Hashtbl . replace tbl x v ; continue k ( ) ) | _ -> None ) ; }"
+   },
+   {
+    "nome": "exception Abortar",
+    "texto": "exception Abortar of string"
+   },
+   {
+    "nome": "run_exn",
+    "texto": "let run_exn ( main : unit -> int ) : ( int , string ) result = match_with main ( ) { retc = ( fun v -> Ok v ) ; exnc = ( function Abortar msg -> Error msg | e -> raise e ) ; effc = ( fun ( type a ) ( eff : a Effect . t ) -> match eff with | Fail msg -> Some ( fun ( k : ( a , _ ) continuation ) -> discontinue k ( Abortar msg ) ) | _ -> None ) ; }"
+   },
+   {
+    "nome": "run_output_emit",
+    "texto": "let run_output_emit ( main : unit -> ' a ) : ' a = match_with main ( ) { retc = ( fun v -> v ) ; exnc = raise ; effc = ( fun ( type a ) ( eff : a Effect . t ) -> match eff with | Output v -> Some ( fun ( k : ( a , _ ) continuation ) -> ! emit v ; continue k ( ) ) | _ -> None ) ; }"
+   },
+   {
+    "nome": "run_output_acc",
+    "texto": "let run_output_acc ( acc : int list ref ) ( main : unit -> ' a ) : ' a = match_with main ( ) { retc = ( fun v -> v ) ; exnc = raise ; effc = ( fun ( type a ) ( eff : a Effect . t ) -> match eff with | Output v -> Some ( fun ( k : ( a , _ ) continuation ) -> acc := v :: ! acc ; continue k ( ) ) | _ -> None ) ; }"
+   },
+   {
+    "nome": "run",
+    "texto": "let run ( tbl : ( string , int ) Hashtbl . t ) ( e : expr ) : ( int , string ) result = run_state tbl ( fun ( ) -> run_output_emit ( fun ( ) -> run_exn ( fun ( ) -> eval e ) ) )"
+   },
+   {
+    "nome": "run_acc",
+    "texto": "let run_acc ( tbl : ( string , int ) Hashtbl . t ) ( acc : int list ref ) ( e : expr ) : ( int , string ) result = run_state tbl ( fun ( ) -> run_output_acc acc ( fun ( ) -> run_exn ( fun ( ) -> eval e ) ) )"
+   }
+  ],
+  "boilerplate_regra": {
+   "B": 67,
+   "N": 11,
+   "linhas": [
+    {
+     "linha": 13,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "open Effect",
+     "texto": "open Effect"
+    },
+    {
+     "linha": 14,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "open Effect.Deep",
+     "texto": "open Effect.Deep"
+    },
+    {
+     "linha": 15,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "open Expr",
+     "texto": "open Expr"
+    },
+    {
+     "linha": 17,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "type+= Effect.t",
+     "texto": "type _ Effect.t +="
+    },
+    {
+     "linha": 18,
+     "rotulo": "N",
+     "motivo": "declaração de uma operação de efeito",
+     "declaracao": "type+= Effect.t",
+     "texto": "  | Get : string -> int option Effect.t"
+    },
+    {
+     "linha": 19,
+     "rotulo": "N",
+     "motivo": "declaração de uma operação de efeito",
+     "declaracao": "type+= Effect.t",
+     "texto": "  | Set : string * int -> unit Effect.t"
+    },
+    {
+     "linha": 20,
+     "rotulo": "N",
+     "motivo": "declaração de uma operação de efeito",
+     "declaracao": "type+= Effect.t",
+     "texto": "  | Fail : string -> 'a Effect.t"
+    },
+    {
+     "linha": 21,
+     "rotulo": "N",
+     "motivo": "declaração de uma operação de efeito",
+     "declaracao": "type+= Effect.t",
+     "texto": "  | Output : int -> unit Effect.t"
+    },
+    {
+     "linha": 54,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_state",
+     "texto": "let run_state (tbl : (string, int) Hashtbl.t) (main : unit -> 'a) : 'a ="
+    },
+    {
+     "linha": 55,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_state",
+     "texto": "  match_with main ()"
+    },
+    {
+     "linha": 56,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_state",
+     "texto": "    {"
+    },
+    {
+     "linha": 57,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_state",
+     "texto": "      retc = (fun v -> v);"
+    },
+    {
+     "linha": 58,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_state",
+     "texto": "      exnc = raise;"
+    },
+    {
+     "linha": 59,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_state",
+     "texto": "      effc ="
+    },
+    {
+     "linha": 60,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_state",
+     "texto": "        (fun (type a) (eff : a Effect.t) ->"
+    },
+    {
+     "linha": 61,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_state",
+     "texto": "          match eff with"
+    },
+    {
+     "linha": 62,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_state",
+     "texto": "          | Get x ->"
+    },
+    {
+     "linha": 63,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_state",
+     "texto": "              Some"
+    },
+    {
+     "linha": 64,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_state",
+     "texto": "                (fun (k : (a, _) continuation) ->"
+    },
+    {
+     "linha": 65,
+     "rotulo": "N",
+     "motivo": "operação sobre a tabela de estado (Hashtbl.*)",
+     "declaracao": "run_state",
+     "texto": "                  continue k (Hashtbl.find_opt tbl x))"
+    },
+    {
+     "linha": 66,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_state",
+     "texto": "          | Set (x, v) ->"
+    },
+    {
+     "linha": 67,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_state",
+     "texto": "              Some"
+    },
+    {
+     "linha": 68,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_state",
+     "texto": "                (fun (k : (a, _) continuation) ->"
+    },
+    {
+     "linha": 69,
+     "rotulo": "N",
+     "motivo": "operação sobre a tabela de estado (Hashtbl.*)",
+     "declaracao": "run_state",
+     "texto": "                  Hashtbl.replace tbl x v;"
+    },
+    {
+     "linha": 70,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_state",
+     "texto": "                  continue k ())"
+    },
+    {
+     "linha": 71,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_state",
+     "texto": "          | _ -> None);"
+    },
+    {
+     "linha": 72,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_state",
+     "texto": "    }"
+    },
+    {
+     "linha": 80,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "exception Abortar",
+     "texto": "exception Abortar of string"
+    },
+    {
+     "linha": 82,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_exn",
+     "texto": "let run_exn (main : unit -> int) : (int, string) result ="
+    },
+    {
+     "linha": 83,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_exn",
+     "texto": "  match_with main ()"
+    },
+    {
+     "linha": 84,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_exn",
+     "texto": "    {"
+    },
+    {
+     "linha": 85,
+     "rotulo": "N",
+     "motivo": "resultado do efeito de exceção (Ok/Error)",
+     "declaracao": "run_exn",
+     "texto": "      retc = (fun v -> Ok v);"
+    },
+    {
+     "linha": 86,
+     "rotulo": "N",
+     "motivo": "resultado do efeito de exceção (Ok/Error)",
+     "declaracao": "run_exn",
+     "texto": "      exnc = (function Abortar msg -> Error msg | e -> raise e);"
+    },
+    {
+     "linha": 87,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_exn",
+     "texto": "      effc ="
+    },
+    {
+     "linha": 88,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_exn",
+     "texto": "        (fun (type a) (eff : a Effect.t) ->"
+    },
+    {
+     "linha": 89,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_exn",
+     "texto": "          match eff with"
+    },
+    {
+     "linha": 90,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_exn",
+     "texto": "          | Fail msg ->"
+    },
+    {
+     "linha": 91,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_exn",
+     "texto": "              Some"
+    },
+    {
+     "linha": 92,
+     "rotulo": "N",
+     "motivo": "decisão de não retomar a continuação",
+     "declaracao": "run_exn",
+     "texto": "                (fun (k : (a, _) continuation) -> discontinue k (Abortar msg))"
+    },
+    {
+     "linha": 93,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_exn",
+     "texto": "          | _ -> None);"
+    },
+    {
+     "linha": 94,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_exn",
+     "texto": "    }"
+    },
+    {
+     "linha": 98,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_emit",
+     "texto": "let run_output_emit (main : unit -> 'a) : 'a ="
+    },
+    {
+     "linha": 99,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_emit",
+     "texto": "  match_with main ()"
+    },
+    {
+     "linha": 100,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_emit",
+     "texto": "    {"
+    },
+    {
+     "linha": 101,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_emit",
+     "texto": "      retc = (fun v -> v);"
+    },
+    {
+     "linha": 102,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_emit",
+     "texto": "      exnc = raise;"
+    },
+    {
+     "linha": 103,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_emit",
+     "texto": "      effc ="
+    },
+    {
+     "linha": 104,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_emit",
+     "texto": "        (fun (type a) (eff : a Effect.t) ->"
+    },
+    {
+     "linha": 105,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_emit",
+     "texto": "          match eff with"
+    },
+    {
+     "linha": 106,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_emit",
+     "texto": "          | Output v ->"
+    },
+    {
+     "linha": 107,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_emit",
+     "texto": "              Some"
+    },
+    {
+     "linha": 108,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_emit",
+     "texto": "                (fun (k : (a, _) continuation) ->"
+    },
+    {
+     "linha": 109,
+     "rotulo": "N",
+     "motivo": "uso da referência de emissão ou de entrada",
+     "declaracao": "run_output_emit",
+     "texto": "                  !emit v;"
+    },
+    {
+     "linha": 110,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_emit",
+     "texto": "                  continue k ())"
+    },
+    {
+     "linha": 111,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_emit",
+     "texto": "          | _ -> None);"
+    },
+    {
+     "linha": 112,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_emit",
+     "texto": "    }"
+    },
+    {
+     "linha": 116,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_acc",
+     "texto": "let run_output_acc (acc : int list ref) (main : unit -> 'a) : 'a ="
+    },
+    {
+     "linha": 117,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_acc",
+     "texto": "  match_with main ()"
+    },
+    {
+     "linha": 118,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_acc",
+     "texto": "    {"
+    },
+    {
+     "linha": 119,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_acc",
+     "texto": "      retc = (fun v -> v);"
+    },
+    {
+     "linha": 120,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_acc",
+     "texto": "      exnc = raise;"
+    },
+    {
+     "linha": 121,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_acc",
+     "texto": "      effc ="
+    },
+    {
+     "linha": 122,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_acc",
+     "texto": "        (fun (type a) (eff : a Effect.t) ->"
+    },
+    {
+     "linha": 123,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_acc",
+     "texto": "          match eff with"
+    },
+    {
+     "linha": 124,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_acc",
+     "texto": "          | Output v ->"
+    },
+    {
+     "linha": 125,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_acc",
+     "texto": "              Some"
+    },
+    {
+     "linha": 126,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_acc",
+     "texto": "                (fun (k : (a, _) continuation) ->"
+    },
+    {
+     "linha": 127,
+     "rotulo": "N",
+     "motivo": "atualização de acumulador ou de fluxo",
+     "declaracao": "run_output_acc",
+     "texto": "                  acc := v :: !acc;"
+    },
+    {
+     "linha": 128,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_acc",
+     "texto": "                  continue k ())"
+    },
+    {
+     "linha": 129,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_acc",
+     "texto": "          | _ -> None);"
+    },
+    {
+     "linha": 130,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_output_acc",
+     "texto": "    }"
+    },
+    {
+     "linha": 134,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run",
+     "texto": "let run (tbl : (string, int) Hashtbl.t) (e : expr) : (int, string) result ="
+    },
+    {
+     "linha": 135,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run",
+     "texto": "  run_state tbl (fun () ->"
+    },
+    {
+     "linha": 136,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run",
+     "texto": "      run_output_emit (fun () -> run_exn (fun () -> eval e)))"
+    },
+    {
+     "linha": 139,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_acc",
+     "texto": "let run_acc (tbl : (string, int) Hashtbl.t) (acc : int list ref) (e : expr) :"
+    },
+    {
+     "linha": 140,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_acc",
+     "texto": "    (int, string) result ="
+    },
+    {
+     "linha": 141,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_acc",
+     "texto": "  run_state tbl (fun () ->"
+    },
+    {
+     "linha": 142,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run_acc",
+     "texto": "      run_output_acc acc (fun () -> run_exn (fun () -> eval e)))"
+    }
+   ]
+  },
+  "reutilizacao": {
+   "instancias": 2,
+   "pontos": {
+    "run_state": 2,
+    "run_exn": 2,
+    "run_output_emit": 1,
+    "run_output_acc": 1
+   }
+  }
+ },
+ "imperativa": {
+  "linguagem": "ocaml",
+  "papel": "base",
+  "arquivo": "/home/user/TCC/codigo/ocaml/imperative/interp_imp.ml",
+  "loc_arquivo": 33,
+  "eval": {
+   "loc": 29,
+   "operacoes": 5,
+   "profundidade": 2,
+   "por_construtor": {
+    "Num": {
+     "loc": 1,
+     "operacoes": 0,
+     "profundidade": 1
+    },
+    "Var": {
+     "loc": 4,
+     "operacoes": 2,
+     "profundidade": 2
+    },
+    "Add": {
+     "loc": 4,
+     "operacoes": 0,
+     "profundidade": 1
+    },
+    "Mul": {
+     "loc": 4,
+     "operacoes": 0,
+     "profundidade": 1
+    },
+    "Div": {
+     "loc": 4,
+     "operacoes": 1,
+     "profundidade": 2
+    },
+    "Let": {
+     "loc": 4,
+     "operacoes": 1,
+     "profundidade": 1
+    },
+    "Seq": {
+     "loc": 3,
+     "operacoes": 0,
+     "profundidade": 1
+    },
+    "Print": {
+     "loc": 4,
+     "operacoes": 1,
+     "profundidade": 1
+    }
+   },
+   "bracos": {
+    "Num": "Num n -> n",
+    "Var": "Var x -> ( match Hashtbl . find_opt env x with | Some v -> v | None -> raise ( Runtime_error ( msg_unbound x ) ) )",
+    "Add": "Add ( a , b ) -> let x = eval env a in let y = eval env b in x + y",
+    "Mul": "Mul ( a , b ) -> let x = eval env a in let y = eval env b in x * y",
+    "Div": "Div ( a , b ) -> let x = eval env a in let y = eval env b in if y = 0 then raise ( Runtime_error msg_div_zero ) else x / y",
+    "Let": "Let ( x , e , b ) -> let v = eval env e in Hashtbl . replace env x v ; eval env b",
+    "Seq": "Seq ( a , b ) -> ignore ( eval env a ) ; eval env b",
+    "Print": "Print e -> let v = eval env e in ! emit v ; v"
+   }
+  },
+  "loc_fora_de_eval": 4,
+  "linhas_fora_de_eval": [
+   {
+    "linha": 10,
+    "texto": "open Expr",
+    "tokens": [
+     "open",
+     "Expr"
+    ],
+    "declaracao": "open Expr"
+   },
+   {
+    "linha": 12,
+    "texto": "exception Runtime_error of string",
+    "tokens": [
+     "exception",
+     "Runtime_error",
+     "of",
+     "string"
+    ],
+    "declaracao": "exception Runtime_error"
+   },
+   {
+    "linha": 45,
+    "texto": "let run (env : (string, int) Hashtbl.t) (e : expr) : (int, string) result =",
+    "tokens": [
+     "let",
+     "run",
+     "(",
+     "env",
+     ":",
+     "(",
+     "string",
+     ",",
+     "int",
+     ")",
+     "Hashtbl",
+     ".",
+     "t",
+     ")",
+     "(",
+     "e",
+     ":",
+     "expr",
+     ")",
+     ":",
+     "(",
+     "int",
+     ",",
+     "string",
+     ")",
+     "result",
+     "="
+    ],
+    "declaracao": "run"
+   },
+   {
+    "linha": 46,
+    "texto": "  match eval env e with v -> Ok v | exception Runtime_error m -> Error m",
+    "tokens": [
+     "match",
+     "eval",
+     "env",
+     "e",
+     "with",
+     "v",
+     "->",
+     "Ok",
+     "v",
+     "|",
+     "exception",
+     "Runtime_error",
+     "m",
+     "->",
+     "Error",
+     "m"
+    ],
+    "declaracao": "run"
+   }
+  ],
+  "declaracoes": [
+   {
+    "nome": "open Expr",
+    "texto": "open Expr"
+   },
+   {
+    "nome": "exception Runtime_error",
+    "texto": "exception Runtime_error of string"
+   },
+   {
+    "nome": "eval",
+    "texto": "let rec eval ( env : ( string , int ) Hashtbl . t ) : expr -> int = function | Num n -> n | Var x -> ( match Hashtbl . find_opt env x with | Some v -> v | None -> raise ( Runtime_error ( msg_unbound x ) ) ) | Add ( a , b ) -> let x = eval env a in let y = eval env b in x + y | Mul ( a , b ) -> let x = eval env a in let y = eval env b in x * y | Div ( a , b ) -> let x = eval env a in let y = eval env b in if y = 0 then raise ( Runtime_error msg_div_zero ) else x / y | Let ( x , e , b ) -> let v = eval env e in Hashtbl . replace env x v ; eval env b | Seq ( a , b ) -> ignore ( eval env a ) ; eval env b | Print e -> let v = eval env e in ! emit v ; v"
+   },
+   {
+    "nome": "run",
+    "texto": "let run ( env : ( string , int ) Hashtbl . t ) ( e : expr ) : ( int , string ) result = match eval env e with v -> Ok v | exception Runtime_error m -> Error m"
+   }
+  ],
+  "boilerplate_regra": {
+   "B": 3,
+   "N": 1,
+   "linhas": [
+    {
+     "linha": 10,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "open Expr",
+     "texto": "open Expr"
+    },
+    {
+     "linha": 12,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "exception Runtime_error",
+     "texto": "exception Runtime_error of string"
+    },
+    {
+     "linha": 45,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run",
+     "texto": "let run (env : (string, int) Hashtbl.t) (e : expr) : (int, string) result ="
+    },
+    {
+     "linha": 46,
+     "rotulo": "N",
+     "motivo": "resultado do efeito de exceção (Ok/Error)",
+     "declaracao": "run",
+     "texto": "  match eval env e with v -> Ok v | exception Runtime_error m -> Error m"
+    }
+   ]
+  },
+  "reutilizacao": {
+   "instancias": 0,
+   "pontos": {}
+  }
+ },
+ "monadas": {
+  "linguagem": "haskell",
+  "papel": "mecanismo",
+  "arquivo": "/home/user/TCC/codigo/haskell/src/Interp/Monadic.hs",
+  "declaracoes": [
+   {
+    "nome": "import Control.Monad",
+    "texto": "import Control.Monad ( when )"
+   },
+   {
+    "nome": "import Control.Monad.Except",
+    "texto": "import Control.Monad.Except ( ExceptT , runExceptT , throwError )"
+   },
+   {
+    "nome": "import Control.Monad.IO.Class",
+    "texto": "import Control.Monad.IO.Class ( liftIO )"
+   },
+   {
+    "nome": "import Control.Monad.State.Strict",
+    "texto": "import Control.Monad.State.Strict ( StateT , get , modify' , runStateT )"
+   },
+   {
+    "nome": "import Data.IORef",
+    "texto": "import Data.IORef ( readIORef )"
+   },
+   {
+    "nome": "import Data.Map.Strict",
+    "texto": "import Data.Map.Strict ( Map )"
+   },
+   {
+    "nome": "import Data.Map.Strict",
+    "texto": "import qualified Data.Map.Strict as Map"
+   },
+   {
+    "nome": "import Expr",
+    "texto": "import Expr"
+   },
+   {
+    "nome": "type Env",
+    "texto": "type Env = Map String Int"
+   },
+   {
+    "nome": "type Interp",
+    "texto": "type Interp a = ExceptT String ( StateT Env IO ) a"
+   },
+   {
+    "nome": "emit",
+    "subitens": {
+     "_": "emit v = liftIO ( readIORef emitRef >>= \\ f -> f v )"
+    },
+    "texto": "emit :: Int -> Interp ( ) emit v = liftIO ( readIORef emitRef >>= \\ f -> f v )"
+   },
+   {
+    "nome": "eval",
+    "texto": "eval :: Expr -> Interp Int eval ( Num n ) = return n eval ( Var x ) = do env <- get maybe ( throwError ( msgUnbound x ) ) return ( Map.lookup x env ) eval ( Add a b ) = do x <- eval a y <- eval b return $! x + y eval ( Mul a b ) = do x <- eval a y <- eval b return $! x * y eval ( Div a b ) = do x <- eval a y <- eval b when ( y == 0 ) ( throwError msgDivZero ) return $! x ` quot ` y eval ( Let x e b ) = do v <- eval e modify' ( Map.insert x v ) eval b eval ( Seq a b ) = eval a >> eval b eval ( Print e ) = do v <- eval e emit v return v"
+   },
+   {
+    "nome": "run",
+    "subitens": {
+     "_": "run env e = runStateT ( runExceptT ( eval e ) ) env"
+    },
+    "texto": "run :: Env -> Expr -> IO ( Either String Int , Env ) run env e = runStateT ( runExceptT ( eval e ) ) env"
+   }
+  ],
+  "eval": {
+   "bracos": {
+    "Add": "eval ( Add a b ) = do x <- eval a y <- eval b return $! x + y",
+    "Div": "eval ( Div a b ) = do x <- eval a y <- eval b when ( y == 0 ) ( throwError msgDivZero ) return $! x ` quot ` y",
+    "Let": "eval ( Let x e b ) = do v <- eval e modify' ( Map.insert x v ) eval b",
+    "Mul": "eval ( Mul a b ) = do x <- eval a y <- eval b return $! x * y",
+    "Num": "eval ( Num n ) = return n",
+    "Print": "eval ( Print e ) = do v <- eval e emit v return v",
+    "Seq": "eval ( Seq a b ) = eval a >> eval b",
+    "Var": "eval ( Var x ) = do env <- get maybe ( throwError ( msgUnbound x ) ) return ( Map.lookup x env )"
+   },
+   "loc": 27,
+   "operacoes": 18,
+   "por_construtor": {
+    "Add": {
+     "loc": 4,
+     "operacoes": 2,
+     "profundidade": 1
+    },
+    "Div": {
+     "loc": 5,
+     "operacoes": 4,
+     "profundidade": 1
+    },
+    "Let": {
+     "loc": 4,
+     "operacoes": 3,
+     "profundidade": 1
+    },
+    "Mul": {
+     "loc": 4,
+     "operacoes": 2,
+     "profundidade": 1
+    },
+    "Num": {
+     "loc": 1,
+     "operacoes": 0,
+     "profundidade": 1
+    },
+    "Print": {
+     "loc": 4,
+     "operacoes": 3,
+     "profundidade": 1
+    },
+    "Seq": {
+     "loc": 1,
+     "operacoes": 1,
+     "profundidade": 1
+    },
+    "Var": {
+     "loc": 3,
+     "operacoes": 3,
+     "profundidade": 1
+    }
+   },
+   "profundidade": 1
+  },
+  "linhas_fora_de_eval": [
+   {
+    "declaracao": "module",
+    "linha": 12,
+    "texto": "module Interp.Monadic",
+    "tokens": [
+     "module",
+     "Interp.Monadic"
+    ]
+   },
+   {
+    "declaracao": "module",
+    "linha": 13,
+    "texto": "  ( Env,",
+    "tokens": [
+     "(",
+     "Env",
+     ","
+    ]
+   },
+   {
+    "declaracao": "module",
+    "linha": 14,
+    "texto": "    Interp,",
+    "tokens": [
+     "Interp",
+     ","
+    ]
+   },
+   {
+    "declaracao": "module",
+    "linha": 15,
+    "texto": "    eval,",
+    "tokens": [
+     "eval",
+     ","
+    ]
+   },
+   {
+    "declaracao": "module",
+    "linha": 16,
+    "texto": "    emit,",
+    "tokens": [
+     "emit",
+     ","
+    ]
+   },
+   {
+    "declaracao": "module",
+    "linha": 17,
+    "texto": "    run,",
+    "tokens": [
+     "run",
+     ","
+    ]
+   },
+   {
+    "declaracao": "module",
+    "linha": 18,
+    "texto": "  )",
+    "tokens": [
+     ")"
+    ]
+   },
+   {
+    "declaracao": "module",
+    "linha": 19,
+    "texto": "where",
+    "tokens": [
+     "where"
+    ]
+   },
+   {
+    "declaracao": "import Control.Monad",
+    "linha": 21,
+    "texto": "import Control.Monad (when)",
+    "tokens": [
+     "import",
+     "Control.Monad",
+     "(",
+     "when",
+     ")"
+    ]
+   },
+   {
+    "declaracao": "import Control.Monad.Except",
+    "linha": 22,
+    "texto": "import Control.Monad.Except (ExceptT, runExceptT, throwError)",
+    "tokens": [
+     "import",
+     "Control.Monad.Except",
+     "(",
+     "ExceptT",
+     ",",
+     "runExceptT",
+     ",",
+     "throwError",
+     ")"
+    ]
+   },
+   {
+    "declaracao": "import Control.Monad.IO.Class",
+    "linha": 23,
+    "texto": "import Control.Monad.IO.Class (liftIO)",
+    "tokens": [
+     "import",
+     "Control.Monad.IO.Class",
+     "(",
+     "liftIO",
+     ")"
+    ]
+   },
+   {
+    "declaracao": "import Control.Monad.State.Strict",
+    "linha": 24,
+    "texto": "import Control.Monad.State.Strict (StateT, get, modify', runStateT)",
+    "tokens": [
+     "import",
+     "Control.Monad.State.Strict",
+     "(",
+     "StateT",
+     ",",
+     "get",
+     ",",
+     "modify'",
+     ",",
+     "runStateT",
+     ")"
+    ]
+   },
+   {
+    "declaracao": "import Data.IORef",
+    "linha": 25,
+    "texto": "import Data.IORef (readIORef)",
+    "tokens": [
+     "import",
+     "Data.IORef",
+     "(",
+     "readIORef",
+     ")"
+    ]
+   },
+   {
+    "declaracao": "import Data.Map.Strict",
+    "linha": 26,
+    "texto": "import Data.Map.Strict (Map)",
+    "tokens": [
+     "import",
+     "Data.Map.Strict",
+     "(",
+     "Map",
+     ")"
+    ]
+   },
+   {
+    "declaracao": "import Data.Map.Strict",
+    "linha": 27,
+    "texto": "import qualified Data.Map.Strict as Map",
+    "tokens": [
+     "import",
+     "qualified",
+     "Data.Map.Strict",
+     "as",
+     "Map"
+    ]
+   },
+   {
+    "declaracao": "import Expr",
+    "linha": 28,
+    "texto": "import Expr",
+    "tokens": [
+     "import",
+     "Expr"
+    ]
+   },
+   {
+    "declaracao": "type Env",
+    "linha": 30,
+    "texto": "type Env = Map String Int",
+    "tokens": [
+     "type",
+     "Env",
+     "=",
+     "Map",
+     "String",
+     "Int"
+    ]
+   },
+   {
+    "declaracao": "type Interp",
+    "linha": 32,
+    "texto": "type Interp a = ExceptT String (StateT Env IO) a",
+    "tokens": [
+     "type",
+     "Interp",
+     "a",
+     "=",
+     "ExceptT",
+     "String",
+     "(",
+     "StateT",
+     "Env",
+     "IO",
+     ")",
+     "a"
+    ]
+   },
+   {
+    "declaracao": "emit",
+    "linha": 35,
+    "texto": "emit :: Int -> Interp ()",
+    "tokens": [
+     "emit",
+     "::",
+     "Int",
+     "->",
+     "Interp",
+     "(",
+     ")"
+    ]
+   },
+   {
+    "declaracao": "emit",
+    "linha": 36,
+    "texto": "emit v = liftIO (readIORef emitRef >>= \\f -> f v)",
+    "tokens": [
+     "emit",
+     "v",
+     "=",
+     "liftIO",
+     "(",
+     "readIORef",
+     "emitRef",
+     ">>=",
+     "\\",
+     "f",
+     "->",
+     "f",
+     "v",
+     ")"
+    ]
+   },
+   {
+    "declaracao": "run",
+    "linha": 68,
+    "texto": "run :: Env -> Expr -> IO (Either String Int, Env)",
+    "tokens": [
+     "run",
+     "::",
+     "Env",
+     "->",
+     "Expr",
+     "->",
+     "IO",
+     "(",
+     "Either",
+     "String",
+     "Int",
+     ",",
+     "Env",
+     ")"
+    ]
+   },
+   {
+    "declaracao": "run",
+    "linha": 69,
+    "texto": "run env e = runStateT (runExceptT (eval e)) env",
+    "tokens": [
+     "run",
+     "env",
+     "e",
+     "=",
+     "runStateT",
+     "(",
+     "runExceptT",
+     "(",
+     "eval",
+     "e",
+     ")",
+     ")",
+     "env"
+    ]
+   }
+  ],
+  "loc_arquivo": 49,
+  "loc_fora_de_eval": 22,
+  "boilerplate_regra": {
+   "B": 20,
+   "N": 2,
+   "linhas": [
+    {
+     "linha": 12,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "module",
+     "texto": "module Interp.Monadic"
+    },
+    {
+     "linha": 13,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "module",
+     "texto": "  ( Env,"
+    },
+    {
+     "linha": 14,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "module",
+     "texto": "    Interp,"
+    },
+    {
+     "linha": 15,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "module",
+     "texto": "    eval,"
+    },
+    {
+     "linha": 16,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "module",
+     "texto": "    emit,"
+    },
+    {
+     "linha": 17,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "module",
+     "texto": "    run,"
+    },
+    {
+     "linha": 18,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "module",
+     "texto": "  )"
+    },
+    {
+     "linha": 19,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "module",
+     "texto": "where"
+    },
+    {
+     "linha": 21,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "import Control.Monad",
+     "texto": "import Control.Monad (when)"
+    },
+    {
+     "linha": 22,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "import Control.Monad.Except",
+     "texto": "import Control.Monad.Except (ExceptT, runExceptT, throwError)"
+    },
+    {
+     "linha": 23,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "import Control.Monad.IO.Class",
+     "texto": "import Control.Monad.IO.Class (liftIO)"
+    },
+    {
+     "linha": 24,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "import Control.Monad.State.Strict",
+     "texto": "import Control.Monad.State.Strict (StateT, get, modify', runStateT)"
+    },
+    {
+     "linha": 25,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "import Data.IORef",
+     "texto": "import Data.IORef (readIORef)"
+    },
+    {
+     "linha": 26,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "import Data.Map.Strict",
+     "texto": "import Data.Map.Strict (Map)"
+    },
+    {
+     "linha": 27,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "import Data.Map.Strict",
+     "texto": "import qualified Data.Map.Strict as Map"
+    },
+    {
+     "linha": 28,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "import Expr",
+     "texto": "import Expr"
+    },
+    {
+     "linha": 30,
+     "rotulo": "N",
+     "motivo": "domínio do estado (type Env)",
+     "declaracao": "type Env",
+     "texto": "type Env = Map String Int"
+    },
+    {
+     "linha": 32,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "type Interp",
+     "texto": "type Interp a = ExceptT String (StateT Env IO) a"
+    },
+    {
+     "linha": 35,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "emit",
+     "texto": "emit :: Int -> Interp ()"
+    },
+    {
+     "linha": 36,
+     "rotulo": "N",
+     "motivo": "uso da referência de emissão ou de entrada",
+     "declaracao": "emit",
+     "texto": "emit v = liftIO (readIORef emitRef >>= \\f -> f v)"
+    },
+    {
+     "linha": 68,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run",
+     "texto": "run :: Env -> Expr -> IO (Either String Int, Env)"
+    },
+    {
+     "linha": 69,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run",
+     "texto": "run env e = runStateT (runExceptT (eval e)) env"
+    }
+   ]
+  },
+  "reutilizacao": {
+   "instancias": 0,
+   "pontos": {
+    "runStateT": 1,
+    "runExceptT": 1
+   }
+  }
+ },
+ "ioref": {
+  "linguagem": "haskell",
+  "papel": "base",
+  "arquivo": "/home/user/TCC/codigo/haskell/src/Interp/IORefBase.hs",
+  "declaracoes": [
+   {
+    "nome": "import Control.Exception",
+    "texto": "import Control.Exception ( Exception , throwIO , try )"
+   },
+   {
+    "nome": "import Control.Monad",
+    "texto": "import Control.Monad ( when )"
+   },
+   {
+    "nome": "import Data.IORef",
+    "texto": "import Data.IORef ( IORef , modifyIORef' , readIORef )"
+   },
+   {
+    "nome": "import Data.Map.Strict",
+    "texto": "import Data.Map.Strict ( Map )"
+   },
+   {
+    "nome": "import Data.Map.Strict",
+    "texto": "import qualified Data.Map.Strict as Map"
+   },
+   {
+    "nome": "import Expr",
+    "texto": "import Expr"
+   },
+   {
+    "nome": "type Env",
+    "texto": "type Env = Map String Int"
+   },
+   {
+    "nome": "data RuntimeError",
+    "subitens": {
+     "RuntimeError": "RuntimeError String"
+    },
+    "texto": "newtype RuntimeError = RuntimeError String deriving ( Show )"
+   },
+   {
+    "nome": "instance@30",
+    "texto": "instance Exception RuntimeError"
+   },
+   {
+    "nome": "emit",
+    "subitens": {
+     "_": "emit v = readIORef emitRef >>= \\ f -> f v"
+    },
+    "texto": "emit :: Int -> IO ( ) emit v = readIORef emitRef >>= \\ f -> f v"
+   },
+   {
+    "nome": "eval",
+    "texto": "eval :: IORef Env -> Expr -> IO Int eval _ ( Num n ) = return n eval ref ( Var x ) = do env <- readIORef ref maybe ( throwIO ( RuntimeError ( msgUnbound x ) ) ) return ( Map.lookup x env ) eval ref ( Add a b ) = do x <- eval ref a y <- eval ref b return $! x + y eval ref ( Mul a b ) = do x <- eval ref a y <- eval ref b return $! x * y eval ref ( Div a b ) = do x <- eval ref a y <- eval ref b when ( y == 0 ) ( throwIO ( RuntimeError msgDivZero ) ) return $! x ` quot ` y eval ref ( Let x e b ) = do v <- eval ref e modifyIORef' ref ( Map.insert x v ) eval ref b eval ref ( Seq a b ) = eval ref a >> eval ref b eval ref ( Print e ) = do v <- eval ref e emit v return v"
+   },
+   {
+    "nome": "run",
+    "subitens": {
+     "_": "run ref e = do r <- try ( eval ref e ) return $ case r of Left ( RuntimeError m ) -> Left m Right v -> Right v"
+    },
+    "texto": "run :: IORef Env -> Expr -> IO ( Either String Int ) run ref e = do r <- try ( eval ref e ) return $ case r of Left ( RuntimeError m ) -> Left m Right v -> Right v"
+   }
+  ],
+  "eval": {
+   "bracos": {
+    "Add": "eval ref ( Add a b ) = do x <- eval ref a y <- eval ref b return $! x + y",
+    "Div": "eval ref ( Div a b ) = do x <- eval ref a y <- eval ref b when ( y == 0 ) ( throwIO ( RuntimeError msgDivZero ) ) return $! x ` quot ` y",
+    "Let": "eval ref ( Let x e b ) = do v <- eval ref e modifyIORef' ref ( Map.insert x v ) eval ref b",
+    "Mul": "eval ref ( Mul a b ) = do x <- eval ref a y <- eval ref b return $! x * y",
+    "Num": "eval _ ( Num n ) = return n",
+    "Print": "eval ref ( Print e ) = do v <- eval ref e emit v return v",
+    "Seq": "eval ref ( Seq a b ) = eval ref a >> eval ref b",
+    "Var": "eval ref ( Var x ) = do env <- readIORef ref maybe ( throwIO ( RuntimeError ( msgUnbound x ) ) ) return ( Map.lookup x env )"
+   },
+   "loc": 27,
+   "operacoes": 18,
+   "por_construtor": {
+    "Add": {
+     "loc": 4,
+     "operacoes": 2,
+     "profundidade": 1
+    },
+    "Div": {
+     "loc": 5,
+     "operacoes": 4,
+     "profundidade": 1
+    },
+    "Let": {
+     "loc": 4,
+     "operacoes": 3,
+     "profundidade": 1
+    },
+    "Mul": {
+     "loc": 4,
+     "operacoes": 2,
+     "profundidade": 1
+    },
+    "Num": {
+     "loc": 1,
+     "operacoes": 0,
+     "profundidade": 1
+    },
+    "Print": {
+     "loc": 4,
+     "operacoes": 3,
+     "profundidade": 1
+    },
+    "Seq": {
+     "loc": 1,
+     "operacoes": 1,
+     "profundidade": 1
+    },
+    "Var": {
+     "loc": 3,
+     "operacoes": 3,
+     "profundidade": 1
+    }
+   },
+   "profundidade": 1
+  },
+  "linhas_fora_de_eval": [
+   {
+    "declaracao": "module",
+    "linha": 9,
+    "texto": "module Interp.IORefBase",
+    "tokens": [
+     "module",
+     "Interp.IORefBase"
+    ]
+   },
+   {
+    "declaracao": "module",
+    "linha": 10,
+    "texto": "  ( Env,",
+    "tokens": [
+     "(",
+     "Env",
+     ","
+    ]
+   },
+   {
+    "declaracao": "module",
+    "linha": 11,
+    "texto": "    RuntimeError (..),",
+    "tokens": [
+     "RuntimeError",
+     "(",
+     "..",
+     ")",
+     ","
+    ]
+   },
+   {
+    "declaracao": "module",
+    "linha": 12,
+    "texto": "    eval,",
+    "tokens": [
+     "eval",
+     ","
+    ]
+   },
+   {
+    "declaracao": "module",
+    "linha": 13,
+    "texto": "    emit,",
+    "tokens": [
+     "emit",
+     ","
+    ]
+   },
+   {
+    "declaracao": "module",
+    "linha": 14,
+    "texto": "    run,",
+    "tokens": [
+     "run",
+     ","
+    ]
+   },
+   {
+    "declaracao": "module",
+    "linha": 15,
+    "texto": "  )",
+    "tokens": [
+     ")"
+    ]
+   },
+   {
+    "declaracao": "module",
+    "linha": 16,
+    "texto": "where",
+    "tokens": [
+     "where"
+    ]
+   },
+   {
+    "declaracao": "import Control.Exception",
+    "linha": 18,
+    "texto": "import Control.Exception (Exception, throwIO, try)",
+    "tokens": [
+     "import",
+     "Control.Exception",
+     "(",
+     "Exception",
+     ",",
+     "throwIO",
+     ",",
+     "try",
+     ")"
+    ]
+   },
+   {
+    "declaracao": "import Control.Monad",
+    "linha": 19,
+    "texto": "import Control.Monad (when)",
+    "tokens": [
+     "import",
+     "Control.Monad",
+     "(",
+     "when",
+     ")"
+    ]
+   },
+   {
+    "declaracao": "import Data.IORef",
+    "linha": 20,
+    "texto": "import Data.IORef (IORef, modifyIORef', readIORef)",
+    "tokens": [
+     "import",
+     "Data.IORef",
+     "(",
+     "IORef",
+     ",",
+     "modifyIORef'",
+     ",",
+     "readIORef",
+     ")"
+    ]
+   },
+   {
+    "declaracao": "import Data.Map.Strict",
+    "linha": 21,
+    "texto": "import Data.Map.Strict (Map)",
+    "tokens": [
+     "import",
+     "Data.Map.Strict",
+     "(",
+     "Map",
+     ")"
+    ]
+   },
+   {
+    "declaracao": "import Data.Map.Strict",
+    "linha": 22,
+    "texto": "import qualified Data.Map.Strict as Map",
+    "tokens": [
+     "import",
+     "qualified",
+     "Data.Map.Strict",
+     "as",
+     "Map"
+    ]
+   },
+   {
+    "declaracao": "import Expr",
+    "linha": 23,
+    "texto": "import Expr",
+    "tokens": [
+     "import",
+     "Expr"
+    ]
+   },
+   {
+    "declaracao": "type Env",
+    "linha": 25,
+    "texto": "type Env = Map String Int",
+    "tokens": [
+     "type",
+     "Env",
+     "=",
+     "Map",
+     "String",
+     "Int"
+    ]
+   },
+   {
+    "declaracao": "data RuntimeError",
+    "linha": 27,
+    "texto": "newtype RuntimeError = RuntimeError String",
+    "tokens": [
+     "newtype",
+     "RuntimeError",
+     "=",
+     "RuntimeError",
+     "String"
+    ]
+   },
+   {
+    "declaracao": "data RuntimeError",
+    "linha": 28,
+    "texto": "  deriving (Show)",
+    "tokens": [
+     "deriving",
+     "(",
+     "Show",
+     ")"
+    ]
+   },
+   {
+    "declaracao": "instance@30",
+    "linha": 30,
+    "texto": "instance Exception RuntimeError",
+    "tokens": [
+     "instance",
+     "Exception",
+     "RuntimeError"
+    ]
+   },
+   {
+    "declaracao": "emit",
+    "linha": 33,
+    "texto": "emit :: Int -> IO ()",
+    "tokens": [
+     "emit",
+     "::",
+     "Int",
+     "->",
+     "IO",
+     "(",
+     ")"
+    ]
+   },
+   {
+    "declaracao": "emit",
+    "linha": 34,
+    "texto": "emit v = readIORef emitRef >>= \\f -> f v",
+    "tokens": [
+     "emit",
+     "v",
+     "=",
+     "readIORef",
+     "emitRef",
+     ">>=",
+     "\\",
+     "f",
+     "->",
+     "f",
+     "v"
+    ]
+   },
+   {
+    "declaracao": "run",
+    "linha": 65,
+    "texto": "run :: IORef Env -> Expr -> IO (Either String Int)",
+    "tokens": [
+     "run",
+     "::",
+     "IORef",
+     "Env",
+     "->",
+     "Expr",
+     "->",
+     "IO",
+     "(",
+     "Either",
+     "String",
+     "Int",
+     ")"
+    ]
+   },
+   {
+    "declaracao": "run",
+    "linha": 66,
+    "texto": "run ref e = do",
+    "tokens": [
+     "run",
+     "ref",
+     "e",
+     "=",
+     "do"
+    ]
+   },
+   {
+    "declaracao": "run",
+    "linha": 67,
+    "texto": "  r <- try (eval ref e)",
+    "tokens": [
+     "r",
+     "<-",
+     "try",
+     "(",
+     "eval",
+     "ref",
+     "e",
+     ")"
+    ]
+   },
+   {
+    "declaracao": "run",
+    "linha": 68,
+    "texto": "  return $ case r of",
+    "tokens": [
+     "return",
+     "$",
+     "case",
+     "r",
+     "of"
+    ]
+   },
+   {
+    "declaracao": "run",
+    "linha": 69,
+    "texto": "    Left (RuntimeError m) -> Left m",
+    "tokens": [
+     "Left",
+     "(",
+     "RuntimeError",
+     "m",
+     ")",
+     "->",
+     "Left",
+     "m"
+    ]
+   },
+   {
+    "declaracao": "run",
+    "linha": 70,
+    "texto": "    Right v -> Right v",
+    "tokens": [
+     "Right",
+     "v",
+     "->",
+     "Right",
+     "v"
+    ]
+   }
+  ],
+  "loc_arquivo": 53,
+  "loc_fora_de_eval": 26,
+  "boilerplate_regra": {
+   "B": 22,
+   "N": 4,
+   "linhas": [
+    {
+     "linha": 9,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "module",
+     "texto": "module Interp.IORefBase"
+    },
+    {
+     "linha": 10,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "module",
+     "texto": "  ( Env,"
+    },
+    {
+     "linha": 11,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "module",
+     "texto": "    RuntimeError (..),"
+    },
+    {
+     "linha": 12,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "module",
+     "texto": "    eval,"
+    },
+    {
+     "linha": 13,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "module",
+     "texto": "    emit,"
+    },
+    {
+     "linha": 14,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "module",
+     "texto": "    run,"
+    },
+    {
+     "linha": 15,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "module",
+     "texto": "  )"
+    },
+    {
+     "linha": 16,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "module",
+     "texto": "where"
+    },
+    {
+     "linha": 18,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "import Control.Exception",
+     "texto": "import Control.Exception (Exception, throwIO, try)"
+    },
+    {
+     "linha": 19,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "import Control.Monad",
+     "texto": "import Control.Monad (when)"
+    },
+    {
+     "linha": 20,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "import Data.IORef",
+     "texto": "import Data.IORef (IORef, modifyIORef', readIORef)"
+    },
+    {
+     "linha": 21,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "import Data.Map.Strict",
+     "texto": "import Data.Map.Strict (Map)"
+    },
+    {
+     "linha": 22,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "import Data.Map.Strict",
+     "texto": "import qualified Data.Map.Strict as Map"
+    },
+    {
+     "linha": 23,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "import Expr",
+     "texto": "import Expr"
+    },
+    {
+     "linha": 25,
+     "rotulo": "N",
+     "motivo": "domínio do estado (type Env)",
+     "declaracao": "type Env",
+     "texto": "type Env = Map String Int"
+    },
+    {
+     "linha": 27,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "data RuntimeError",
+     "texto": "newtype RuntimeError = RuntimeError String"
+    },
+    {
+     "linha": 28,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "data RuntimeError",
+     "texto": "  deriving (Show)"
+    },
+    {
+     "linha": 30,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "instance@30",
+     "texto": "instance Exception RuntimeError"
+    },
+    {
+     "linha": 33,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "emit",
+     "texto": "emit :: Int -> IO ()"
+    },
+    {
+     "linha": 34,
+     "rotulo": "N",
+     "motivo": "uso da referência de emissão ou de entrada",
+     "declaracao": "emit",
+     "texto": "emit v = readIORef emitRef >>= \\f -> f v"
+    },
+    {
+     "linha": 65,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run",
+     "texto": "run :: IORef Env -> Expr -> IO (Either String Int)"
+    },
+    {
+     "linha": 66,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run",
+     "texto": "run ref e = do"
+    },
+    {
+     "linha": 67,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run",
+     "texto": "  r <- try (eval ref e)"
+    },
+    {
+     "linha": 68,
+     "rotulo": "B",
+     "motivo": "infraestrutura: sem marcador semântico",
+     "declaracao": "run",
+     "texto": "  return $ case r of"
+    },
+    {
+     "linha": 69,
+     "rotulo": "N",
+     "motivo": "resultado do efeito de exceção (Left/Right)",
+     "declaracao": "run",
+     "texto": "    Left (RuntimeError m) -> Left m"
+    },
+    {
+     "linha": 70,
+     "rotulo": "N",
+     "motivo": "resultado do efeito de exceção (Left/Right)",
+     "declaracao": "run",
+     "texto": "    Right v -> Right v"
+    }
+   ]
+  },
+  "reutilizacao": {
+   "instancias": 0,
+   "pontos": {}
+  }
+ }
+}

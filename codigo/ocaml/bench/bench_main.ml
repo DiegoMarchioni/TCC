@@ -22,9 +22,10 @@
      acumulador zerado no início de cada execução, nas duas.
    - O resultado é passado por [Sys.opaque_identity] nas duas versões, para
      que o flambda não elimine trabalho de forma assimétrica.
-   - A ordem alterna entre cenários (base primeiro nos de índice par,
-     mecanismo primeiro nos ímpares), para não favorecer sistematicamente
-     um lado com a deriva térmica da máquina.
+   - A ordem alterna entre cenários (base primeiro nos de índice par na
+     lista completa, mecanismo primeiro nos ímpares), para não favorecer
+     sistematicamente um lado com a deriva térmica da máquina; uma repetição
+     isolada de um cenário mantém a ordem dele.
    - Antes de medir, confere-se que mecanismo e base produzem a mesma soma,
      o mesmo número de erros e o mesmo traço sobre a carga. *)
 
@@ -41,6 +42,15 @@ let seed = env_int "TCC_SEED" 42
 let quota = env_float "TCC_QUOTA" 20.0
 let limit = env_int "TCC_LIMIT" 5000
 let n_bootstrap = env_int "TCC_BOOTSTRAP" 1000
+
+(* Posição do cenário na lista completa: fixa a ordem entre base e mecanismo
+   por cenário, também quando TCC_CENARIOS seleciona só alguns (repetições). *)
+let posicao sc =
+  let rec go i = function
+    | [] -> 0
+    | x :: resto -> if x = sc then i else go (i + 1) resto
+  in
+  go 0 Expr.scenarios
 
 let cenarios =
   match Sys.getenv_opt "TCC_CENARIOS" with
@@ -146,8 +156,9 @@ let () =
     | _ -> stdout
   in
   output_string saida (cabecalho ^ "\n");
-  List.iteri
-    (fun idx sc ->
+  List.iter
+    (fun sc ->
+      let idx = posicao sc in
       let nome_sc = Expr.scenario_name sc in
       let exprs = Expr.workload sc seed in
       let tbl_ef = Hashtbl.create 1024 and tbl_imp = Hashtbl.create 1024 in

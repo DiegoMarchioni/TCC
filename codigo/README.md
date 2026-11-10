@@ -5,8 +5,10 @@ artigo *Mônadas e Efeitos Algébricos em Linguagens Funcionais* (TCC II,
 Ciência da Computação, PUC Minas).
 
 > **Uso de IA.** Este código foi gerado com assistência de IA (Claude, da
-> Anthropic, via Claude Code) e revisado pelo autor. A declaração exigida pelos
-> Arts. 6º a 8º do Regulamento está no artigo.
+> Anthropic, via Claude Code) e revisado pelo autor. A campanha em
+> `resultados/campanha-20261110-005710/` também foi executada pela ferramenta,
+> numa máquina virtual de nuvem. A declaração exigida pelos Arts. 6º a 8º do
+> Regulamento está no artigo e se ajusta sozinha a quem executou a campanha.
 
 ## Começo rápido
 
@@ -14,10 +16,14 @@ Ciência da Computação, PUC Minas).
 cd codigo
 eval $(opam env --switch=tcc)   # ver Instalação
 make testar                     # tudo deve passar: 28/28, 61/61, 61/61
-make metricas                   # QP1 e preparação de QP3
-make quarto-efeito              # QP2
-make campanha                   # QP4 (~20 min com os parâmetros do artigo)
+make tudo                       # do teste ao artigo, na ordem do protocolo (~35 min)
 ```
+
+`make tudo` encadeia: `testar-completo` (oráculos, mutantes, quarto efeito) →
+`metricas` (QP1, QP3) → `quarto-efeito` (QP2) → `campanha` (QP4, com repetição
+automática de R² < 0,95) → `sensibilidade` → `artigo` (regrava números,
+tabelas e ambiente em `../artigo.tex` e confere as afirmações do texto) →
+`figuras` (figuras da apresentação). `make ajuda` lista os alvos.
 
 ## Estrutura
 
@@ -42,7 +48,10 @@ make campanha                   # QP4 (~20 min com os parâmetros do artigo)
 | `metricas-hs/` | 4.2 | métricas por AST para Haskell (`ghc-lib-parser`) |
 | `docs/protocolo-metricas.md` | 4.2 | definições operacionais e critério de *boilerplate* |
 | `quarto-efeito/` | 4.2, 5.3 | o quarto efeito (`Input`) como *patch*, e a medição de QP2 |
-| `scripts/` | — | testes, normalização, métricas, mutantes, campanha e resumo |
+| `scripts/` | — | testes, normalização, métricas, mutantes, campanha, repetição por R², resumo, sensibilidade |
+| `scripts/atualizar_artigo.py` | 1, 4–7 | gera os números, as Tabelas 1 e 2 e o ambiente do artigo e confere as frases marcadas `AFIRMACAO` |
+| `scripts/figuras.py` | — | figuras da apresentação (SVG, sem dependências) |
+| `resultados/` | 6 | métricas, campanha citada, sensibilidade e figuras (versionados) |
 
 ## Instalação
 
@@ -98,14 +107,18 @@ make testar-completo  # + testes de mutação (8/8) + quarto efeito (73/73 + 73/
 
 ```bash
 scripts/normalizar.sh verificar        # condição de validade das contagens
-python3 scripts/metricas.py tabela     # QP1 + planilhas de boilerplate
+python3 scripts/metricas.py tabela     # QP1 + QP3 (regra mecânica) + reutilização
 quarto-efeito/medir.sh                 # QP2: aplica Input numa cópia, testa, conta
-# QP3: você e o orientador preenchem, separadamente, as colunas 'autor' e
-# 'segundo' de resultados/boilerplate/*.csv com B ou N (critério em
-# docs/protocolo-metricas.md); depois, a coluna 'consenso' das divergências.
-python3 scripts/metricas.py concordancia
 python3 scripts/metricas.py latex      # linhas prontas da Tabela 1
 ```
+
+O *boilerplate* é classificado por **regra mecânica** sobre os *tokens* do
+compilador (`docs/protocolo-metricas.md`, seção 4.1), com o motivo de cada
+linha em `resultados/boilerplate-regra/<impl>.csv`. Validação humana opcional:
+duas pessoas preenchem, separadamente, as colunas `autor` e `segundo` de
+`resultados/boilerplate/*.csv` e depois a coluna `consenso`;
+`python3 scripts/metricas.py concordancia` dá o kappa entre elas e entre a
+regra e o consenso.
 
 ## Campanha de desempenho (QP4)
 
@@ -114,9 +127,14 @@ scripts/rodar-campanha.sh
 ```
 
 Gera `resultados/campanha-AAAAMMDD-HHMMSS/` com o ambiente registrado
-(`ambiente.md`), os CSV brutos, `resumo.md` (razões, IC conservadores,
-dispersão, R², **tempos e alocação absolutos por expressão**) e as linhas
-LaTeX das tabelas. A campanha aborta se qualquer oráculo falhar.
+(`ambiente.md`, inclusive virtualização e quem executou: `TCC_EXECUTOR`, padrão
+`autor`), os CSV brutos, `resumo.md` (razões, IC conservadores, dispersão, R²,
+**tempos e alocação absolutos por expressão**) e as linhas LaTeX das tabelas.
+A campanha aborta se qualquer oráculo falhar, e remede em par, até três vezes,
+toda medição com R² < 0,95 (`scripts/repetir_r2.py`), guardando as descartadas
+em `descartados/` e registrando cada repetição em `ambiente.md`.
+`make sensibilidade` repete a medição com cota de 5 s e 2.000 amostras, para a
+comparação da Seção 6.2.
 
 **Para medir bem** (Seção 4.3; anote o que fizer):
 
@@ -128,7 +146,7 @@ LaTeX das tabelas. A campanha aborta se qualquer oráculo falhar.
 - parâmetros: `SEMENTES`, `TCC_QUOTA` (20), `TCC_LIMIT` (5000),
   `TCC_RESAMPLES` (1000), `TCC_BOOTSTRAP` (1000), `TCC_CENARIOS`.
 
-Para guardar a campanha que entra no artigo: `git add -f resultados/campanha-…`.
+Versione a campanha que entra no artigo junto com o `artigo.tex` regenerado.
 
 ## Decisões de implementação que o artigo precisa refletir
 
@@ -143,32 +161,16 @@ Para guardar a campanha que entra no artigo: `git add -f resultados/campanha-…
 - **A coluna de alocação do OCaml não inclui os segmentos de pilha**
   (`Gc.minor_words`; as *fibers* são alocadas com `malloc`).
 
-## Impacto no artigo ao adotar este código
+## Do resultado ao artigo
 
-O artigo atual descreve uma campanha feita com outro código. Ao adotar este,
-atualize:
-
-1. **Seção 5 (abertura):** URL do código, por exemplo
-   `https://github.com/DiegoMarchioni/TCC/tree/main/codigo` (depois de integrar o
-   ramo à `main`).
-2. **Seção 5 (conformidade):** a frase sobre "amostra de conferência […] e não
-   em toda a carga" deixa de valer: agora o teste confere os *hashes* das 12
-   cargas, com uma terceira réplica de referência em Python.
-3. **Seção 5.2:** a exceção encerra a continuação com `discontinue`; abandoná-la
-   vaza memória (o experimento é um achado relatável).
-4. **Seção 4.3 e 6.2:** *flags* (`-O3` nas bibliotecas, `-O2` no GHC), ambiente
-   (de `ambiente.md`) e parâmetros; os comentários `CONFERIR` sobre `-O3` e
-   `bench_main.ml` ficam resolvidos.
-5. **Tabela 2, Seção 6.3, Introdução, Resumo, Conclusões:** **todos os números
-   de desempenho**, da nova campanha. Inclua os tempos absolutos das bases (o
-   resumo os traz), o que elimina a limitação "ausência dos tempos absolutos" e
-   a "primeira leitura recusada" passa a poder ser feita.
-6. **Tabela 1 e Seção 6.1:** métricas de código (`tabela-metricas.tex`) e os
-   dois parágrafos que faltam; as contagens são idênticas por construtor dentro
-   de cada linguagem, o que deve ser lido como propriedade do desenho.
-7. **Seção 5.3:** o parágrafo do quarto efeito no passado, com o que cada versão
-   exigiu (`quarto-efeito/README.md`).
-8. **Seção 4.2:** a definição operacional do aninhamento
-   (`docs/protocolo-metricas.md`, seção 2).
-9. **Agradecimentos:** a declaração de IA precisa incluir a geração do código
-   (já acrescentada) e a versão do modelo.
+Nenhum número dos resultados é digitado à mão no `artigo.tex`.
+`python3 scripts/atualizar_artigo.py` (`make artigo`) lê `resultados/` (as
+métricas e a campanha mais recente) e regrava, entre os marcadores
+`%%%% <<GERADO:nome>>` e `%%%% <</GERADO:nome>>`, quatro blocos: as macros dos
+números (`\RTOcamlArith`, `\DeltaNsOcamlArith`, `\BoilerHandlers`…), as linhas
+das Tabelas 1 e 2 e o parágrafo do ambiente. Em seguida confere cada frase
+marcada no texto com `%% AFIRMACAO:id` contra os resultados e lista as que
+deixaram de valer (sai com código 1 se houver alguma): os números se atualizam
+sozinhos, mas a interpretação precisa ser revista por quem escreve.
+`--verificar` só confere, sem regravar. Se `sbc-template.sty` e `sbc.bst`
+estiverem na raiz, `make artigo` mede também as páginas (`../medir.sh`).

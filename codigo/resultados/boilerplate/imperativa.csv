@@ -1,0 +1,5 @@
+linha,texto,autor,segundo,consenso
+10,open Expr,,,
+12,exception Runtime_error of string,,,
+45,"let run (env : (string, int) Hashtbl.t) (e : expr) : (int, string) result =",,,
+46,  match eval env e with v -> Ok v | exception Runtime_error m -> Error m,,,

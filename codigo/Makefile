@@ -1,16 +1,24 @@
 # Atalhos. Requer o ambiente do opam ativo: eval $(opam env)
 # Detalhes em README.md.
 
-.PHONY: ajuda testar testar-completo normalizar metricas quarto-efeito campanha mutantes experimento
+.PHONY: ajuda testar testar-completo normalizar metricas quarto-efeito campanha \
+	sensibilidade artigo figuras tudo mutantes experimento
 
 ajuda:
+	@echo "make tudo             do teste ao artigo, na ordem do protocolo (~35 min)"
 	@echo "make testar           semântica, gerador, formato e oráculos (61/61 + 61/61)"
 	@echo "make testar-completo  + mutantes e quarto efeito"
 	@echo "make normalizar       aplica ocamlformat e ormolu"
 	@echo "make metricas         QP1/QP3: métricas de código e planilhas de boilerplate"
 	@echo "make quarto-efeito    QP2: aplica Input numa cópia, testa e conta pontos"
 	@echo "make campanha         QP4: campanha completa (~20 min com os padrões)"
+	@echo "make sensibilidade    corrida subdimensionada sobre a última campanha (~3 min)"
+	@echo "make artigo           regrava números, tabelas e ambiente em ../artigo.tex"
+	@echo "make figuras          figuras da apresentação, a partir dos resultados"
 	@echo "make experimento      continuação abandonada vs discontinue (OCaml 5)"
+
+# Pipeline completo. A suíte de oráculo é pré-condição de tudo o que vem depois.
+tudo: testar-completo metricas quarto-efeito campanha sensibilidade artigo figuras
 
 testar:
 	scripts/testar.sh
@@ -32,6 +40,19 @@ quarto-efeito:
 
 campanha:
 	scripts/rodar-campanha.sh
+
+# Sem argumento, usa a campanha mais recente.
+sensibilidade:
+	scripts/rodar-sensibilidade.sh
+
+# Regrava os blocos gerados do artigo e confere as afirmações marcadas no
+# texto; mede as páginas se os arquivos do modelo SBC estiverem na raiz.
+artigo:
+	python3 scripts/atualizar_artigo.py
+	scripts/medir-paginas.sh
+
+figuras:
+	python3 scripts/figuras.py
 
 mutantes:
 	python3 scripts/mutantes.py

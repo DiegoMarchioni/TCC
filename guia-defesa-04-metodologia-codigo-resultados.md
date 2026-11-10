@@ -1,9 +1,11 @@
 # Guia de defesa — Parte 4: Metodologia, Implementações, Resultados e Conclusões
 
-*Escrito em 09/11/2026.* Cobre as Seções 4 a 7 do `artigo.tex` e o código em
-`codigo/`. **O código deste repositório foi gerado com assistência de IA.** Na
-banca, você precisa conseguir explicar cada decisão dele. Este guia existe para
-isso, e a declaração de uso de IA do artigo precisa dizê-lo (Arts. 7º e 8º).
+*Escrito em 09/11/2026; atualizado em 10/11/2026 com os resultados da campanha
+final.* Cobre as Seções 4 a 7 do `artigo.tex` e o código em `codigo/`. **O
+código deste repositório foi gerado com assistência de IA, e a campanha foi
+executada pela ferramenta numa máquina virtual de nuvem.** Na banca, você
+precisa conseguir explicar cada decisão. Este guia existe para isso, e a
+declaração de uso de IA do artigo já o diz (Arts. 7º e 8º).
 
 ---
 
@@ -15,6 +17,7 @@ eval $(opam env)            # OCaml 5.2.1 + flambda
 make testar                 # semântica 28/28, gerador, formato, 61/61 + 61/61
 make testar-completo        # + mutantes (8/8) e quarto efeito (73/73 + 73/73)
 make experimento            # continuação abandonada vs discontinue
+make tudo                   # do teste ao artigo: métricas, campanha, figuras (~35 min)
 ```
 
 Se algum passo falhar na sua máquina, resolva antes de medir: a medição só vale
@@ -64,7 +67,8 @@ Definições exatas em `codigo/docs/protocolo-metricas.md`; ferramentas de AST e
 | Operações de efeito (OCaml) | `perform`, `Hashtbl.*`, `raise`, `!emit` |
 | Operações de efeito (Haskell) | cada vinculação monádica (comandos de `do` menos o último; `>>=`, `>>`) + `get`, `modify'`, `throwError`, `readIORef`, `modifyIORef'`, `throwIO`, `emit`… |
 | Aninhamento | despacho por construtor = 1; `match`/`case`/`if`/`try`/funções incrementam; `let` e `do` não (alinhado à *Cognitive Complexity*) |
-| *Boilerplate* | linhas fora de `eval`, classificadas `B`/`N` por **dupla contagem independente** (você e o orientador), com kappa de Cohen |
+| *Boilerplate* | linhas fora de `eval` classificadas `B`/`N` por **regra mecânica** sobre os *tokens* do compilador: `N` se a linha tem um marcador da semântica de um efeito (`Hashtbl.f`, `!emit`, `:=`, `Ok`/`Error`, `discontinue`, declaração `\| Op :` no OCaml; `Map.f`, `emitRef`, `Left`/`Right`, `state`, `type Env` no Haskell), `B` nos outros casos. Auditoria linha a linha em `resultados/boilerplate-regra/*.csv` |
+| Reutilização | para cada *handler*/camada, número de declarações de topo que o instalam, menos 1, somado |
 | Pontos de modificação | declarações de topo preexistentes cujo texto mudou ao inserir `Input` |
 
 **Por que só comparação vertical:** as listas de operações diferem entre as
@@ -91,6 +95,21 @@ composição (QP2). Diga isso no texto, como ressalva de validade de construto: 
 divisão de unidades põe a semântica dos efeitos fora de `eval` nos *handlers*
 e dentro dela na base.
 
+| Fora de `eval` | Linhas | *Boilerplate* (B) | Reutilização |
+|---|---:|---:|---:|
+| *Handlers* | 78 | 67 (18 só para o oráculo) | 2 |
+| Imperativa | 4 | 3 | 0 |
+| Mônadas | 22 | 20 | 0 |
+| `IORef` | 26 | 22 | 0 |
+
+**Como defender a regra mecânica:** ela é reprodutível por terceiros e não
+depende de quem conta; cada linha tem o motivo gravado no CSV. Se a banca
+discordar de uma linha, abra o CSV e mostre o marcador. No Haskell, quase tudo é
+cabeçalho de módulo e importação (comum às duas versões); o que sobra é o
+sinônimo da pilha e o executor (mônadas) contra o tipo da exceção, a instância
+`Exception` e o `try` (base). A dupla contagem humana continua disponível como
+validação (`python3 scripts/metricas.py concordancia`).
+
 ---
 
 ## 3. Seção 4.3: protocolo
@@ -106,7 +125,8 @@ e dentro dela na base.
 | Ordem alternada entre cenários | a deriva térmica não favorece sistematicamente um lado |
 | Pré-condição dentro do *harness* | mecanismo e base precisam dar a mesma soma, os mesmos erros e o mesmo traço sobre a carga, ou a medição aborta |
 | `-O3` em **todas** as bibliotecas OCaml; `-O2` no Haskell | flags idênticas dentro de cada linguagem |
-| Ambiente registrado em `ambiente.md` | CPU, SO, *governor*, *turbo*, afinidade e versões: a campanha documenta onde rodou |
+| Ambiente registrado em `ambiente.md` | CPU, SO, *governor*, *turbo*, afinidade, virtualização, quem executou e versões: a campanha documenta onde rodou |
+| R² do tempo ≥ 0,95, senão remede o **par** | `scripts/repetir_r2.py`, chamado pela campanha: até 3 tentativas, mesma ordem do cenário, descartes guardados em `descartados/` e registrados em `ambiente.md`. Na campanha final, um par (OCaml/State/semente 43, R² 0,949) foi remedido (0,962) |
 
 **O viés 1 + Δ/T_base:** se o sobrecusto é aditivo por operação, uma base mais
 cara **deflaciona** a razão. A base Haskell (`Map`, logarítmico) é mais cara que
@@ -210,47 +230,80 @@ propriedade de reinterpretar o efeito.
 
 ---
 
-## 5. Seção 6: resultados
+## 5. Seção 6: resultados (campanha de 10/11/2026)
 
-### Desempenho
+Onde estão: `codigo/resultados/campanha-20261110-005710/` (`resumo.md`,
+`ambiente.md`, `brutos/`, `descartados/`, `sensibilidade/`). Máquina: Intel Xeon
+@ 2,10 GHz, 4 vCPU, **máquina virtual de nuvem** (flag `hypervisor`), Ubuntu
+24.04.5, OCaml 5.2.1+flambda, GHC 9.4.7, Bechamel 0.5.0, Criterion 1.6.1.0,
+afinidade fixa num núcleo (`taskset -c 3`), sementes 42, 43, 44, cota de 20 s.
 
-Os números do artigo atual vieram do **código antigo**. Com este código, rode
-`make campanha` e **substitua todos**. Um teste de fumaça nesta sessão (máquina
-de nuvem, cota de 0,5 s, **não é resultado**) sugeriu que as razões do Haskell
-podem ficar bem mais perto de 1 do que 1,08–1,90, e Output no OCaml bem acima de
-2,35. Não presuma nada: meça e escreva o que sair.
+### Tabela 2, por expressão (medianas das sementes)
 
-**Como ler a coluna de alocação:**
+| | OCaml base | Δ | razão | Haskell base | Δ | razão |
+|---|---:|---:|---:|---:|---:|---:|
+| Arith, tempo (ns) | 77 | 45 | 1,59 | 96 | 10 | 1,08 |
+| State, tempo (ns) | 87 | 84 | 1,98 | 346 | −4 | 0,99 |
+| Exn, tempo (ns) | 77 | 49 | 1,63 | 95 | 5 | 1,05 |
+| Output, tempo (ns) | 34 | 111 | 4,26 | 41 | −2 | 0,97 |
+| Arith, alocação (B) | 15 | 168 | 12,0 | 127 | 150 | 2,2 |
 
-- OCaml: palavras do *minor heap* (`Gc.minor_words`), convertidas para bytes no
-  resumo. **Os segmentos de pilha das *fibers* não aparecem**: são alocados com
-  `malloc`, fora do *heap* (Sivaramakrishnan et al. 2021, §5.2; `runtime/fiber.c`
-  do 5.2). A coluna mostra fechamentos, registros de *handler* e resultados.
-- A base OCaml aloca quase nada em Arith (aritmética de inteiros não aloca):
-  **razões de alocação sobre denominador quase nulo inflam.** Use os valores
-  absolutos por expressão (`tabela-absolutos.tex`), que o resumo já gera.
-- Haskell: bytes alocados pelo RTS (`allocated:iters`).
+IC de 95% da razão de tempo: no OCaml, nenhum inclui 1; no Haskell, só o de
+Arith exclui 1 ([1,04; 1,18]). Dispersão entre sementes: até 18,3% no tempo
+(Haskell/Output, cuja base oscilou numa semente) e 0,2% na alocação.
 
-**Tempos absolutos:** o resumo já traz ns por expressão para base e mecanismo.
-Com eles, dá para comparar cenários entre si, o que o texto atual diz não poder
-fazer. Atualize esse trecho.
+### As três leituras que o texto faz (e você precisa saber explicar)
 
-### Código
+1. **Arith no OCaml é o número mais limpo:** sem operação de efeito alguma, o
+   excedente (45 ns por expressão) é só instalar três *handlers*. Os outros
+   cenários somam a ele o custo das operações (State 84, Output 111 ns). Com
+   escopos curtos (um por expressão), a instalação domina.
+2. **A razão de alocação engana:** 12× no OCaml contra 2,2× no Haskell parece
+   uma ordem de grandeza, mas o excedente em bytes é parecido (168 × 150 B por
+   expressão). A diferença é a **base**: a imperativa do OCaml aloca só o
+   resultado (15 B), a do Haskell, 127 B. É o viés 1 + Δ/T_base na forma mais
+   aguda. **Os segmentos de pilha das fibers não estão nessa coluna** (malloc,
+   fora do heap).
+3. **Não compare as razões entre linguagens diretamente:** as bases diferem
+   (em State, 346 ns com `Map` × 87 com `Hashtbl`) e os *runtimes* também. O
+   que vale comparar é a **forma** do custo: no OCaml, fixo por instalação e
+   por operação; no Haskell, proporcional aos *binds* e quase apagado pelo GHC
+   (três de quatro intervalos incluem 1).
 
-Tabela 1: `make metricas` + `make quarto-efeito` + a dupla contagem
-(`resultados/boilerplate/*.csv`, depois `python3 scripts/metricas.py
-concordancia` e `latex`).
+**A hipótese do TCC I** (handlers < 1,5×, mônadas > 2×) **falhou nas duas
+metades**, e o texto diz isso. Diga com tranquilidade: é o achado mais
+interessante.
+
+### Achado não previsto: o R² não basta
+
+A corrida subdimensionada (cota de 5 s, 2.000 amostras, semente 42) teve
+**todos** os R² ≥ 0,95 e mesmo assim deslocou as razões em até 28% (OCaml/State:
+1,91 → 2,44). Ou seja: um R² aceitável não garante que a configuração de
+amostragem foi suficiente. Figura: `resultados/figuras/sensibilidade.png`.
+
+### Como ler a coluna de alocação
+
+- OCaml: palavras do *minor heap* (`Gc.minor_words`), convertidas para bytes.
+  **As fibers não aparecem** (`malloc`, fora do *heap*: Sivaramakrishnan et al.
+  2021, §5.2; `runtime/fiber.c` do 5.2). A coluna mostra fechamentos, registros
+  de *handler* e resultados.
+- Haskell: bytes alocados pelo RTS (`allocated:iters`, com `+RTS -T`).
 
 ---
 
 ## 6. Seção 7: conclusões frente à literatura (conferido)
 
 - 1% (Sivaramakrishnan) = programas **sem** *handlers*.
-- 6,7–12,3× = recursão não-*tail* com *handler* e **sem `perform`**: o regime de
-  Arith.
-- 23 ns (alocar a *fiber* e trocar) contra 5 ns (realizar e tratar).
+- 6,7–12,3× = recursão não-*tail* com *handler* e sem `perform`. As razões
+  daqui (até 4,26) ficam abaixo.
+- 23 ns para alocar a *fiber* e trocar de pilha: **mesma ordem** dos 45 ns que
+  custou instalar três *handlers* por expressão em Arith.
 - Haskell: mônada de estado/MTL contra versão pura = 1,0–1,3 em contadores
-  (Kammar 2013; Xie & Leijen 2020).
+  (Kammar 2013; Xie & Leijen 2020). As daqui (0,97–1,08) ficam no limite
+  inferior ou abaixo, como se espera de uma base que **não é pura**: executa em
+  `IO` e compartilha o `Map`.
+- Dois achados não previstos: o vazamento ao abandonar a continuação (Seção
+  5.2) e o R² que não basta (Seção 6.2).
 
 ---
 
@@ -271,12 +324,45 @@ concordancia` e `latex`).
 7. **"Como sei que as cargas são as mesmas nas duas linguagens?"** → os *hashes*
    das 12 cargas batem nas três réplicas, e o teste de conformidade confere.
 8. **"O oráculo pega erros de verdade?"** → testes de mutação, 8/8.
+9. **"Por que o Haskell quase não tem sobrecusto?"** → o GHC especializa a pilha
+   concreta (`ExceptT String (StateT Env IO)`) e elimina boa parte do custo dos
+   *binds*; o que sobra aparece em Arith, a carga com mais vinculações por
+   expressão (10 ns). E a base não é pura: também paga `IO`.
+10. **"Output no OCaml tem razão 4,26: efeito de saída é caro?"** → a razão é
+    alta porque a base de Output é a mais barata (34 ns: árvores de
+    profundidade 2). Em valor absoluto, Output soma 111 ns, dos quais 45 ns são
+    instalação (Arith); as duas operações de saída custam o resto.
+11. **"Os números são confiáveis numa máquina virtual?"** → as razões são tomadas
+    na mesma sessão, em ordem alternada, com afinidade fixa; o texto declara a
+    máquina virtual e recomenda replicar em máquina dedicada. `make tudo` refaz
+    tudo, e o script avisa se alguma frase do texto deixar de valer.
+12. **"Por que a regra de boilerplate e não contagem humana?"** → reprodutível e
+    auditável linha a linha; a contagem humana ficou como validação opcional.
 
 ---
 
-## 8. O que atualizar no artigo ao adotar este código
+## 8. Como os números entram no artigo (e como refazê-los)
 
-Lista completa em `codigo/README.md`, seção "Impacto no artigo". O essencial:
-números da Tabela 2 (nova campanha), Tabela 1 (métricas), descrição da
-conformidade (agora todas as cargas), o `discontinue`, a URL do repositório e a
-declaração de IA (geração de código).
+Nenhum resultado é digitado à mão no `artigo.tex`. O script
+`codigo/scripts/atualizar_artigo.py` (`make artigo`) lê `codigo/resultados/` e
+regrava quatro blocos marcados com `%%%% <<GERADO:...>>`: as macros dos números
+(`\RTOcamlArith`, `\DeltaNsOcamlArith`, `\BoilerHandlers` etc.), as linhas
+das Tabelas 1 e 2 e o parágrafo do ambiente. Depois confere cada frase marcada
+com `%% AFIRMACAO:` (são 20: "nenhum IC do OCaml inclui 1", "o excedente de
+bytes é próximo", "a hipótese do TCC I falhou"…) e lista as que deixaram de
+valer.
+
+**Se quiser refazer tudo no seu computador** (recomendável, para a máquina não
+ser virtual):
+
+```bash
+cd codigo
+eval $(opam env)
+TCC_TASKSET="taskset -c 2" make tudo     # Linux; sem taskset em outros sistemas
+```
+
+Isso roda testes, métricas, quarto efeito, campanha (com repetição automática
+de R² < 0,95), sensibilidade, atualiza o artigo e as figuras. O campo
+`executor` passa a ser você, e a declaração de IA se ajusta sozinha (macro
+`\DeclaracaoExecucao`). Se o script acusar uma afirmação, reescreva a frase
+marcada: os números mudam sozinhos, mas a interpretação é sua.
