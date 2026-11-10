@@ -30,9 +30,24 @@ LIMIAR = 0.95
 TENTATIVAS = 3
 
 
+_compilado = set()
+
+
 def binario(ling):
+    """Caminho do executável de benchmark, compilado como na campanha.
+
+    A compilação é refeita (sem efeito, se já estiver em dia) para garantir o
+    perfil release do dune: no perfil dev, o dune passa -opaque e desliga a
+    otimização entre módulos, e a medição deixaria de ser a do protocolo.
+    """
     if ling == "ocaml":
+        if ling not in _compilado:
+            subprocess.run(["dune", "build", "--profile", "release"], cwd=RAIZ / "ocaml", check=True)
+            _compilado.add(ling)
         return [str(RAIZ / "ocaml/_build/default/bench/bench_main.exe")]
+    if ling not in _compilado:
+        subprocess.run(["cabal", "build", "-v0", "all", "bench:desempenho"], cwd=RAIZ / "haskell", check=True)
+        _compilado.add(ling)
     saida = subprocess.run(["cabal", "list-bin", "-v0", "bench:desempenho"], cwd=RAIZ / "haskell",
                            capture_output=True, text=True, check=True)
     return [saida.stdout.strip().splitlines()[-1]]

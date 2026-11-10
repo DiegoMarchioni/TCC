@@ -6,8 +6,8 @@
 # Repete a medição com uma configuração subdimensionada (padrão: cota de 5 s e
 # 2.000 amostras, uma semente) e grava em <campanha>/sensibilidade/. Sem
 # argumento, usa a campanha mais recente. O atualizar_artigo.py compara o R² e
-# as razões com os da mesma semente na campanha principal. Usa os executáveis
-# já compilados por rodar-campanha.sh e a mesma afinidade (TCC_TASKSET).
+# as razões com os da mesma semente na campanha principal. Usa a mesma
+# compilação e a mesma afinidade (TCC_TASKSET) da campanha.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 ultima="$(find resultados -maxdepth 1 -type d -name 'campanha-*' | sort | tail -1)"
@@ -27,8 +27,14 @@ scripts/registrar-ambiente.sh > "$destino/ambiente.md"
   echo "SEMENTES=$SEMENTE TCC_QUOTA=$TCC_QUOTA TCC_LIMIT=$TCC_LIMIT TCC_RESAMPLES=$TCC_RESAMPLES"
 } >> "$destino/ambiente.md"
 
+# Compila (ou só confere que está compilado) com as mesmas opções da campanha.
+(cd ocaml && dune build --profile release 2>&1)
+(cd haskell && cabal build -v0 all bench:desempenho)
 BENCH_OCAML="ocaml/_build/default/bench/bench_main.exe"
 BENCH_HASKELL="$(cd haskell && cabal list-bin -v0 bench:desempenho | tail -1)"
+for b in "$BENCH_OCAML" "$BENCH_HASKELL"; do
+  [ -x "$b" ] || { echo "executável de benchmark ausente: $b"; exit 1; }
+done
 # shellcheck disable=SC2086
 TCC_SEED="$SEMENTE" TCC_SAIDA="$destino/brutos/ocaml-$SEMENTE.csv" $TASKSET "$BENCH_OCAML"
 # shellcheck disable=SC2086

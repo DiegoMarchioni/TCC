@@ -39,13 +39,19 @@ scripts/registrar-ambiente.sh > "$destino/ambiente.md"
   echo; echo "## Parâmetros da campanha"
   echo "SEMENTES=$SEMENTES TCC_QUOTA=$TCC_QUOTA TCC_LIMIT=$TCC_LIMIT TCC_RESAMPLES=$TCC_RESAMPLES"
   echo "TCC_BOOTSTRAP=$TCC_BOOTSTRAP TCC_CENARIOS=${TCC_CENARIOS:-todos} TCC_TASKSET=${TASKSET:-nenhum}"
+  echo "compilação: dune --profile release (sem -opaque), ocamlopt -O3; ghc -O2"
 } >> "$destino/ambiente.md"
 
 echo "== compilação"
 (cd ocaml && dune build --profile release 2>&1)
-(cd haskell && cabal build -v0 all)
+# O alvo do benchmark é pedido pelo nome: `cabal build all` sozinho não o
+# compila quando benchmarks não estão habilitados no plano.
+(cd haskell && cabal build -v0 all bench:desempenho)
 BENCH_OCAML="ocaml/_build/default/bench/bench_main.exe"
 BENCH_HASKELL="$(cd haskell && cabal list-bin -v0 bench:desempenho | tail -1)"
+for b in "$BENCH_OCAML" "$BENCH_HASKELL"; do
+  [ -x "$b" ] || { echo "executável de benchmark ausente: $b"; exit 1; }
+done
 
 echo "== pré-condição: suítes de oráculo"
 (cd ocaml && dune test --profile release --force 2>&1 | tail -1) | tee "$destino/oraculo-ocaml.txt"

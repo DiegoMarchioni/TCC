@@ -17,8 +17,18 @@ ajuda:
 	@echo "make figuras          figuras da apresentação, a partir dos resultados"
 	@echo "make experimento      continuação abandonada vs discontinue (OCaml 5)"
 
-# Pipeline completo. A suíte de oráculo é pré-condição de tudo o que vem depois.
-tudo: testar-completo metricas quarto-efeito campanha sensibilidade artigo figuras
+# Pipeline completo, em passos estritamente sequenciais (também sob make -j).
+# A suíte de oráculo é pré-condição de tudo o que vem depois. O artigo fica por
+# último: se alguma afirmação do texto deixar de valer com os números novos, o
+# pipeline termina com erro, com as figuras já geradas.
+tudo:
+	$(MAKE) testar-completo
+	$(MAKE) metricas
+	$(MAKE) quarto-efeito
+	$(MAKE) campanha
+	$(MAKE) sensibilidade
+	$(MAKE) figuras
+	$(MAKE) artigo
 
 testar:
 	scripts/testar.sh
@@ -48,8 +58,9 @@ sensibilidade:
 # Regrava os blocos gerados do artigo e confere as afirmações marcadas no
 # texto; mede as páginas se os arquivos do modelo SBC estiverem na raiz.
 artigo:
-	python3 scripts/atualizar_artigo.py
-	scripts/medir-paginas.sh
+	@python3 scripts/atualizar_artigo.py; estado=$$?; \
+	scripts/medir-paginas.sh || estado=1; \
+	exit $$estado
 
 figuras:
 	python3 scripts/figuras.py
