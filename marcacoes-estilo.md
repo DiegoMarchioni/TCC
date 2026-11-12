@@ -30,29 +30,30 @@ de linha referem-se ao `artigo.tex` da revisão final.
 
 Estes trechos estão marcados `VOZ` no fonte: o orientador pediu que você os
 escrevesse com as suas palavras. Na revisão final fiz neles só duas mudanças
-mínimas, sem acrescentar texto: **retirei dos dois resumos o período sobre a
-contagem de linhas**, que tinha um erro de fato (o sequenciamento explícito
+mínimas, só cortando ou trocando um termo: **retirei dos dois resumos o período
+sobre a contagem de linhas**, que tinha um erro de fato (o sequenciamento explícito
 não é exigência só do OCaml) e fazia os resumos passarem da primeira página; e
 troquei "sobrecusto" por "razão de tempo" no último período, porque com os
 números da campanha o Haskell fica abaixo de 1. O resto continua seu: para
 cada frase, o padrão que a denuncia e uma direção. A frase nova é sua.
 
-### Abstract (linhas 268 a 281) e Resumo (linhas 286 a 300)
+### Abstract (linhas 268 a 279) e Resumo (linhas 284 a 296)
 
 | Frase (início) | Padrão | Direção |
 |---|---|---|
 | "Managing computational effects is a central challenge…" / "O gerenciamento de efeitos computacionais é um desafio central…" | abertura genérica, seguida de dois-pontos que anunciam uma lista | comece pelo que você fez e por quê |
 | "The mechanism cannot be isolated from the host language runtime, so…" / "O mecanismo não pode ser isolado do runtime…, de modo que a comparação é feita por razões:" | frase longa encadeada por dois-pontos, voz passiva | duas frases curtas, na voz ativa |
-| "Four functionally equivalent implementations … were built, together with…" / "Foram construídas quatro implementações…" | voz passiva e lista de três itens | diga o que construiu em uma frase direta |
+| "Four functionally equivalent implementations … were built." / "Foram construídas quatro implementações…" | voz passiva | diga o que construiu em uma frase direta, na voz ativa |
 | "The time ratio between each mechanism and its baseline lies between…" / "A razão de tempo entre cada mecanismo e a sua base situa-se entre…" | o resumo termina sem conclusão e não diz nada sobre QP1 a QP3 | acrescente o achado principal: o avaliador empata, e o custo de escrita está na infraestrutura |
 
-**Tamanho.** Na réplica do modelo, cada resumo ocupa hoje 12 linhas, e o limite
-do modelo SBC é 10; os dois já cabem na primeira página. Para chegar a 10 só
-cortando, retire "and the two ratios are then contrasted" e a oração sobre a
-suíte de oráculo e o gerador (e os trechos equivalentes em português). Ao
-reescrever com as suas palavras, planeje as 10 linhas desde o início.
+**Tamanho.** Para caber no limite de 10 linhas do modelo SBC, a revisão final
+também cortou, sem reescrever, "and the two ratios are then contrasted" e a
+oração sobre a suíte de oráculo e o gerador (e os trechos equivalentes em
+português). Na réplica do modelo, cada resumo tem agora 10 linhas, e os dois
+cabem na primeira página. Ao reescrever com as suas palavras, mantenha as 10
+linhas; se quiser de volta a suíte de oráculo, encurte o primeiro período.
 
-### Primeiro parágrafo da Introdução (linha 310)
+### Primeiro parágrafo da Introdução (linha 306)
 
 | Frase (início) | Padrão | Direção |
 |---|---|---|
@@ -68,16 +69,16 @@ quiser citá-lo, use-o para modularidade.
 Estes não tirei porque são escolhas de redação, não erros, e estão em
 partes que são suas:
 
-- **Construções impessoais em série:** “Adota-se” (linha 395), “Pergunta-se”
-  (linha 353), “Especifica-se” (linha 563), “Segue-se que”. São normais em texto
+- **Construções impessoais em série:** “Adota-se” (linha 391), “Pergunta-se”
+  (linha 349), “Especifica-se” (linha 559), “Segue-se que”. São normais em texto
   acadêmico, mas várias seguidas soam mecânicas. Varie algumas.
 - **Frases longas encadeadas por ponto e vírgula:** o parágrafo da semântica
-  (linha 563) junta determinismo, progresso e terminação numa frase só.
+  (linha 559) junta determinismo, progresso e terminação numa frase só.
   Considere dividir em três.
 - **“e não X” com função de precisão:** “para que a razão isole o mecanismo e
   não a estrutura de dados”, “assentam sobre microbenchmarks, e não sobre um
   caso de uso integrado”. Esses carregam conteúdo; pode manter.
-- **Os trechos marcados `NOVO (10/11)`** (linhas 374, 803, 859 e 928)
+- **Os trechos marcados `NOVO (10/11)`** (linhas 370, 816, 872 e 941)
   continuam sendo texto que eu redigi, agora sem os vícios acima. O ideal
   continua sendo você reescrevê-los com as suas palavras; a declaração de IA
   já cobre esses trechos de qualquer forma.
