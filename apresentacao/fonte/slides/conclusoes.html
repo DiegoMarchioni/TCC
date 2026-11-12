@@ -1,0 +1,39 @@
+<section id="conclusoes" data-transition="fade" style="background:#F7F5F0;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Conclusão</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Conclusões e trabalhos futuros</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:40px">
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Escrita</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">O custo está no código em volta de eval: nos handlers, onde eles são instalados; nas mônadas, no tipo da pilha, que muda a cada efeito.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:40px">
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Execução</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Handlers custam ao ser instalados e a cada operação, mesmo sem efeito. As mônadas, otimizadas pelo compilador, quase não custam.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:40px">
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Limites</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Um único programa, uma máquina virtual e versões específicas das linguagens.</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">Trabalhos futuros</p>
+<p style="font-size:28px;line-height:1.4;color:#17212F;width:1600px">Comparar os dois numa mesma linguagem · outros programas e efeitos · legibilidade medida com pessoas</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">15</p>
+<aside>(1:20 · acumulado 16:10) Âncora: escrita: custo em volta da eval; execução: handlers cobram, mônadas quase nada.
+
+Para concluir.
+
+Na escrita, o mecanismo não muda a eval, que fica igual à da base. O custo está no código em volta. Nos handlers, ele fica concentrado onde os handlers são instalados. Nas mônadas, ele fica no tipo da pilha, que muda a cada efeito novo.
+
+Na execução, os handlers do OCaml cobram para ser instalados e a cada operação, mesmo sem efeito nenhum. As mônadas do Haskell, otimizadas pelo compilador, quase não custam.
+
+Na prática: no OCaml, o cuidado é com quantas vezes se instala um handler. No Haskell, o custo aparece quando a pilha precisa mudar, não quando o programa roda.
+
+Os limites estão no slide: um único programa, uma máquina virtual e versões específicas das linguagens. Como trabalhos futuros, eu vejo comparar os dois mecanismos numa mesma linguagem, testar outros programas e efeitos, e medir a legibilidade com pessoas.
+
+[O parágrafo “Na prática” é a sua opinião sobre os dados. Diga olhando para a câmera.]</aside>
+</section>

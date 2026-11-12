@@ -1,0 +1,23 @@
+<section id="ap-protocolo" data-transition="fade" style="background:#EFEBE3;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Apêndice</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Protocolo de medição</h2>
+</div>
+<table style="width:1664px;font-size:24px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC">
+<tr><th style="width:20%;text-align:left;font-weight:600;color:#646A78">Item</th><th style="width:80%;text-align:left;font-weight:600;color:#646A78">Configuração</th></tr>
+<tr><td>Máquina</td><td>Intel Xeon @ 2,10 GHz, 4 vCPU, máquina virtual de nuvem, Ubuntu 24.04.5; afinidade fixa num núcleo</td></tr>
+<tr><td>Compilação</td><td>OCaml 5.2.1 + flambda com -O3; GHC 9.4.7 com -O2; flags iguais para mecanismo e base</td></tr>
+<tr><td>Harnesses</td><td>Bechamel 0.5.0, cota de 20 s e limit 5000; Criterion 1.6.1.0, 1.000 reamostragens</td></tr>
+<tr><td>Cargas</td><td>4 cenários × 10.000 expressões × 3 sementes (42, 43, 44), geradas fora da região medida</td></tr>
+<tr><td>Instalação</td><td>três handlers por expressão no OCaml; a pilha executada uma vez por expressão no Haskell</td></tr>
+<tr><td>Regras</td><td>oráculo como pré-condição; mesmo resultado conferido no harness; ordem alternada; R² ≥ 0,95</td></tr>
+<tr><td>Repetição</td><td>um par com R² 0,949 foi remedido (0,962), com o descarte registrado</td></tr>
+<tr><td>Execução</td><td>pela ferramenta de IA, em sessão na nuvem, como declara o artigo</td></tr>
+<tr><td>Reprodução</td><td>make tudo: testes, métricas, campanha, sensibilidade, artigo e figuras</td></tr>
+</table>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">A2</p>
+<aside>Use se perguntarem sobre a máquina, os flags, a cota, as sementes ou o R².
+
+Pontos para citar: flags iguais dentro de cada linguagem (-O3 no OCaml, -O2 no Haskell); cargas geradas fora da região medida; resultado forçado no Haskell e protegido com Sys.opaque_identity no OCaml; o harness confere soma, erros e traço antes de medir; um par com R² de 0,949 foi refeito pelo protocolo e deu 0,962. A máquina virtual está declarada, e a replicação em máquina dedicada é recomendada no texto.</aside>
+</section>

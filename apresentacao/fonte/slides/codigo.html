@@ -1,0 +1,37 @@
+<section id="codigo" data-transition="fade" style="background:#EFEBE3;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Implementação</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">O mesmo trecho de eval, com e sem handlers</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:28px">
+<div style="display:flex;gap:16px;align-items:center">
+<div style="width:20px;height:20px;background:#2A78D6;border-radius:4px"></div>
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">Handlers · interp_effects.ml</p>
+</div>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.6;white-space:nowrap;color:#17212F">| Var x -&gt; (<br>&#160;&#160;&#160;&#160;match <span style="color:#1F5FAF;font-weight:600">perform (Get x)</span> with<br>&#160;&#160;&#160;&#160;| Some v -&gt; v<br>&#160;&#160;&#160;&#160;| None -&gt; <span style="color:#1F5FAF;font-weight:600">perform (Fail (msg_unbound x))</span>)</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:28px">
+<div style="display:flex;gap:16px;align-items:center">
+<div style="width:20px;height:20px;background:#8E8C82;border-radius:4px"></div>
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">Imperativa · interp_imp.ml</p>
+</div>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.6;white-space:nowrap;color:#17212F">| Var x -&gt; (<br>&#160;&#160;&#160;&#160;match <span style="color:#17212F;font-weight:600">Hashtbl.find_opt env x</span> with<br>&#160;&#160;&#160;&#160;| Some v -&gt; v<br>&#160;&#160;&#160;&#160;| None -&gt; <span style="color:#17212F;font-weight:600">raise (Runtime_error (msg_unbound x))</span>)</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;line-height:1.35;color:#17212F;width:1500px">Cada operação direta da base deu lugar a exatamente uma operação de efeito.</p>
+<p style="font-size:24px;color:#646A78">Código completo, testes e scripts: github.com/DiegoMarchioni/TCC, pasta codigo/</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">7</p>
+<aside>(0:50 · acumulado 7:40) Âncora: a estrutura é a mesma; só a operação muda.
+
+Este é o mesmo trecho da eval nas duas versões em OCaml: o que lê uma variável.
+
+À esquerda, com handlers, o código pede o valor com perform. À direita, a base lê direto da tabela. Se a variável não existe, um pede o erro com perform, e o outro lança a exceção com raise.
+
+A estrutura é a mesma, linha por linha. Eu escrevi as versões como espelho uma da outra, para que a diferença medida fosse só o mecanismo.
+
+[Passe o cursor pelas linhas em destaque enquanto fala.]</aside>
+</section>

@@ -1,0 +1,29 @@
+<section id="ap-sensibilidade" data-transition="fade" style="background:#EFEBE3;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Apêndice</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Sensibilidade à configuração de amostragem</h2>
+</div>
+<div style="display:flex;flex-direction:column;gap:32px">
+<div style="position:relative;display:flex;flex-direction:column;gap:24px;width:1664px">
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;height:44px"><p style="width:300px;font-size:28px;font-weight:600;color:#17212F">OCaml · Arith</p><div style="width:300px"></div><div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:291px;height:32px;background:#2A78D6;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">+14%</p></div></div>
+<div style="display:flex;align-items:center;height:44px"><p style="width:300px;font-size:28px;font-weight:600;color:#17212F">OCaml · State</p><div style="width:300px"></div><div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:599px;height:32px;background:#2A78D6;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">+28%</p></div></div>
+<div style="display:flex;align-items:center;height:44px"><p style="width:300px;font-size:28px;font-weight:600;color:#17212F">OCaml · Exn</p><div style="width:300px"></div><div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:231px;height:32px;background:#2A78D6;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">+11%</p></div></div>
+<div style="display:flex;align-items:center;height:44px"><p style="width:300px;font-size:28px;font-weight:600;color:#17212F">OCaml · Output</p><div style="width:300px"></div><div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:107px;height:32px;background:#2A78D6;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">+5%</p></div></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;height:44px"><p style="width:300px;font-size:28px;font-weight:600;color:#17212F">Haskell · Arith</p><div style="width:300px"></div><div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:43px;height:32px;background:#EB6834;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">+2%</p></div></div>
+<div style="display:flex;align-items:center;height:44px"><p style="width:300px;font-size:28px;font-weight:600;color:#17212F">Haskell · State</p><div style="width:300px;display:flex;align-items:center;justify-content:flex-end;gap:12px"><p style="font-size:28px;color:#4A5160">−8%</p><div style="width:169px;height:32px;background:#EB6834;border-radius:6px 0px 0px 6px"></div></div><div style="flex:1"></div></div>
+<div style="display:flex;align-items:center;height:44px"><p style="width:300px;font-size:28px;font-weight:600;color:#17212F">Haskell · Exn</p><div style="width:300px;display:flex;align-items:center;justify-content:flex-end;gap:12px"><p style="font-size:28px;color:#4A5160">−9%</p><div style="width:195px;height:32px;background:#EB6834;border-radius:6px 0px 0px 6px"></div></div><div style="flex:1"></div></div>
+<div style="display:flex;align-items:center;height:44px"><p style="width:300px;font-size:28px;font-weight:600;color:#17212F">Haskell · Output</p><div style="width:300px;display:flex;align-items:center;justify-content:flex-end;gap:12px"><p style="font-size:28px;color:#4A5160">−1%</p><div style="width:13px;height:32px;background:#EB6834;border-radius:6px 0px 0px 6px"></div></div><div style="flex:1"></div></div>
+</div>
+<div style="position:absolute;left:599px;top:0px;width:2px;height:436px;background:#8E8C82"></div>
+</div>
+<p style="font-size:24px;line-height:1.4;color:#646A78;width:1600px">Desvio relativo da razão de tempo: corrida com cota de 5 s e 2.000 amostras (semente 42) contra a mesma semente da campanha, com cota de 20 s. Todos os R² da corrida curta ficaram ≥ 0,95.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">A4</p>
+<aside>Use se perguntarem sobre o achado do R².
+
+Pontos para citar: a corrida curta (cota de 5 s, 2.000 amostras, semente 42) teve todos os R² acima de 0,95 e mesmo assim deslocou as razões: até +28% no OCaml State e −9% no Haskell Exn, comparando com a mesma semente na campanha. A conclusão é metodológica: a configuração de amostragem precisa ser testada, e o R² sozinho não denuncia uma configuração insuficiente.</aside>
+</section>

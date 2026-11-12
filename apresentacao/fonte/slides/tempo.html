@@ -1,0 +1,84 @@
+<section id="tempo" data-transition="fade" style="background:#F7F5F0;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Resultados · QP4</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Custo de tempo por expressão</h2>
+</div>
+<div style="display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;gap:48px;align-items:center">
+<div style="display:flex;gap:12px;align-items:center"><div style="width:20px;height:20px;background:#2A78D6;border-radius:4px"></div><p style="font-size:28px;color:#4A5160">Handlers sobre imperativa (OCaml)</p></div>
+<div style="display:flex;gap:12px;align-items:center"><div style="width:20px;height:20px;background:#EB6834;border-radius:4px"></div><p style="font-size:28px;color:#4A5160">Mônadas sobre IORef (Haskell)</p></div>
+</div>
+<div style="position:relative;display:flex;flex-direction:column;gap:28px;width:1664px">
+<div style="display:flex;align-items:center">
+<div style="width:260px;display:flex;flex-direction:column;gap:2px">
+<p style="font-size:28px;font-weight:600;color:#17212F">Arith</p>
+<p style="font-size:24px;color:#646A78">sem Var/Let/Print</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px">
+<div style="display:flex;align-items:center;height:40px">
+<div style="width:180px"></div>
+<div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:365px;height:32px;background:#2A78D6;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">45 ns</p></div>
+</div>
+<div style="display:flex;align-items:center;height:40px">
+<div style="width:180px"></div>
+<div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:81px;height:32px;background:#EB6834;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">10 ns</p></div>
+</div>
+</div>
+</div>
+<div style="display:flex;align-items:center">
+<div style="width:260px"><p style="font-size:28px;font-weight:600;color:#17212F">State</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px">
+<div style="display:flex;align-items:center;height:40px">
+<div style="width:180px"></div>
+<div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:680px;height:32px;background:#2A78D6;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">84 ns</p></div>
+</div>
+<div style="display:flex;align-items:center;height:40px">
+<div style="width:180px;display:flex;align-items:center;justify-content:flex-end;gap:12px"><p style="font-size:28px;color:#4A5160">−4 ns</p><div style="width:32px;height:32px;background:#EB6834;border-radius:6px 0px 0px 6px"></div></div>
+<div style="flex:1"></div>
+</div>
+</div>
+</div>
+<div style="display:flex;align-items:center">
+<div style="width:260px"><p style="font-size:28px;font-weight:600;color:#17212F">Exn</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px">
+<div style="display:flex;align-items:center;height:40px">
+<div style="width:180px"></div>
+<div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:397px;height:32px;background:#2A78D6;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">49 ns</p></div>
+</div>
+<div style="display:flex;align-items:center;height:40px">
+<div style="width:180px"></div>
+<div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:41px;height:32px;background:#EB6834;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">5 ns</p></div>
+</div>
+</div>
+</div>
+<div style="display:flex;align-items:center">
+<div style="width:260px"><p style="font-size:28px;font-weight:600;color:#17212F">Output</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px">
+<div style="display:flex;align-items:center;height:40px">
+<div style="width:180px"></div>
+<div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:899px;height:32px;background:#2A78D6;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">111 ns</p></div>
+</div>
+<div style="display:flex;align-items:center;height:40px">
+<div style="width:180px;display:flex;align-items:center;justify-content:flex-end;gap:12px"><p style="font-size:28px;color:#4A5160">−2 ns</p><div style="width:16px;height:32px;background:#EB6834;border-radius:6px 0px 0px 6px"></div></div>
+<div style="flex:1"></div>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:439px;top:0px;width:2px;height:428px;background:#8E8C82"></div>
+</div>
+<p style="font-size:24px;line-height:1.4;color:#646A78;width:1600px">Tempo a mais que a base da mesma linguagem, em ns por expressão (mediana de 3 conjuntos de expressões). Razões: OCaml de 1,59 a 4,26; Haskell de 0,97 a 1,08.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">11</p>
+<aside>(1:20 · acumulado 11:40) Âncora: no OCaml, custo para instalar e a cada operação; no Haskell, quase nenhum.
+
+Este é o quadro completo: quantos nanossegundos cada mecanismo gasta a mais que a sua base, por expressão. As medições rodaram numa máquina virtual na nuvem, como está declarado no artigo, com três conjuntos de expressões diferentes.
+
+Em azul, o OCaml. Arith, quarenta e cinco, e Exn, quarenta e nove: quase só o custo de instalar. State, oitenta e quatro, e Output, cento e onze: aqui o custo de cada operação se soma.
+
+Em laranja, o Haskell: no máximo dez nanossegundos, e em dois cenários a diferença fica até um pouco negativa, o que é ruído de medição.
+
+Eu não leio isso como “um mecanismo é mais rápido que o outro”, porque as linguagens são diferentes. O que os dados mostram é como cada um cobra. No OCaml, há um custo para instalar os handlers e outro a cada operação. No Haskell, o compilador otimiza a pilha, e o custo quase desaparece.
+
+[Percorra as barras azuis de cima para baixo e depois as laranja.]</aside>
+</section>
