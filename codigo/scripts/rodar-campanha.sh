@@ -6,8 +6,9 @@
 # Passos: registra o ambiente; compila as duas linguagens; roda as duas suítes
 # de oráculo (pré-condição: a campanha aborta se qualquer verificação falhar);
 # mede os quatro cenários com as três sementes, em corridas estritamente
-# sequenciais; remede em par o que tiver R² < 0,95 (scripts/repetir_r2.py,
-# com registro em ambiente.md); e resume tudo com scripts/resumir_campanha.py.
+# sequenciais, e conta diretamente a alocação do OCaml; remede em par o que
+# tiver R² < 0,95 (scripts/repetir_r2.py, com registro em ambiente.md); e
+# resume tudo com scripts/resumir_campanha.py.
 #
 # Variáveis de ambiente (padrões = protocolo do artigo):
 #   SEMENTES       "42 43 44"
@@ -60,9 +61,12 @@ grep -q "61/61" "$destino/oraculo-ocaml.txt" || { echo "oráculo OCaml não pass
 grep -q "61/61" "$destino/oraculo-haskell.txt" || { echo "oráculo Haskell não passou"; exit 1; }
 
 echo "== medições"
+mkdir -p "$destino/alocacao-direta"
 for s in $SEMENTES; do
   # shellcheck disable=SC2086
   TCC_SEED="$s" TCC_SAIDA="$destino/brutos/ocaml-$s.csv" $TASKSET "$BENCH_OCAML"
+  # Alocação do OCaml por contagem direta (exata e determinística; segundos).
+  TCC_MODO=alocacao TCC_SEED="$s" TCC_SAIDA="$destino/alocacao-direta/ocaml-$s.csv" "$BENCH_OCAML"
   # shellcheck disable=SC2086
   TCC_SEED="$s" TCC_SAIDA="$destino/brutos/haskell-$s.csv" $TASKSET "$BENCH_HASKELL"
 done

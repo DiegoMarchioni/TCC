@@ -62,3 +62,13 @@ TCC_BOOTSTRAP=1000 TCC_CENARIOS=todos TCC_TASKSET=taskset -c 3
 ## Repetições por R²
 Medições com R² do tempo < 0.95 remedidas em par (mecanismo e base), na ordem da campanha, com os mesmos parâmetros e afinidade.
 - 2026-11-10 01:15 UTC, commit 760e800 com alterações não commitadas apenas nos harnesses (ordem entre as versões fixa por cenário, para que a repetição isolada mantivesse a ordem da campanha): ocaml/state/semente 43 remedido (R² antes: efeitos 0.972, imperativa 0.949; depois: efeitos 0.962, imperativa 0.962); linhas antigas em descartados/ocaml-43-state-descarte1.csv
+
+## Alocação por contagem direta
+Acrescentada em 2026-11-10, depois da campanha: alocacao-direta/ocaml-<semente>.csv,
+gravado pelo harness com TCC_MODO=alocacao (Gc.minor_words entre duas coletas menores
+forçadas, 20 execuções da carga). O valor é exato e determinístico: depende do código e
+do compilador (os mesmos da campanha: OCaml 5.2.1+flambda, -O3, perfil release), e não
+da máquina nem da amostragem. Substitui, no resumo, a alocação da regressão do Bechamel,
+cujo contador (Gc.quick_stat().minor_words) só avança a cada coleta menor e subestimava
+a base em até 4,5%. Os tempos da campanha não foram tocados; a alocação da regressão
+continua nos CSV de brutos/.

@@ -153,9 +153,9 @@ Gráfico de barras do excedente por cenário. **Este é o slide central.**
 
 ### 12. Alocação por expressão (1:20)
 Barras empilhadas: base em cinza, excedente na cor de cada linguagem.
-- 12× contra 2,2× parece uma ordem de grandeza.
+- 11,5× contra 2,2× parece uma ordem de grandeza.
 - Em bytes, o excedente é parecido: 168 contra 150 B por expressão.
-- A diferença é a base: a imperativa do OCaml aloca 15 B (só o resultado), a do
+- A diferença é a base: a imperativa do OCaml aloca 16 B (só o resultado), a do
   Haskell, 127 B. É o 1 + Δ/T_base do slide 3, na forma mais aguda.
 - Ressalva honesta: as pilhas das *fibers* ficam fora do *heap* e fora dessa
   coluna.

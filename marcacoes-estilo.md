@@ -1,8 +1,8 @@
 # Marcações de estilo: padrões de texto gerado por IA
 
-*10/11/2026.* O que eu mudei, o que ficou para você reescrever e como reconhecer
-os padrões quando você mesmo escrever. Os números de linha referem-se ao
-`artigo.tex` desta data.
+*10/11/2026, atualizado na revisão final.* O que eu mudei, o que ficou para você
+reescrever e como reconhecer os padrões quando você mesmo escrever. Os números
+de linha referem-se ao `artigo.tex` da revisão final.
 
 ## O que eu mudei
 
@@ -29,34 +29,36 @@ os padrões quando você mesmo escrever. Os números de linha referem-se ao
 ## O que você precisa reescrever (eu só marquei)
 
 Estes trechos estão marcados `VOZ` no fonte: o orientador pediu que você os
-escrevesse com as suas palavras, por isso não mexi neles. Para cada frase, o
-padrão que a denuncia e uma direção. A frase nova é sua.
+escrevesse com as suas palavras. Na revisão final fiz neles só duas mudanças
+mínimas, sem acrescentar texto: **retirei dos dois resumos o período sobre a
+contagem de linhas**, que tinha um erro de fato (o sequenciamento explícito
+não é exigência só do OCaml) e fazia os resumos passarem da primeira página; e
+troquei "sobrecusto" por "razão de tempo" no último período, porque com os
+números da campanha o Haskell fica abaixo de 1. O resto continua seu: para
+cada frase, o padrão que a denuncia e uma direção. A frase nova é sua.
 
-### Abstract (linhas 263 a 278)
+### Abstract (linhas 268 a 281) e Resumo (linhas 286 a 300)
 
 | Frase (início) | Padrão | Direção |
 |---|---|---|
-| “Managing computational effects is a central challenge…” | abertura genérica, seguida de dois-pontos que anunciam uma lista | comece pelo que você fez e por quê |
-| “The mechanism cannot be isolated from the host language runtime, so…” | frase longa encadeada por dois-pontos, voz passiva | duas frases curtas, na voz ativa |
-| “Four functionally equivalent implementations … were built, together with…” | voz passiva e lista de três itens | diga o que construiu em uma frase direta |
-| “Counting lines of code proved highly sensitive … to the explicit sequencing OCaml requires…” | além do padrão, **erro factual**: o Haskell também sequencia explicitamente (ver o comentário no fonte) | diga que a contagem depende do estilo e do idioma de cada linguagem, e por isso só se compara dentro da mesma |
-| “The measured overhead lies between…” | o resumo termina sem conclusão | feche com o achado principal: o avaliador empata, e o custo está na infraestrutura e na instalação dos handlers |
+| "Managing computational effects is a central challenge…" / "O gerenciamento de efeitos computacionais é um desafio central…" | abertura genérica, seguida de dois-pontos que anunciam uma lista | comece pelo que você fez e por quê |
+| "The mechanism cannot be isolated from the host language runtime, so…" / "O mecanismo não pode ser isolado do runtime…, de modo que a comparação é feita por razões:" | frase longa encadeada por dois-pontos, voz passiva | duas frases curtas, na voz ativa |
+| "Four functionally equivalent implementations … were built, together with…" / "Foram construídas quatro implementações…" | voz passiva e lista de três itens | diga o que construiu em uma frase direta |
+| "The time ratio between each mechanism and its baseline lies between…" / "A razão de tempo entre cada mecanismo e a sua base situa-se entre…" | o resumo termina sem conclusão e não diz nada sobre QP1 a QP3 | acrescente o achado principal: o avaliador empata, e o custo de escrita está na infraestrutura |
 
-### Resumo (linhas 283 a 300)
-
-Os mesmos padrões, em português: a abertura genérica (“é um desafio central”),
-“de modo que a comparação é feita por razões:” (passiva com dois-pontos), a
-lista de três itens em “Foram construídas…”, o mesmo erro factual sobre o
-sequenciamento explícito e o fecho sem conclusão. **Os dois resumos precisam
-caber em até 10 linhas cada,** ambos na primeira página (hoje têm 12 e 14).
+**Tamanho.** Na réplica do modelo, cada resumo ocupa hoje 12 linhas, e o limite
+do modelo SBC é 10; os dois já cabem na primeira página. Para chegar a 10 só
+cortando, retire "and the two ratios are then contrasted" e a oração sobre a
+suíte de oráculo e o gerador (e os trechos equivalentes em português). Ao
+reescrever com as suas palavras, planeje as 10 linhas desde o início.
 
 ### Primeiro parágrafo da Introdução (linha 310)
 
 | Frase (início) | Padrão | Direção |
 |---|---|---|
-| “O paradigma funcional tem como premissa central a transparência referencial: a propriedade de que…” | abertura de manual, com definição depois de dois-pontos | diga o que é e por que importa para o seu problema |
-| “…com operações que um programa real precisa realizar: ler arquivos, lançar exceções, manipular estado mutável.” | lista de três itens depois de dois-pontos | escolha o exemplo que interessa ao trabalho, ou deixe a lista sem os dois-pontos |
-| “Dois mecanismos concentram a atenção da literatura: as mônadas, que… e os efeitos algébricos, que…” | estrutura paralela longa depois de dois-pontos | separe em duas frases, uma para cada mecanismo |
+| "O paradigma funcional tem como premissa central a transparência referencial: a propriedade de que…" | abertura de manual, com definição depois de dois-pontos | diga o que é e por que importa para o seu problema |
+| "…com operações que um programa real precisa realizar: ler arquivos, lançar exceções, manipular estado mutável." | lista de três itens depois de dois-pontos | escolha o exemplo que interessa ao trabalho, ou deixe a lista sem os dois-pontos |
+| "Dois mecanismos concentram a atenção da literatura: as mônadas, que… e os efeitos algébricos, que…" | estrutura paralela longa depois de dois-pontos | separe em duas frases, uma para cada mecanismo |
 
 A citação de Hughes saiu dessa frase (ela não sustentava a afirmação). Se você
 quiser citá-lo, use-o para modularidade.
@@ -66,16 +68,16 @@ quiser citá-lo, use-o para modularidade.
 Estes não tirei porque são escolhas de redação, não erros, e estão em
 partes que são suas:
 
-- **Construções impessoais em série:** “Adota-se” (linha 396), “Pergunta-se”
-  (linha 353), “Especifica-se” (linha 564), “Segue-se que”. São normais em texto
+- **Construções impessoais em série:** “Adota-se” (linha 395), “Pergunta-se”
+  (linha 353), “Especifica-se” (linha 563), “Segue-se que”. São normais em texto
   acadêmico, mas várias seguidas soam mecânicas. Varie algumas.
 - **Frases longas encadeadas por ponto e vírgula:** o parágrafo da semântica
-  (linha 564) junta determinismo, progresso e terminação numa frase só.
+  (linha 563) junta determinismo, progresso e terminação numa frase só.
   Considere dividir em três.
 - **“e não X” com função de precisão:** “para que a razão isole o mecanismo e
   não a estrutura de dados”, “assentam sobre microbenchmarks, e não sobre um
   caso de uso integrado”. Esses carregam conteúdo; pode manter.
-- **Os trechos marcados `NOVO (10/11)`** (linhas 374, 799, 855 e 924)
+- **Os trechos marcados `NOVO (10/11)`** (linhas 374, 803, 859 e 928)
   continuam sendo texto que eu redigi, agora sem os vícios acima. O ideal
   continua sendo você reescrevê-los com as suas palavras; a declaração de IA
   já cobre esses trechos de qualquer forma.

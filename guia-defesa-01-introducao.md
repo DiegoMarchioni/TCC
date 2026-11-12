@@ -184,7 +184,7 @@ num artefato isolado:
   OCaml (*handlers* × imperativa) e 20 × 22 no Haskell (mônadas × `IORef`); só
   os mecanismos exigiram pontos de modificação para o quarto efeito (2 e 2,
   contra 0 e 0).
-- **QP4:** *handlers* custam 1,59 a 4,26 vezes a base em tempo e 6,7 a 13,2 em
+- **QP4:** *handlers* custam 1,59 a 4,26 vezes a base em tempo e 6,6 a 12,7 em
   alocação; mônadas, 0,97 a 1,08 e 1,1 a 2,2.
 
 Os números do texto são **macros geradas** pela campanha (`make artigo`): se

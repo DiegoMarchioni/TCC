@@ -12,6 +12,8 @@
      TCC_BOOTSTRAP  reamostragens para o IC                (padrão 1000)
      TCC_CENARIOS   lista separada por vírgulas            (padrão todos)
      TCC_SAIDA      arquivo CSV de saída                   (padrão stdout)
+     TCC_MODO       campanha (padrão) ou alocacao: só a contagem direta
+                    da alocação, exata, sem medir tempo
 
    Decisões de medição:
    - O ambiente (Hashtbl) é criado vazio uma única vez por versão e cenário,
@@ -144,17 +146,60 @@ let medir nome f =
   let aloc = estimar b Instance.minor_allocated in
   (Array.length b.lr, tempo, aloc)
 
+(* ---- Alocação por contagem direta -------------------------------------- *)
+
+(* Palavras alocadas no heap menor por execução da carga, contadas
+   diretamente: [Gc.minor ()] esvazia a área jovem e põe o contador em dia, de
+   modo que a diferença de [Gc.minor_words ()] entre duas coletas forçadas é
+   exata. Serve de conferência para a regressão do Bechamel, cujo contador
+   ([Gc.quick_stat ()].minor_words) só avança a cada coleta menor no OCaml 5 e
+   por isso subestima cargas que alocam menos que uma área jovem por
+   execução. O valor é determinístico: depende do código e do compilador, e
+   não da máquina nem da configuração de amostragem. *)
+let alocacao_direta f =
+  let execucoes = 20 in
+  ignore (Sys.opaque_identity (f ()));
+  Gc.minor ();
+  let antes = Gc.minor_words () in
+  for _ = 1 to execucoes do
+    ignore (Sys.opaque_identity (f ()))
+  done;
+  Gc.minor ();
+  let depois = Gc.minor_words () in
+  (depois -. antes) /. float execucoes
+
 (* ---- Programa principal ----------------------------------------------- *)
 
 let cabecalho =
   "linguagem,cenario,implementacao,papel,semente,n_expressoes,amostras,tempo_ns,tempo_ic_inf,tempo_ic_sup,tempo_r2,alocacao,alocacao_ic_inf,alocacao_ic_sup,alocacao_r2,unidade_alocacao"
 
-let () =
-  let saida =
-    match Sys.getenv_opt "TCC_SAIDA" with
-    | Some p when p <> "" -> open_out p
-    | _ -> stdout
-  in
+let saida () =
+  match Sys.getenv_opt "TCC_SAIDA" with
+  | Some p when p <> "" -> open_out p
+  | _ -> stdout
+
+(* TCC_MODO=alocacao: só a contagem direta, sem medir tempo (segundos). *)
+let modo_alocacao () =
+  let saida = saida () in
+  output_string saida
+    "linguagem,cenario,implementacao,papel,semente,n_expressoes,palavras_por_execucao\n";
+  List.iter
+    (fun sc ->
+      let nome_sc = Expr.scenario_name sc in
+      let exprs = Expr.workload sc seed in
+      List.iter
+        (fun (impl, papel, f) ->
+          Printf.fprintf saida "ocaml,%s,%s,%s,%d,%d,%.2f\n%!" nome_sc impl
+            papel seed (Array.length exprs) (alocacao_direta f))
+        [
+          ("imperativa", "base", executar_imperativa (Hashtbl.create 1024) exprs);
+          ("efeitos", "mecanismo", executar_efeitos (Hashtbl.create 1024) exprs);
+        ])
+    cenarios;
+  if saida != stdout then close_out saida
+
+let modo_campanha () =
+  let saida = saida () in
   output_string saida (cabecalho ^ "\n");
   List.iter
     (fun sc ->
@@ -197,3 +242,12 @@ let () =
         versoes)
     cenarios;
   if saida != stdout then close_out saida
+
+let () =
+  match Sys.getenv_opt "TCC_MODO" with
+  | Some "alocacao" -> modo_alocacao ()
+  | None | Some "" | Some "campanha" -> modo_campanha ()
+  | Some outro ->
+      Printf.eprintf "TCC_MODO desconhecido: %s (use campanha ou alocacao)\n"
+        outro;
+      exit 2

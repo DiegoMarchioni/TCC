@@ -15,17 +15,27 @@ secao "Repositório"
 echo "commit: $(git rev-parse HEAD 2>/dev/null || echo '?')"
 echo "alterações não commitadas: $(git status --porcelain 2>/dev/null | wc -l | tr -d ' ')"
 
+# Os rótulos abaixo são lidos por scripts/atualizar_artigo.py: LC_ALL=C evita
+# que o lscpu os traduza (em pt_BR sairia "Nome do modelo"), e no macOS, que
+# não tem lscpu, as mesmas chaves são montadas a partir do sysctl.
 secao "Processador e memória"
 if command -v lscpu >/dev/null; then
-  lscpu | grep -E '^(Model name|CPU\(s\)|Thread\(s\) per core|Core\(s\) per socket|CPU max MHz|CPU min MHz)'
+  LC_ALL=C lscpu | grep -E '^(Model name|CPU\(s\)|Thread\(s\) per core|Core\(s\) per socket|CPU max MHz|CPU min MHz)'
+elif sysctl -n machdep.cpu.brand_string >/dev/null 2>&1; then
+  echo "Model name:                              $(sysctl -n machdep.cpu.brand_string)"
+  echo "CPU(s):                                  $(sysctl -n hw.logicalcpu 2>/dev/null)"
 else
-  sysctl -n machdep.cpu.brand_string 2>/dev/null || echo "(lscpu indisponível)"
+  echo "(lscpu e sysctl indisponíveis: preencha 'Model name:' e 'CPU(s):' à mão)"
 fi
 grep -E '^MemTotal' /proc/meminfo 2>/dev/null || true
 
 secao "Sistema"
 uname -srm
-grep -E '^(PRETTY_NAME)=' /etc/os-release 2>/dev/null || true
+if [ -r /etc/os-release ]; then
+  grep -E '^(PRETTY_NAME)=' /etc/os-release
+elif command -v sw_vers >/dev/null; then
+  echo "PRETTY_NAME=\"$(sw_vers -productName) $(sw_vers -productVersion)\""
+fi
 if grep -qw hypervisor /proc/cpuinfo 2>/dev/null; then
   echo "virtualização: sim (flag hypervisor em /proc/cpuinfo)"
 else

@@ -1,0 +1,9 @@
+linguagem,cenario,implementacao,papel,semente,n_expressoes,palavras_por_execucao
+ocaml,arith,imperativa,base,42,10000,20003.00
+ocaml,arith,efeitos,mecanismo,42,10000,230003.00
+ocaml,state,imperativa,base,42,10001,60005.00
+ocaml,state,efeitos,mecanismo,42,10001,537526.00
+ocaml,exn,imperativa,base,42,10000,20003.00
+ocaml,exn,efeitos,mecanismo,42,10000,254003.00
+ocaml,output,imperativa,base,42,10000,80003.00
+ocaml,output,efeitos,mecanismo,42,10000,530003.00

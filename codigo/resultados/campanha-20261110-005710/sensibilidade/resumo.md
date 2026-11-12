@@ -26,7 +26,9 @@ Razão = mecanismo / linha de base da mesma linguagem; mediana das sementes. IC 
 | ocaml | exn | 77.0 | 144.7 | 14.5 | 201.0 |
 | ocaml | output | 34.1 | 156.2 | 62.9 | 422.0 |
 
-Alocação: OCaml conta palavras do *minor heap* (Gc.minor_words, convertidas para bytes); os segmentos de pilha das *fibers* são alocados fora do heap e não aparecem aqui. Haskell conta bytes alocados pelo RTS (regressão allocated:iters).
+Alocação: no OCaml, palavras do *minor heap* convertidas para bytes; os segmentos de pilha das *fibers* são alocados fora do heap e não aparecem aqui. No Haskell, bytes alocados pelo RTS (regressão allocated:iters do Criterion, sincronizada por coleta menor a cada amostra).
+
+Sem alocacao-direta/: a alocação do OCaml vem da regressão do Bechamel, que subestima a base (ver o cabeçalho de scripts/resumir_campanha.py).
 
 ## Avisos
 

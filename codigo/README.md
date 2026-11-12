@@ -158,8 +158,14 @@ Versione a campanha que entra no artigo junto com o `artigo.tex` regenerado.
   Haskell.
 - **IC da razão no OCaml calculado pelo *harness***: o Bechamel 0.5.0 não expõe
   o IC do *bootstrap* na API.
-- **A coluna de alocação do OCaml não inclui os segmentos de pilha**
-  (`Gc.minor_words`; as *fibers* são alocadas com `malloc`).
+- **A coluna de alocação do OCaml não inclui os segmentos de pilha** (as
+  *fibers* são alocadas com `malloc`, fora do *heap*).
+- **Alocação do OCaml por contagem direta.** O contador que o Bechamel lê
+  (`Gc.quick_stat().minor_words`) só avança a cada coleta menor no OCaml 5, e a
+  regressão subestima a base em até 4,7%. Por isso o *harness* conta
+  diretamente (`TCC_MODO=alocacao`: `Gc.minor_words` entre duas coletas menores
+  forçadas), e a campanha grava o resultado em `alocacao-direta/`. O valor é
+  exato e determinístico; o `resumo.md` mostra os dois lado a lado.
 
 ## Do resultado ao artigo
 

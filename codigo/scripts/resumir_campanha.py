@@ -18,6 +18,15 @@ mediana das razões e a dispersão (máx - mín)/mediana. O IC reportado é o
 envelope dos IC das três sementes. Valores absolutos por expressão: tempo da
 base em ns e alocação em bytes (palavras do OCaml x 8, máquina de 64 bits).
 
+Alocação: no Haskell, vem da regressão allocated:iters do Criterion, que
+sincroniza o contador com uma coleta menor antes e depois de cada amostra e é
+exata. No OCaml, o contador que o Bechamel lê (Gc.quick_stat().minor_words) só
+avança a cada coleta menor, e a regressão subestima cargas que alocam menos que
+uma área jovem por execução (a base, em até 4,5%). Por isso, quando existe
+alocacao-direta/ocaml-<semente>.csv (contagem direta entre duas coletas
+forçadas, gravada pelo harness com TCC_MODO=alocacao), ela substitui a
+regressão; os dois valores ficam lado a lado no resumo.md.
+
 Avisos: R² abaixo de 0,95 em qualquer medição de tempo (o protocolo manda
 descartar e repetir) e sementes faltando.
 """
@@ -48,6 +57,28 @@ def ler_brutos(pasta):
     return linhas
 
 
+def aplicar_alocacao_direta(pasta, linhas):
+    """Troca a alocação da regressão pela contagem direta, onde ela existe.
+
+    Guarda a da regressão em 'alocacao_regressao'. Devolve quantas linhas
+    foram trocadas.
+    """
+    direta = {}
+    for arq in sorted((pasta / "alocacao-direta").glob("*.csv")):
+        with open(arq, encoding="utf-8") as f:
+            for r in csv.DictReader(f):
+                chave = (r["linguagem"], r["cenario"], r["implementacao"], int(r["semente"]))
+                direta[chave] = float(r["palavras_por_execucao"])
+    trocadas = 0
+    for r in linhas:
+        chave = (r["linguagem"], r["cenario"], r["implementacao"], r["semente"])
+        r["alocacao_regressao"] = r["alocacao"]
+        if chave in direta:
+            r["alocacao"] = r["alocacao_ic_inf"] = r["alocacao_ic_sup"] = direta[chave]
+            trocadas += 1
+    return trocadas
+
+
 def razao(m, b, prefixo):
     """Razão M/B e IC conservador [M_inf/B_sup, M_sup/B_inf]."""
     ponto = "tempo_ns" if prefixo == "tempo" else prefixo
@@ -69,6 +100,7 @@ def main(argv):
     if not linhas:
         print(f"nenhum CSV em {pasta / 'brutos'}")
         return 1
+    diretas = aplicar_alocacao_direta(pasta, linhas)
 
     grupos = defaultdict(dict)        # (ling, cenario, semente) -> papel -> linha
     for r in linhas:
@@ -142,9 +174,29 @@ def main(argv):
     for r in resumo:
         md.append(f"| {r['linguagem']} | {r['cenario']} | {r['base_ns_por_expr']:.1f} | "
                   f"{r['mec_ns_por_expr']:.1f} | {r['base_bytes_por_expr']:.1f} | {r['mec_bytes_por_expr']:.1f} |")
-    md += ["", "Alocação: OCaml conta palavras do *minor heap* (Gc.minor_words, convertidas para bytes); "
-           "os segmentos de pilha das *fibers* são alocados fora do heap e não aparecem aqui. "
-           "Haskell conta bytes alocados pelo RTS (regressão allocated:iters)."]
+    md += ["", "Alocação: no OCaml, palavras do *minor heap* convertidas para bytes; os segmentos de "
+           "pilha das *fibers* são alocados fora do heap e não aparecem aqui. No Haskell, bytes "
+           "alocados pelo RTS (regressão allocated:iters do Criterion, sincronizada por coleta "
+           "menor a cada amostra)."]
+    if diretas:
+        md += ["", "## Alocação do OCaml: contagem direta × regressão do Bechamel", "",
+               "A contagem direta (Gc.minor_words entre duas coletas menores forçadas) é exata e "
+               "determinística, e é a que o resumo usa. O contador que o Bechamel lê só avança a "
+               "cada coleta menor, e a regressão subestima sobretudo a base.", "",
+               "| Cenário | Versão | Direta (palavras/execução) | Regressão | Diferença |",
+               "|---|---|---:|---:|---:|"]
+        for cen in CENARIOS:
+            for papel in ("base", "mecanismo"):
+                rs = [r for r in linhas if r["linguagem"] == "ocaml" and r["cenario"] == cen
+                      and r["papel"] == papel and r["alocacao"] != r["alocacao_regressao"]]
+                if rs:
+                    d = statistics.median(r["alocacao"] for r in rs)
+                    g = statistics.median(r["alocacao_regressao"] for r in rs)
+                    md.append(f"| {cen} | {rs[0]['implementacao']} | {d:,.0f} | {g:,.0f} | "
+                              f"{(g / d - 1) * 100:+.1f}% |")
+    else:
+        md += ["", "Sem alocacao-direta/: a alocação do OCaml vem da regressão do Bechamel, que "
+               "subestima a base (ver o cabeçalho de scripts/resumir_campanha.py)."]
     if avisos:
         md += ["", "## Avisos", ""] + [f"- {a}" for a in avisos]
     (pasta / "resumo.md").write_text("\n".join(md) + "\n", encoding="utf-8")

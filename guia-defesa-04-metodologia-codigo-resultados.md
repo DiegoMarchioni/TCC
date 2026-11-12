@@ -246,11 +246,11 @@ afinidade fixa num núcleo (`taskset -c 3`), sementes 42, 43, 44, cota de 20 s.
 | State, tempo (ns) | 87 | 84 | 1,98 | 346 | −4 | 0,99 |
 | Exn, tempo (ns) | 77 | 49 | 1,63 | 95 | 5 | 1,05 |
 | Output, tempo (ns) | 34 | 111 | 4,26 | 41 | −2 | 0,97 |
-| Arith, alocação (B) | 15 | 168 | 12,0 | 127 | 150 | 2,2 |
+| Arith, alocação (B) | 16 | 168 | 11,5 | 127 | 150 | 2,2 |
 
 IC de 95% da razão de tempo: no OCaml, nenhum inclui 1; no Haskell, só o de
 Arith exclui 1 ([1,04; 1,18]). Dispersão entre sementes: até 18,3% no tempo
-(Haskell/Output, cuja base oscilou numa semente) e 0,2% na alocação.
+(Haskell/Output, cuja base oscilou numa semente) e menos de 0,1% na alocação.
 
 ### As três leituras que o texto faz (e você precisa saber explicar)
 
@@ -258,10 +258,10 @@ Arith exclui 1 ([1,04; 1,18]). Dispersão entre sementes: até 18,3% no tempo
    excedente (45 ns por expressão) é só instalar três *handlers*. Os outros
    cenários somam a ele o custo das operações (State 84, Output 111 ns). Com
    escopos curtos (um por expressão), a instalação domina.
-2. **A razão de alocação engana:** 12× no OCaml contra 2,2× no Haskell parece
+2. **A razão de alocação engana:** 11,5× no OCaml contra 2,2× no Haskell parece
    uma ordem de grandeza, mas o excedente em bytes é parecido (168 × 150 B por
    expressão). A diferença é a **base**: a imperativa do OCaml aloca só o
-   resultado (15 B), a do Haskell, 127 B. É o viés 1 + Δ/T_base na forma mais
+   resultado (16 B, duas palavras), a do Haskell, 127 B. É o viés 1 + Δ/T_base na forma mais
    aguda. **Os segmentos de pilha das fibers não estão nessa coluna** (malloc,
    fora do heap).
 3. **Não compare as razões entre linguagens diretamente:** as bases diferem
@@ -283,11 +283,23 @@ amostragem foi suficiente. Figura: `resultados/figuras/sensibilidade.png`.
 
 ### Como ler a coluna de alocação
 
-- OCaml: palavras do *minor heap* (`Gc.minor_words`), convertidas para bytes.
+- OCaml: palavras do *minor heap*, convertidas para bytes, **por contagem
+  direta**: `Gc.minor_words` entre duas coletas menores forçadas, em 20
+  execuções da carga (`TCC_MODO=alocacao` do *harness*; a campanha grava em
+  `alocacao-direta/`). O valor é **exato e determinístico**: 20.003 palavras por
+  execução na base de Arith, isto é, duas palavras por expressão (o `Ok v`).
   **As fibers não aparecem** (`malloc`, fora do *heap*: Sivaramakrishnan et al.
   2021, §5.2; `runtime/fiber.c` do 5.2). A coluna mostra fechamentos, registros
   de *handler* e resultados.
-- Haskell: bytes alocados pelo RTS (`allocated:iters`, com `+RTS -T`).
+- **Por que não a regressão do Bechamel:** o contador que ele lê
+  (`Gc.quick_stat().minor_words`) só avança a cada coleta menor no OCaml 5.
+  Uma carga que aloca menos que uma área jovem por execução fica subestimada:
+  a base, em até 4,7% (o que elevava a razão de Arith de 11,5 para 12,0). A
+  comparação lado a lado está no fim do `resumo.md` da campanha. Foi a revisão
+  final que achou isso, ao ver a alocação da base cair com cotas menores.
+- Haskell: bytes alocados pelo RTS (`allocated:iters`, com `+RTS -T`). O
+  Criterion força uma coleta menor antes e depois de cada amostra, então o
+  valor já é exato.
 
 ---
 

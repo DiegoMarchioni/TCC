@@ -114,7 +114,7 @@ def ler_ambiente(pasta):
 
 # ---- macros --------------------------------------------------------------------------
 
-def macros(metricas, pontos, resumo, amb, sens):
+def macros(metricas, pontos, resumo, amb, sens, vies):
     m = {}
     # código
     for chave, nome in IMPLS.items():
@@ -154,7 +154,10 @@ def macros(metricas, pontos, resumo, amb, sens):
         m[f"FaixaRAen{L}"] = f"{en(min(ras), 1)} and {en(max(ras), 1)}"
         m[f"RdoisMin{L}"] = pt(min(resumo[(ling, c)]["r2_tempo_min"] for c in CENS), 3)
     m["DispTempoMax"] = pt(max(r["dispersao_tempo_pct"] for r in resumo.values()), 1)
-    m["DispAlocMax"] = pt(max(r["dispersao_alocacao_pct"] for r in resumo.values()), 1)
+    disp_aloc = max(r["dispersao_alocacao_pct"] for r in resumo.values())
+    m["DispAlocMax"] = pt(disp_aloc, 1)
+    m["DispAlocFrase"] = ("inferior a 0,1\\%" if disp_aloc < 0.05 else f"de até {pt(disp_aloc, 1)}\\%")
+    m["ViesAlocMax"] = pt(vies, 1)
     sementes = amb["sementes"].split()
     m["Sementes"] = ", ".join(sementes[:-1]) + " e " + sementes[-1] if len(sementes) > 1 else amb["sementes"]
     m["CotaS"] = amb["quota"]
@@ -234,72 +237,111 @@ def bloco_ambiente(amb):
 
 # ---- afirmações qualitativas do texto ------------------------------------------------------
 
-def afirmacoes(metricas, pontos, resumo, sens_dados):
+def afirmacoes(metricas, pontos, resumo, sens_dados, vies):
+    """id -> (vale?, o que a frase marcada afirma). Só entram ids usados no artigo."""
     R = lambda l, c, k: resumo[(l, c)][k]          # noqa: E731
     dns = lambda l, c: R(l, c, "mec_ns_por_expr") - R(l, c, "base_ns_por_expr")  # noqa: E731
+    dby = lambda l, c: R(l, c, "mec_bytes_por_expr") - R(l, c, "base_bytes_por_expr")  # noqa: E731
     cens = list(CENS)
+    sens = sens_dados or {}
 
     def identicas_por_construtor(a, b):
         pa, pb = metricas[a]["eval"]["por_construtor"], metricas[b]["eval"]["por_construtor"]
         return all(pa[c] == pb[c] for c in CONSTRUTORES)
 
+    B = lambda k: metricas[k]["boilerplate_regra"]["B"]            # noqa: E731
+    reuso = lambda k: metricas[k]["reutilizacao"]["instancias"]    # noqa: E731
+    pts = lambda k: pontos[k]["pontos_de_modificacao"]             # noqa: E731
     return {
-        "metricas-identicas": identicas_por_construtor("handlers", "imperativa")
-        and identicas_por_construtor("monadas", "ioref"),
-        "boiler-ocaml-maior": metricas["handlers"]["boilerplate_regra"]["B"]
-        > metricas["imperativa"]["boilerplate_regra"]["B"],
-        "boiler-haskell-menor": metricas["monadas"]["boilerplate_regra"]["B"]
-        < metricas["ioref"]["boilerplate_regra"]["B"],
-        "reuso-so-handlers": metricas["handlers"]["reutilizacao"]["instancias"] > 0
-        and all(metricas[k]["reutilizacao"]["instancias"] == 0 for k in ("imperativa", "monadas", "ioref")),
-        "pontos-mecanismos-bases": pontos["handlers"]["pontos_de_modificacao"] > 0
-        and pontos["monadas"]["pontos_de_modificacao"] > 0
-        and pontos["imperativa"]["pontos_de_modificacao"] == 0
-        and pontos["ioref"]["pontos_de_modificacao"] == 0,
-        "ocaml-acima-de-1": all(R("ocaml", c, "tempo_ic_inf") > 1 for c in cens),
-        "ocaml-aloc-maior-que-tempo": all(R("ocaml", c, "razao_alocacao") > R("ocaml", c, "razao_tempo")
-                                          for c in cens),
-        "arith-menor-ocaml": min(cens, key=lambda c: R("ocaml", c, "razao_tempo")) == "arith",
-        "output-maior-ocaml": max(cens, key=lambda c: R("ocaml", c, "razao_tempo")) == "output",
-        "haskell-perto-de-1": all(0.7 <= R("haskell", c, "razao_tempo") <= 1.3 for c in cens),
-        "haskell-exn-abaixo-de-1": R("haskell", "exn", "tempo_ic_sup") < 1,
-        "haskell-state-faixa-literatura": 1.0 <= R("haskell", "state", "razao_tempo") <= 1.3,
-        "ocaml-arith-abaixo-literatura": R("ocaml", "arith", "razao_tempo") < 6.7,
+        "metricas-identicas": (
+            identicas_por_construtor("handlers", "imperativa") and identicas_por_construtor("monadas", "ioref"),
+            "eval tem as mesmas métricas no mecanismo e na base, construtor a construtor"),
+        "boiler-ocaml-maior": (B("handlers") > B("imperativa"),
+                               "os handlers têm mais boilerplate que a base imperativa"),
+        "boiler-haskell-menor": (B("monadas") < B("ioref"),
+                                 "as mônadas têm menos boilerplate que a base IORef"),
+        "reuso-so-handlers": (
+            reuso("handlers") > 0 and all(reuso(k) == 0 for k in ("imperativa", "monadas", "ioref")),
+            "só a versão com handlers registra reutilização"),
+        "pontos-mecanismos-bases": (
+            pts("handlers") > 0 and pts("monadas") > 0 and pts("imperativa") == 0 and pts("ioref") == 0,
+            "só os mecanismos exigiram pontos de modificação para o quarto efeito"),
+        "ocaml-acima-de-1": (all(R("ocaml", c, "tempo_ic_inf") > 1 for c in cens),
+                             "nenhum IC de 95% da razão de tempo do OCaml inclui 1"),
+        "haskell-ic-so-arith-exclui-1": (
+            R("haskell", "arith", "tempo_ic_inf") > 1
+            and all(R("haskell", c, "tempo_ic_inf") <= 1 <= R("haskell", c, "tempo_ic_sup")
+                    for c in ("state", "exn", "output")),
+            "no Haskell, só o IC de Arith exclui 1 (os outros três incluem)"),
+        "haskell-perto-de-1": (all(0.7 <= R("haskell", c, "razao_tempo") <= 1.3 for c in cens),
+                               "as razões de tempo do Haskell ficam perto de 1 (entre 0,7 e 1,3)"),
+        "haskell-base-state-cara": (
+            R("haskell", "state", "base_ns_por_expr") > 2 * R("ocaml", "state", "base_ns_por_expr"),
+            "em State, a base do Haskell custa mais que o dobro da do OCaml"),
+        "ocaml-delta-arith-menor": (min(cens, key=lambda c: dns("ocaml", c)) == "arith",
+                                    "no OCaml, o menor excedente de tempo é o de Arith"),
+        "haskell-maior-delta-arith": (max(cens, key=lambda c: dns("haskell", c)) == "arith",
+                                      "no Haskell, o maior excedente de tempo é o de Arith"),
+        "delta-bytes-proximos": (
+            abs(dby("ocaml", "arith") - dby("haskell", "arith")) < 0.5 * max(dby("ocaml", "arith"), 1),
+            "em Arith, os excedentes de alocação das duas linguagens são próximos"),
+        "base-ocaml-aloca-pouco": (R("ocaml", "arith", "base_bytes_por_expr") < 24,
+                                   "em Arith, a base do OCaml aloca só o resultado (menos de 3 palavras)"),
         # TCC I: sobrecusto < 1,5x nos handlers e > 2x nas mônadas
-        "h4-ocaml-refutada": min(R("ocaml", c, "razao_tempo") for c in cens) > 1.5,
-        "h4-haskell-refutada": max(R("haskell", c, "razao_tempo") for c in cens) < 2.0,
-        "ocaml-abaixo-literatura": max(R("ocaml", c, "razao_tempo") for c in cens) < 6.7,
-        "haskell-limite-inferior-literatura": max(R("haskell", c, "razao_tempo") for c in cens) < 1.15,
-        "ocaml-delta-arith-menor": min(cens, key=lambda c: dns("ocaml", c)) == "arith",
-        "haskell-maior-delta-arith": max(cens, key=lambda c: dns("haskell", c)) == "arith",
-        "haskell-ic-so-arith-exclui-1": R("haskell", "arith", "tempo_ic_inf") > 1
-        and all(R("haskell", c, "tempo_ic_inf") <= 1 <= R("haskell", c, "tempo_ic_sup")
-                for c in ("state", "exn", "output")),
-        "ocaml-instalacao-mesma-ordem-fonte": 23 <= dns("ocaml", "arith") <= 207,
-        "haskell-base-state-cara": R("haskell", "state", "base_ns_por_expr")
-        > 2 * R("ocaml", "state", "base_ns_por_expr"),
-        "sensibilidade-r2-ok": (sens_dados or {}).get("abaixo", 1) == 0,
-        "sensibilidade-desloca": (sens_dados or {}).get("dif_pct", 0) >= 10,
-        "delta-bytes-proximos": abs((R("ocaml", "arith", "mec_bytes_por_expr") - R("ocaml", "arith", "base_bytes_por_expr"))
-                                    - (R("haskell", "arith", "mec_bytes_por_expr") - R("haskell", "arith", "base_bytes_por_expr")))
-        < 0.5 * max(R("ocaml", "arith", "mec_bytes_por_expr") - R("ocaml", "arith", "base_bytes_por_expr"), 1),
-        "base-ocaml-aloca-pouco": R("ocaml", "arith", "base_bytes_por_expr") < 16,
-        "sensibilidade-r2": (sens_dados or {}).get("abaixo", 0) > 0,
+        "h4-ocaml-refutada": (min(R("ocaml", c, "razao_tempo") for c in cens) > 1.5,
+                              "toda razão de tempo do OCaml fica acima de 1,5"),
+        "h4-haskell-refutada": (max(R("haskell", c, "razao_tempo") for c in cens) < 2.0,
+                                "toda razão de tempo do Haskell fica abaixo de 2"),
+        "ocaml-abaixo-literatura": (max(R("ocaml", c, "razao_tempo") for c in cens) < 6.7,
+                                    "as razões do OCaml ficam abaixo de 6,7 (Sivaramakrishnan et al.)"),
+        "ocaml-instalacao-mesma-ordem-fonte": (
+            23 <= dns("ocaml", "arith") <= 207,
+            "o excedente de Arith no OCaml é da ordem dos 23 ns por fiber da fonte (três handlers)"),
+        "haskell-limite-inferior-literatura": (
+            max(R("haskell", c, "razao_tempo") for c in cens) < 1.15,
+            "as razões do Haskell ficam no limite inferior da faixa 1,0 a 1,3 ou abaixo"),
+        "sensibilidade-r2-ok": (sens.get("abaixo", 1) == 0,
+                                "na corrida subdimensionada, nenhum R² ficou abaixo de 0,95"),
+        "sensibilidade-desloca": (sens.get("dif_pct", 0) >= 10,
+                                  "a corrida subdimensionada deslocou alguma razão em 10% ou mais"),
+        "vies-regressao-alocacao": (vies >= 1.0,
+                                    "a regressão do Bechamel subestima a alocação da base em 1% ou mais"),
     }
 
 
 def conferir(texto, valores):
-    ids = re.findall(r"%% AFIRMACAO:([\w-]+)", texto)
+    """Confere cada marcador %% AFIRMACAO:id do texto; devolve as mensagens de problema."""
+    marcadores = [(texto.count("\n", 0, mo.start()) + 1, mo.group(1))
+                  for mo in re.finditer(r"%% AFIRMACAO:([\w-]+)", texto)]
     problemas = []
-    for i in ids:
+    for linha, i in marcadores:
         if i not in valores:
-            problemas.append(f"  ? {i}: afirmação marcada no texto, mas sem verificação definida")
-        elif not valores[i]:
-            problemas.append(f"  ✗ {i}: deixou de valer com estes resultados; reveja a frase marcada")
-    for i in sorted(set(ids)):
-        if valores.get(i):
+            problemas.append(f"  ? {i} (linha {linha}): marcada no texto, mas sem verificação definida")
+        elif not valores[i][0]:
+            problemas.append(f"  ✗ {i} (linha {linha}): a frase afirma que {valores[i][1]}, e isso "
+                             "deixou de valer com estes resultados; reescreva a frase")
+    for i in sorted({i for _, i in marcadores}):
+        if i in valores and valores[i][0]:
             print(f"  ✓ {i}")
     return problemas
+
+
+def vies_alocacao(campanha):
+    """Maior subestimativa (%) da alocação do OCaml pela regressão do Bechamel,
+    em relação à contagem direta; 0 se a campanha não tem alocacao-direta/."""
+    direta = {}
+    for arq in sorted((campanha / "alocacao-direta").glob("*.csv")):
+        with open(arq, encoding="utf-8") as f:
+            for l in csv.DictReader(f):
+                direta[(l["cenario"], l["implementacao"], l["semente"])] = float(l["palavras_por_execucao"])
+    maior = 0.0
+    for arq in sorted((campanha / "brutos").glob("ocaml-*.csv")):
+        with open(arq, encoding="utf-8") as f:
+            for l in csv.DictReader(f):
+                d = direta.get((l["cenario"], l["implementacao"], l["semente"]))
+                if d:
+                    maior = max(maior, (1 - float(l["alocacao"]) / d) * 100)
+    return maior
 
 
 # ---- sensibilidade (corrida subdimensionada) ------------------------------------------------
@@ -359,8 +401,15 @@ def main(argv):
     pontos = ler_json("pontos-modificacao.json")
     resumo = ler_resumo(campanha)
     amb = ler_ambiente(campanha)
+    faltam = [k for k in ("cpu", "ncpu", "so", "ocaml", "ghc", "bechamel", "criterion",
+                          "sementes", "quota", "limite", "reamostras") if amb[k] in ("?", "")]
+    if faltam:
+        raise SystemExit(f"{(campanha / 'ambiente.md').relative_to(RAIZ)} não informa: {', '.join(faltam)}. "
+                         "O parágrafo do ambiente sairia com lacunas; complete o arquivo (as chaves "
+                         "esperadas estão em scripts/registrar-ambiente.sh) e rode de novo.")
     sens_macros, sens_dados = ler_sensibilidade(campanha, resumo)
-    m = macros(metricas, pontos, resumo, amb, sens_macros)
+    vies = vies_alocacao(campanha)
+    m = macros(metricas, pontos, resumo, amb, sens_macros, vies)
     texto = artigo.read_text(encoding="utf-8")
 
     if "--verificar" not in argv:
@@ -375,9 +424,12 @@ def main(argv):
                   "do artigo precisa dizê-lo")
 
     print("Afirmações qualitativas do texto:")
-    problemas = conferir(texto, afirmacoes(metricas, pontos, resumo, sens_dados))
+    problemas = conferir(texto, afirmacoes(metricas, pontos, resumo, sens_dados, vies))
     for p in problemas:
         print(p)
+    if problemas:
+        print("Os números do artigo foram atualizados, mas as frases acima não valem mais: "
+              "reescreva-as em ../artigo.tex e rode `make artigo` de novo.")
     return 1 if problemas else 0
 
 
