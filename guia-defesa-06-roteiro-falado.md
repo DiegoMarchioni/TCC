@@ -15,7 +15,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 ## Como usar este roteiro
 
 1. **Leia em voz alta uma vez, com cronômetro.** O texto tem cerca de
-   1.702 palavras: uns 16 minutos de fala, já contando pausas
+   1.831 palavras: uns 17 minutos e meio de fala, já contando pausas
    curtas. Sobra margem dentro dos 20 minutos; use-a para falar devagar e
    apontar na tela.
 2. **Reescreva com as suas palavras o que não soar como você.** O orientador
@@ -33,19 +33,20 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 | 1 | Capa | 0:30 | 0:30 | 45 |
 | 2 | Dois mecanismos para efeitos | 1:20 | 1:50 | 144 |
 | 3 | Cada mecanismo contra uma base | 1:30 | 3:20 | 159 |
-| 4 | Questões de pesquisa | 1:10 | 4:30 | 120 |
-| 5 | Um interpretador com três efeitos | 1:10 | 5:40 | 125 |
-| 6 | Quatro versões e a verificação | 1:10 | 6:50 | 119 |
-| 7 | O mesmo trecho de eval, com e sem handlers | 0:50 | 7:40 | 81 |
-| 8 | Legibilidade de eval | 0:40 | 8:20 | 59 |
-| 9 | Composabilidade e infraestrutura | 1:20 | 9:40 | 138 |
-| 10 | Destaque: 45 ns | 0:40 | 10:20 | 59 |
-| 11 | Custo de tempo por expressão | 1:20 | 11:40 | 152 |
-| 12 | Memória por expressão | 1:00 | 12:40 | 98 |
-| 13 | Achados não previstos | 1:10 | 13:50 | 134 |
-| 14 | Frente à literatura e ao TCC I | 1:00 | 14:50 | 104 |
-| 15 | Conclusões e trabalhos futuros | 1:20 | 16:10 | 143 |
-| 16 | Obrigado | 0:20 | 16:30 | 22 |
+| 4 | Questões de pesquisa | 1:00 | 4:20 | 113 |
+| 5 | Um interpretador com três efeitos | 1:10 | 5:30 | 125 |
+| 6 | A função eval | 1:20 | 6:50 | 136 |
+| 7 | Quatro versões e a verificação | 1:10 | 8:00 | 119 |
+| 8 | O mesmo trecho de eval, com e sem handlers | 0:50 | 8:50 | 81 |
+| 9 | Legibilidade de eval | 0:40 | 9:30 | 59 |
+| 10 | Composabilidade e infraestrutura | 1:20 | 10:50 | 138 |
+| 11 | Destaque: 45 ns | 0:40 | 11:30 | 59 |
+| 12 | Custo de tempo por expressão | 1:20 | 12:50 | 152 |
+| 13 | Memória por expressão | 1:00 | 13:50 | 98 |
+| 14 | Achados não previstos | 1:10 | 15:00 | 134 |
+| 15 | Frente à literatura e ao TCC I | 1:00 | 16:00 | 104 |
+| 16 | Conclusões e trabalhos futuros | 1:20 | 17:20 | 143 |
+| 17 | Obrigado | 0:20 | 17:40 | 22 |
 
 ---
 
@@ -83,15 +84,15 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 >
 > O resultado é uma razão: quanto o mecanismo custa em relação à base. A fórmula mostra um cuidado. A razão é um mais o custo extra dividido pelo custo da base. Se a base for muito barata, a razão fica grande, mesmo com um custo extra pequeno. Por isso eu mostro também os valores absolutos, e a comparação entre as duas linguagens é só indicativa.
 
-*Aponte a fórmula. Ela volta no slide 12.*
+*Aponte a fórmula. Ela volta no slide 13.*
 
-### Slide 4: Questões de pesquisa (1:10 · acumulado 4:30)
+### Slide 4: Questões de pesquisa (1:00 · acumulado 4:20)
 
 **Âncora:** quatro perguntas: legibilidade, composabilidade, abstração e desempenho.
 
 > Com isso, eu fiz quatro perguntas.
 >
-> A primeira é legibilidade. O coração de um interpretador é uma função chamada eval: ela recebe uma expressão e calcula o resultado. Eu meço três coisas nessa função: o número de linhas, o número de operações de efeito e o quanto o código é aninhado. São medidas indiretas: ler o código com pessoas seria outro estudo.
+> A primeira é legibilidade. Eu meço três coisas na eval, a função principal do interpretador, que eu mostro daqui a pouco: o número de linhas, o número de operações de efeito e o quanto o código é aninhado. São medidas indiretas: ler o código com pessoas seria outro estudo.
 >
 > A segunda é composabilidade: quantas partes do código que já existe precisam mudar para acrescentar um quarto efeito.
 >
@@ -101,7 +102,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 >
 > E as métricas de código só comparam versões da mesma linguagem.
 
-### Slide 5: Um interpretador com três efeitos (1:10 · acumulado 5:40)
+### Slide 5: Um interpretador com três efeitos (1:10 · acumulado 5:30)
 
 **Âncora:** um interpretador pequeno com estado, exceção e saída; equivalência definida antes.
 
@@ -111,7 +112,19 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 >
 > Fiz três simplificações, de propósito: as variáveis são globais, o erro sempre encerra a expressão, e é um único programa.
 
-### Slide 6: Quatro versões e a verificação (1:10 · acumulado 6:50)
+### Slide 6: A função eval (1:20 · acumulado 6:50)
+
+**Âncora:** a eval recebe uma expressão e calcula o valor; os efeitos acontecem dentro dela.
+
+> Antes de mostrar as versões, vale explicar a peça central. Todo interpretador tem uma função chamada eval, de evaluate, avaliar. Ela recebe uma expressão e calcula quanto ela vale. À esquerda está o começo dela, na versão imperativa: um caso para cada comando.
+>
+> À direita, ela rodando sobre dois mais n, com n valendo três. A eval recebe uma soma, cai no caso Add e avalia os dois lados. O lado esquerdo cai no caso Num e devolve dois. O lado direito cai no caso Var: lê n na tabela e devolve três. Essa leitura é uma operação de efeito. Por fim, a linha x mais y soma os dois e devolve cinco.
+>
+> Essa divisão vai importar nos resultados: a legibilidade mede o código dentro da eval, e a infraestrutura é o código em volta dela.
+
+*Siga os passos 1 a 4 com o cursor, apontando a linha do código de cada caso.*
+
+### Slide 7: Quatro versões e a verificação (1:10 · acumulado 8:00)
 
 **Âncora:** quatro versões; nada é medido antes de os testes passarem.
 
@@ -129,7 +142,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 
 *A frase sobre a IA é recomendada: a declaração está no artigo, e dizê-la você mesmo, ligada aos testes, vira um ponto forte.*
 
-### Slide 7: O mesmo trecho de eval, com e sem handlers (0:50 · acumulado 7:40)
+### Slide 8: O mesmo trecho de eval, com e sem handlers (0:50 · acumulado 8:50)
 
 **Âncora:** a estrutura é a mesma; só a operação muda.
 
@@ -141,7 +154,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 
 *Passe o cursor pelas linhas em destaque enquanto fala.*
 
-### Slide 8: Legibilidade de eval (0:40 · acumulado 8:20)
+### Slide 9: Legibilidade de eval (0:40 · acumulado 9:30)
 
 **Âncora:** a eval empata; o mecanismo não muda a leitura.
 
@@ -149,7 +162,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 >
 > Então, a resposta à primeira pergunta: o mecanismo não muda a leitura da eval. Se existe diferença na hora de escrever, ela está em outro lugar.
 
-### Slide 9: Composabilidade e infraestrutura (1:20 · acumulado 9:40)
+### Slide 10: Composabilidade e infraestrutura (1:20 · acumulado 10:50)
 
 **Âncora:** o custo de escrever está no código em volta da eval.
 
@@ -161,7 +174,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 >
 > Em troca, só os handlers têm reaproveitamento: dois handlers são usados em mais de um lugar. Isso permite trocar o que a saída faz sem mexer na eval.
 
-### Slide 10: Destaque: 45 ns (0:40 · acumulado 10:20)
+### Slide 11: Destaque: 45 ns (0:40 · acumulado 11:30)
 
 **Âncora:** 45 ns só para instalar os handlers, sem nenhum efeito.
 
@@ -171,7 +184,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 
 *Fale mais devagar e faça uma pausa depois de “quarenta e cinco nanossegundos”.*
 
-### Slide 11: Custo de tempo por expressão (1:20 · acumulado 11:40)
+### Slide 12: Custo de tempo por expressão (1:20 · acumulado 12:50)
 
 **Âncora:** no OCaml, custo para instalar e a cada operação; no Haskell, quase nenhum.
 
@@ -185,7 +198,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 
 *Percorra as barras azuis de cima para baixo e depois as laranja.*
 
-### Slide 12: Memória por expressão (1:00 · acumulado 12:40)
+### Slide 13: Memória por expressão (1:00 · acumulado 13:50)
 
 **Âncora:** a memória a mais é parecida; o que muda é a base.
 
@@ -195,7 +208,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 
 *Aponte o pequeno trecho cinza da barra do OCaml ao dizer “dezesseis bytes”.*
 
-### Slide 13: Achados não previstos (1:10 · acumulado 13:50)
+### Slide 14: Achados não previstos (1:10 · acumulado 15:00)
 
 **Âncora:** um vazamento de memória no OCaml e uma medição sensível à configuração.
 
@@ -205,7 +218,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 >
 > O segundo é sobre a medição. Eu repeti as medições com um tempo de coleta quatro vezes menor. Todas continuaram passando no critério de qualidade que eu usei. Mesmo assim, as razões mudaram até vinte e oito por cento. Ou seja: a configuração da medição muda o resultado, e isso precisa ser considerado ao ler os números.
 
-### Slide 14: Frente à literatura e ao TCC I (1:00 · acumulado 14:50)
+### Slide 15: Frente à literatura e ao TCC I (1:00 · acumulado 16:00)
 
 **Âncora:** mesma ordem de grandeza da literatura; a previsão do TCC I não se confirmou.
 
@@ -219,7 +232,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 
 *Diga a última frase com tranquilidade, sem tom de desculpa: uma previsão que não se confirma também é resultado.*
 
-### Slide 15: Conclusões e trabalhos futuros (1:20 · acumulado 16:10)
+### Slide 16: Conclusões e trabalhos futuros (1:20 · acumulado 17:20)
 
 **Âncora:** escrita: custo em volta da eval; execução: handlers cobram, mônadas quase nada.
 
@@ -235,7 +248,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 
 *O parágrafo “Na prática” é a sua opinião sobre os dados. Diga olhando para a câmera.*
 
-### Slide 16: Obrigado (0:20 · acumulado 16:30)
+### Slide 17: Obrigado (0:20 · acumulado 17:40)
 
 **Âncora:** obrigado; tudo se refaz com um comando.
 
@@ -469,14 +482,14 @@ construído.
 | Problema e motivação | lacuna clara e relevante, dita cedo | slide 2, em 1 min 40 s |
 | Objetivos e perguntas | perguntas explícitas e mensuráveis | slide 4 |
 | Rigor do método | ameaças à validade tratadas, e não escondidas | slides 3, 5 e 6 (confundimento, viés da razão, equivalência) |
-| Resultados | evidência para cada pergunta, com números | slides 8 a 12 |
+| Resultados | evidência para cada pergunta, com números | slides 9 a 13 |
 | Honestidade | limites, resultados contrários e o que não foi medido | slides 12, 13, 14 e 15 |
-| Discussão | confronto com a literatura, com cuidado | slide 14 |
-| Conclusões | respostas às perguntas e uma recomendação | slide 15 |
+| Discussão | confronto com a literatura, com cuidado | slide 15 |
+| Conclusões | respostas às perguntas e uma recomendação | slide 16 |
 | Tempo | dentro dos 20 minutos, sem correria | 19 min 30 s, com folga |
 | Clareza | uma ideia por slide, transições explícitas | âncoras e frases de ligação |
 | Domínio na arguição | respostas diretas, com evidência e limite | seção anterior, Guias 01 a 04 |
-| Integridade | uso de IA declarado, reprodutibilidade | slide 6, apêndice A5, `make tudo` |
+| Integridade | uso de IA declarado, reprodutibilidade | slide 7, apêndice A5, `make tudo` |
 
 **O que ainda depende de você, e decide a nota:**
 

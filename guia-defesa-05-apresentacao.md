@@ -6,7 +6,7 @@ prevê 20 minutos de apresentação e 20 de arguição; as bancas vão de 02 a
 23/11/2026.
 
 **Os slides** foram montados como uma apresentação no Claude (link enviado na
-conversa), com 16 slides para os 20 minutos e 5 de apêndice para a arguição.
+conversa), com 17 slides para os 20 minutos e 5 de apêndice para a arguição.
 Pelo menu da própria página, a apresentação baixa como **PDF** (o mais seguro
 para apresentar online) ou **PPTX** (editável: os gráficos são formas nativas,
 não imagens). Não existe modelo oficial de slides da SBC, e o Regulamento só
@@ -15,7 +15,7 @@ código de cores das figuras: azul para OCaml/*handlers*, laranja para
 Haskell/mônadas, cinza para as bases.
 
 > **Os números dos slides são texto fixo.** Se você refizer a campanha com
-> `make tudo`, confira os slides 10 a 14 e os apêndices A1 e A4 contra
+> `make tudo`, confira os slides 11 a 15 e os apêndices A1 e A4 contra
 > `codigo/resultados/campanha-*/resumo.md` (ou peça para regenerá-los).
 
 As figuras do artigo estão em `codigo/resultados/figuras/`, em SVG (fonte) e
@@ -24,7 +24,7 @@ PNG 2×, e se regeneram com `make figuras`. Os números de cada figura estão em
 
 > **Fale com as suas palavras.** As notas abaixo são o que cada slide precisa
 > transmitir, não um texto para ler. Ensaie com cronômetro pelo menos duas
-> vezes; 16 slides em 20 minutos dá cerca de 1min15s por slide.
+> vezes; 17 slides em 20 minutos dá cerca de 1min10s por slide.
 
 ---
 
@@ -39,22 +39,23 @@ nas notas do apresentador de cada slide. Abaixo, o mapa de tempos.
 | 1 | Capa | 0:30 | 0:30 |
 | 2 | Dois mecanismos para efeitos | 1:20 | 1:50 |
 | 3 | Cada mecanismo contra uma base | 1:30 | 3:20 |
-| 4 | Questões de pesquisa | 1:10 | 4:30 |
-| 5 | Um interpretador com três efeitos | 1:10 | 5:40 |
-| 6 | Quatro versões e a verificação | 1:10 | 6:50 |
-| 7 | O mesmo trecho de eval, com e sem handlers | 0:50 | 7:40 |
-| 8 | Legibilidade de eval | 0:40 | 8:20 |
-| 9 | Composabilidade e infraestrutura | 1:20 | 9:40 |
-| 10 | Destaque: 45 ns | 0:40 | 10:20 |
-| 11 | Custo de tempo por expressão | 1:20 | 11:40 |
-| 12 | Memória por expressão | 1:00 | 12:40 |
-| 13 | Achados não previstos | 1:10 | 13:50 |
-| 14 | Frente à literatura e ao TCC I | 1:00 | 14:50 |
-| 15 | Conclusões e trabalhos futuros | 1:20 | 16:10 |
-| 16 | Obrigado | 0:20 | 16:30 |
+| 4 | Questões de pesquisa | 1:00 | 4:20 |
+| 5 | Um interpretador com três efeitos | 1:10 | 5:30 |
+| 6 | A função eval | 1:20 | 6:50 |
+| 7 | Quatro versões e a verificação | 1:10 | 8:00 |
+| 8 | O mesmo trecho de eval, com e sem handlers | 0:50 | 8:50 |
+| 9 | Legibilidade de eval | 0:40 | 9:30 |
+| 10 | Composabilidade e infraestrutura | 1:20 | 10:50 |
+| 11 | Destaque: 45 ns | 0:40 | 11:30 |
+| 12 | Custo de tempo por expressão | 1:20 | 12:50 |
+| 13 | Memória por expressão | 1:00 | 13:50 |
+| 14 | Achados não previstos | 1:10 | 15:00 |
+| 15 | Frente à literatura e ao TCC I | 1:00 | 16:00 |
+| 16 | Conclusões e trabalhos futuros | 1:20 | 17:20 |
+| 17 | Obrigado | 0:20 | 17:40 |
 | A1–A5 | Apêndice: Tabela 2 completa, protocolo, quarto efeito, sensibilidade, uso de IA | arguição | |
 
-Sobram cerca de 3 minutos e meio de folga. Os apêndices não entram na fala: abra-os só se a
+Sobram cerca de 2 minutos e 20 segundos de folga. Os apêndices não entram na fala: abra-os só se a
 banca perguntar.
 
 *Os blocos abaixo são material de estudo: o contexto técnico por trás de cada
@@ -83,9 +84,9 @@ programa".
   (imperativa com `Hashtbl` no OCaml; `IORef` com o mesmo `Map` no Haskell) e
   só então confrontar as razões, e com cautela: **exploratório**.
 - Fórmula para guardar: razão = 1 + Δ / T_base. Uma base cara *deflaciona* a
-  razão (vai voltar no slide 11).
+  razão (vai voltar no slide 13).
 
-### 4. Questões de pesquisa (1:10)
+### 4. Questões de pesquisa (1:00)
 - QP1 legibilidade: LOC, operações de efeito e aninhamento de `eval`
   (*proxies* estruturais, não legibilidade percebida).
 - QP2 composabilidade: pontos de modificação para inserir um 4º efeito
@@ -102,7 +103,20 @@ programa".
   mensagem de erro.
 - Limitações assumidas: ambiente global, exceção só abortiva, n = 1.
 
-### 6. Quatro versões e a verificação (1:10)
+### 6. A função eval (1:20)
+- O que é: a função principal do interpretador. Recebe uma expressão (uma
+  árvore de construtores) e devolve o inteiro que ela vale, com um caso para
+  cada um dos 8 construtores.
+- É recursiva: no caso `Add`, chama a si mesma para cada lado e soma os
+  resultados.
+- Os efeitos acontecem dentro dela: `Var` e `Let` mexem no estado, `Div` por
+  zero e variável inexistente dão erro, `Print` escreve na saída.
+- Por que importa: a QP1 mede só a `eval`; a QP3 mede o resto do arquivo (o
+  código em volta dela). O resultado principal sai dessa divisão.
+- O código do slide é o de `codigo/ocaml/imperative/interp_imp.ml`, linhas 14
+  a 23, com a anotação de tipo omitida e a mensagem de erro abreviada.
+
+### 7. Quatro versões e a verificação (1:10)
 - *Handlers* × imperativa (OCaml); mônadas × `IORef` (Haskell).
 - Oráculo: 28 casos × 2 versões + 5 conferências = **61/61 nas duas
   linguagens**; é pré-condição da medição.
@@ -111,7 +125,7 @@ programa".
 - Gerador replicado em OCaml, Haskell e Python: os *hashes* das 12 cargas batem
   nas três.
 
-### 7. O mesmo trecho de eval, com e sem handlers (0:50)
+### 8. O mesmo trecho de eval, com e sem handlers (0:50)
 Mostre o braço `Var` lado a lado (é o slide de código; mantenha curto):
 
 ```ocaml
@@ -125,12 +139,12 @@ Mostre o braço `Var` lado a lado (é o slide de código; mantenha curto):
 "Cada operação direta da base virou exatamente uma operação de efeito. A
 diferença não está aqui."
 
-### 8. Legibilidade de eval (0:40)
+### 9. Legibilidade de eval (0:40)
 Tabela pequena: 29/5/2 (OCaml, nas duas) e 27/18/1 (Haskell, nas duas), igual
 também construtor a construtor. **Pelos *proxies*, o mecanismo não pesa na
 leitura do avaliador.**
 
-### 9. Composabilidade e infraestrutura (1:20)
+### 10. Composabilidade e infraestrutura (1:20)
 Gráfico de barras do *boilerplate* e os pontos de modificação ao lado.
 - *Handlers*: 67 linhas de *boilerplate* contra 3 da base (registros de
   `match_with`, repasses `| _ -> None`, `continue`, composições); 18 delas só
@@ -143,11 +157,11 @@ Gráfico de barras do *boilerplate* e os pontos de modificação ao lado.
 - Reutilização: só os *handlers* (2): o preço do *boilerplate* compra a troca
   de interpretação sem tocar no avaliador.
 
-### 10. Destaque: 45 ns (0:40)
+### 11. Destaque: 45 ns (0:40)
 Slide azul, um número só. Fale devagar: "no OCaml, só instalar três *handlers*
 em cada expressão custa 45 ns, sem nenhuma operação de efeito". Avance.
 
-### 11. Custo de tempo por expressão (1:20)
+### 12. Custo de tempo por expressão (1:20)
 Gráfico de barras do excedente por cenário. **Este é o slide central.**
 - Arith no OCaml não faz operação de efeito nenhuma: os **45 ns** por expressão
   são só instalar três *handlers*. É o número mais limpo do trabalho.
@@ -156,7 +170,7 @@ Gráfico de barras do excedente por cenário. **Este é o slide central.**
   intervalos de confiança incluem 1. O GHC quase apaga a pilha.
 - Razões: OCaml 1,59 a 4,26; Haskell 0,97 a 1,08.
 
-### 12. Memória por expressão (1:00)
+### 13. Memória por expressão (1:00)
 Barras empilhadas: base em cinza, excedente na cor de cada linguagem.
 - 11,5× contra 2,2× parece uma ordem de grandeza.
 - Em bytes, o excedente é parecido: 168 contra 150 B por expressão.
@@ -165,7 +179,7 @@ Barras empilhadas: base em cinza, excedente na cor de cada linguagem.
 - Ressalva honesta: as pilhas das *fibers* ficam fora do *heap* e fora dessa
   coluna.
 
-### 13. Achados não previstos (1:10)
+### 14. Achados não previstos (1:10)
 Dois cartões com os números; o detalhe da sensibilidade está no apêndice A4.
 - **Vazamento:** abandonar a continuação (em vez de `discontinue`) vaza o
   segmento de pilha: 2 milhões de erros → ~1,2 GB contra ~6 MB. Nenhuma métrica
@@ -174,7 +188,7 @@ Dois cartões com os números; o detalhe da sensibilidade está no apêndice A4.
   deslocou as razões em até 28%. Configuração de amostragem é ameaça à
   validade.
 
-### 14. Frente à literatura e ao TCC I (1:00)
+### 15. Frente à literatura e ao TCC I (1:00)
 - Sivaramakrishnan et al. 2021: 1% é para programas *sem* *handlers*; 6,7–12,3×
   é recursão não-*tail* sob *handler*. As razões daqui ficam abaixo, e os
   45 ns são da mesma ordem dos 23 ns que eles medem por *fiber*.
@@ -183,7 +197,7 @@ Dois cartões com os números; o detalhe da sensibilidade está no apêndice A4.
 - **TCC I:** previa *handlers* < 1,5× e mônadas > 2×. Falhou nas duas metades.
   Diga sem rodeio.
 
-### 15. Conclusões e trabalhos futuros (1:20)
+### 16. Conclusões e trabalhos futuros (1:20)
 - Escrita: o custo dos mecanismos está na **infraestrutura**, não no avaliador;
   nos *handlers*, localizado e pago uma vez; nas mônadas, cresce com a pilha.
 - Execução: *handlers* têm custo fixo por instalação e por operação; mônadas,
@@ -194,7 +208,7 @@ Dois cartões com os números; o detalhe da sensibilidade está no apêndice A4.
   segurança de efeitos (Koka), estudo com pessoas.
 - Feche com uma frase sua sobre o que você recomendaria a quem vai escolher.
 
-### 16. Obrigado (0:20)
+### 17. Obrigado (0:20)
 Agradeça e passe a palavra à banca. Deixe este slide aberto durante a
 arguição; os apêndices A1 a A5 estão logo depois, para responder com números.
 
