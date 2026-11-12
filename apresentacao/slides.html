@@ -134,7 +134,7 @@ Por isso, eu comparo cada mecanismo com uma versão simples na mesma linguagem, 
 
 O resultado é uma razão: quanto o mecanismo custa em relação à base. A fórmula mostra um cuidado. A razão é um mais o custo extra dividido pelo custo da base. Se a base for muito barata, a razão fica grande, mesmo com um custo extra pequeno. Por isso eu mostro também os valores absolutos, e a comparação entre as duas linguagens é só indicativa.
 
-[Aponte a fórmula. Ela volta no slide 12.]</aside>
+[Aponte a fórmula. Ela volta no slide 13.]</aside>
 </section>
 
 <section id="qps" data-transition="fade" style="background:#F7F5F0;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:48px">
@@ -167,11 +167,11 @@ O resultado é uma razão: quanto o mecanismo custa em relação à base. A fór
 <p style="font-size:28px;line-height:1.4;color:#4A5160;width:1500px">Comparações de código só dentro da mesma linguagem: handlers × imperativa, mônadas × IORef.</p>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
 <p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">4</p>
-<aside>(1:10 · acumulado 4:30) Âncora: quatro perguntas: legibilidade, composabilidade, abstração e desempenho.
+<aside>(1:00 · acumulado 4:20) Âncora: quatro perguntas: legibilidade, composabilidade, abstração e desempenho.
 
 Com isso, eu fiz quatro perguntas.
 
-A primeira é legibilidade. O coração de um interpretador é uma função chamada eval: ela recebe uma expressão e calcula o resultado. Eu meço três coisas nessa função: o número de linhas, o número de operações de efeito e o quanto o código é aninhado. São medidas indiretas: ler o código com pessoas seria outro estudo.
+A primeira é legibilidade. Eu meço três coisas na eval, a função principal do interpretador, que eu mostro daqui a pouco: o número de linhas, o número de operações de efeito e o quanto o código é aninhado. São medidas indiretas: ler o código com pessoas seria outro estudo.
 
 A segunda é composabilidade: quantas partes do código que já existe precisam mudar para acrescentar um quarto efeito.
 
@@ -222,13 +222,60 @@ E as métricas de código só comparam versões da mesma linguagem.</aside>
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
 <p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">5</p>
-<aside>(1:10 · acumulado 5:40) Âncora: um interpretador pequeno com estado, exceção e saída; equivalência definida antes.
+<aside>(1:10 · acumulado 5:30) Âncora: um interpretador pequeno com estado, exceção e saída; equivalência definida antes.
 
 Para comparar, eu precisava de um programa que usasse os três efeitos. Escolhi um interpretador de uma linguagem pequena, com estes oito comandos. Var lê uma variável e Let guarda um valor: esse é o estado. Dividir por zero ou ler uma variável que não existe dá erro: essa é a exceção. E Print mostra um valor: essa é a saída.
 
 Antes de programar, eu escrevi uma especificação formal que diz qual é o resultado certo de cada expressão. Com ela, duas versões são equivalentes se dão o mesmo valor, deixam o mesmo estado, mostram a mesma saída e dão a mesma mensagem de erro.
 
 Fiz três simplificações, de propósito: as variáveis são globais, o erro sempre encerra a expressão, e é um único programa.</aside>
+</section>
+
+<section id="eval" data-transition="fade" style="background:#EFEBE3;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:40px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Caso de uso</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">A função eval: recebe uma expressão e calcula o valor</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="width:860px;display:flex;flex-direction:column;gap:16px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:28px 32px">
+<div style="display:flex;gap:16px;align-items:center">
+<div style="width:20px;height:20px;background:#8E8C82;border-radius:4px"></div>
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">O código · interp_imp.ml (trecho)</p>
+</div>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.55;white-space:nowrap;color:#17212F">let rec eval env = function<br>&#160;&#160;| <span style="font-weight:600">Num</span> n -&gt; n<br>&#160;&#160;| <span style="font-weight:600">Var</span> x -&gt; (<br>&#160;&#160;&#160;&#160;&#160;&#160;match <span style="color:#1F5FAF;font-weight:600">Hashtbl.find_opt env x</span> with<br>&#160;&#160;&#160;&#160;&#160;&#160;| Some v -&gt; v<br>&#160;&#160;&#160;&#160;&#160;&#160;| None -&gt; raise (Runtime_error ...))<br>&#160;&#160;| <span style="font-weight:600">Add</span> (a, b) -&gt;<br>&#160;&#160;&#160;&#160;&#160;&#160;let x = eval env a in<br>&#160;&#160;&#160;&#160;&#160;&#160;let y = eval env b in<br>&#160;&#160;&#160;&#160;&#160;&#160;x + y<br><span style="color:#646A78">&#160;&#160;(* Mul, Div, Let, Seq e Print: mesma ideia *)</span></p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:28px 32px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">Rodando 2 + n, com n = 3</p>
+<div style="display:flex;gap:20px;align-items:flex-start">
+<p style="width:44px;height:44px;border-radius:22px;background:#17212F;color:#F7F5F0;font-size:24px;font-weight:600;text-align:center;line-height:44px">1</p>
+<div style="flex:1;display:flex;flex-direction:column;gap:4px"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#17212F">eval (Add (Num 2, Var "n"))</p><p style="font-size:24px;color:#4A5160">caso Add: avalia os dois lados</p></div>
+</div>
+<div style="display:flex;gap:20px;align-items:flex-start">
+<p style="width:44px;height:44px;border-radius:22px;background:#17212F;color:#F7F5F0;font-size:24px;font-weight:600;text-align:center;line-height:44px">2</p>
+<div style="flex:1;display:flex;flex-direction:column;gap:4px"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#17212F">eval (Num 2)</p><p style="font-size:24px;color:#4A5160">caso Num: devolve 2</p></div>
+</div>
+<div style="display:flex;gap:20px;align-items:flex-start">
+<p style="width:44px;height:44px;border-radius:22px;background:#1F5FAF;color:#F7F5F0;font-size:24px;font-weight:600;text-align:center;line-height:44px">3</p>
+<div style="flex:1;display:flex;flex-direction:column;gap:4px"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#17212F">eval (Var "n")</p><p style="font-size:24px;color:#1F5FAF;font-weight:600">caso Var: lê n na tabela e devolve 3 (efeito de estado)</p></div>
+</div>
+<div style="display:flex;gap:20px;align-items:flex-start">
+<p style="width:44px;height:44px;border-radius:22px;background:#17212F;color:#F7F5F0;font-size:24px;font-weight:600;text-align:center;line-height:44px">4</p>
+<div style="flex:1;display:flex;flex-direction:column;gap:4px"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#17212F">x + y</p><p style="font-size:24px;color:#4A5160">volta ao caso Add: 2 + 3 = 5</p></div>
+</div>
+</div>
+</div>
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;line-height:1.35;color:#17212F;width:1600px">Os efeitos acontecem dentro da eval. A legibilidade (QP1) mede o código da eval; a infraestrutura (QP3), o código em volta dela.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">6</p>
+<aside>(1:20 · acumulado 6:50) Âncora: a eval recebe uma expressão e calcula o valor; os efeitos acontecem dentro dela.
+
+Antes de mostrar as versões, vale explicar a peça central. Todo interpretador tem uma função chamada eval, de evaluate, avaliar. Ela recebe uma expressão e calcula quanto ela vale. À esquerda está o começo dela, na versão imperativa: um caso para cada comando.
+
+À direita, ela rodando sobre dois mais n, com n valendo três. A eval recebe uma soma, cai no caso Add e avalia os dois lados. O lado esquerdo cai no caso Num e devolve dois. O lado direito cai no caso Var: lê n na tabela e devolve três. Essa leitura é uma operação de efeito. Por fim, a linha x mais y soma os dois e devolve cinco.
+
+Essa divisão vai importar nos resultados: a legibilidade mede o código dentro da eval, e a infraestrutura é o código em volta dela.
+
+[Siga os passos 1 a 4 com o cursor, apontando a linha do código de cada caso.]</aside>
 </section>
 
 <section id="implementacoes" data-transition="fade" style="background:#F7F5F0;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:48px">
@@ -259,8 +306,8 @@ Fiz três simplificações, de propósito: as variáveis são globais, o erro se
 </div>
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
-<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">6</p>
-<aside>(1:10 · acumulado 6:50) Âncora: quatro versões; nada é medido antes de os testes passarem.
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">7</p>
+<aside>(1:10 · acumulado 8:00) Âncora: quatro versões; nada é medido antes de os testes passarem.
 
 Então eu implementei quatro versões: no OCaml, com handlers e a base imperativa; no Haskell, com mônadas e a base com IORef.
 
@@ -303,8 +350,8 @@ O código foi gerado com apoio de IA, como está declarado no artigo, e revisado
 <p style="font-size:24px;color:#646A78">Código completo, testes e scripts: github.com/DiegoMarchioni/TCC, pasta codigo/</p>
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
-<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">7</p>
-<aside>(0:50 · acumulado 7:40) Âncora: a estrutura é a mesma; só a operação muda.
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">8</p>
+<aside>(0:50 · acumulado 8:50) Âncora: a estrutura é a mesma; só a operação muda.
 
 Este é o mesmo trecho da eval nas duas versões em OCaml: o que lê uma variável.
 
@@ -332,8 +379,8 @@ A estrutura é a mesma, linha por linha. Eu escrevi as versões como espelho uma
 <p style="font-size:24px;line-height:1.4;color:#646A78;width:1500px">Contagem automática sobre o código formatado. Cada linguagem tem as suas operações de efeito, por isso só se compara dentro da mesma.</p>
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
-<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">8</p>
-<aside>(0:40 · acumulado 8:20) Âncora: a eval empata; o mecanismo não muda a leitura.
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">9</p>
+<aside>(0:40 · acumulado 9:30) Âncora: a eval empata; o mecanismo não muda a leitura.
 
 Os números confirmam. No OCaml, as duas versões têm a mesma eval: vinte e nove linhas, cinco operações de efeito e aninhamento dois. No Haskell, também empatam: vinte e sete, dezoito e um.
 
@@ -402,8 +449,8 @@ Então, a resposta à primeira pergunta: o mecanismo não muda a leitura da eval
 </div>
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
-<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">9</p>
-<aside>(1:20 · acumulado 9:40) Âncora: o custo de escrever está no código em volta da eval.
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">10</p>
+<aside>(1:20 · acumulado 10:50) Âncora: o custo de escrever está no código em volta da eval.
 
 Esse outro lugar é o código em volta da eval.
 
@@ -419,7 +466,7 @@ Em troca, só os handlers têm reaproveitamento: dois handlers são usados em ma
 <p style="font-family:'Source Serif 4', Georgia, serif;font-size:160px;font-weight:600;line-height:1;color:#F7F5F0">45 ns</p>
 <p style="font-size:36px;line-height:1.35;color:#F7F5F0;width:1300px">por expressão, só para instalar três handlers, sem nenhuma operação de efeito.</p>
 <p style="font-size:28px;line-height:1.4;color:#D6E4F7;width:1300px">No Haskell, a maior diferença sobre a base foi de 10 ns por expressão.</p>
-<aside>(0:40 · acumulado 10:20) Âncora: 45 ns só para instalar os handlers, sem nenhum efeito.
+<aside>(0:40 · acumulado 11:30) Âncora: 45 ns só para instalar os handlers, sem nenhum efeito.
 
 Agora, o desempenho. Começo pelo número mais claro do trabalho.
 
@@ -499,8 +546,8 @@ No cenário Arith, as expressões só fazem contas, sem nenhum efeito. Mesmo ass
 <p style="font-size:24px;line-height:1.4;color:#646A78;width:1600px">Tempo a mais que a base da mesma linguagem, em ns por expressão (mediana de 3 conjuntos de expressões). Razões: OCaml de 1,59 a 4,26; Haskell de 0,97 a 1,08.</p>
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
-<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">11</p>
-<aside>(1:20 · acumulado 11:40) Âncora: no OCaml, custo para instalar e a cada operação; no Haskell, quase nenhum.
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">12</p>
+<aside>(1:20 · acumulado 12:50) Âncora: no OCaml, custo para instalar e a cada operação; no Haskell, quase nenhum.
 
 Este é o quadro completo: quantos nanossegundos cada mecanismo gasta a mais que a sua base, por expressão. As medições rodaram numa máquina virtual na nuvem, como está declarado no artigo, com três conjuntos de expressões diferentes.
 
@@ -554,8 +601,8 @@ Eu não leio isso como “um mecanismo é mais rápido que o outro”, porque as
 <p style="font-size:24px;line-height:1.4;color:#646A78;width:1500px">Cenário Arith, bytes alocados por expressão.</p>
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
-<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">12</p>
-<aside>(1:00 · acumulado 12:40) Âncora: a memória a mais é parecida; o que muda é a base.
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">13</p>
+<aside>(1:00 · acumulado 13:50) Âncora: a memória a mais é parecida; o que muda é a base.
 
 Na memória aparece o cuidado com a fórmula. No cenário Arith, a razão do OCaml é 11,5, e a do Haskell, 2,2. Parece uma diferença enorme.
 
@@ -598,8 +645,8 @@ Mas olhem as barras. A memória a mais que cada mecanismo usa é parecida: cento
 </div>
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
-<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">13</p>
-<aside>(1:10 · acumulado 13:50) Âncora: um vazamento de memória no OCaml e uma medição sensível à configuração.
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">14</p>
+<aside>(1:10 · acumulado 15:00) Âncora: um vazamento de memória no OCaml e uma medição sensível à configuração.
 
 Dois resultados eu não esperava.
 
@@ -621,8 +668,8 @@ O segundo é sobre a medição. Eu repeti as medições com um tempo de coleta q
 </table>
 <p style="font-size:28px;line-height:1.4;color:#4A5160">Cada trabalho mede uma situação diferente; a comparação é só de ordem de grandeza.</p>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
-<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">14</p>
-<aside>(1:00 · acumulado 14:50) Âncora: mesma ordem de grandeza da literatura; a previsão do TCC I não se confirmou.
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">15</p>
+<aside>(1:00 · acumulado 16:00) Âncora: mesma ordem de grandeza da literatura; a previsão do TCC I não se confirmou.
 
 Comparando com outros trabalhos, sabendo que cada um mede uma situação diferente.
 
@@ -659,8 +706,8 @@ E o mais interessante: no TCC I, eu previ handlers abaixo de 1,5 vez a base e m�
 <p style="font-size:28px;line-height:1.4;color:#17212F;width:1600px">Comparar os dois numa mesma linguagem · outros programas e efeitos · legibilidade medida com pessoas</p>
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
-<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">15</p>
-<aside>(1:20 · acumulado 16:10) Âncora: escrita: custo em volta da eval; execução: handlers cobram, mônadas quase nada.
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">16</p>
+<aside>(1:20 · acumulado 17:20) Âncora: escrita: custo em volta da eval; execução: handlers cobram, mônadas quase nada.
 
 Para concluir.
 
@@ -683,7 +730,7 @@ Os limites estão no slide: um único programa, uma máquina virtual e versões 
 <p style="font-size:24px;line-height:1.4;color:#B9C2CF">Código, resultados e artigo; make tudo refaz cada número do texto.</p>
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#B9C2CF">Diego Marchioni · Orientador: Marco Rodrigo · PUC Minas</p>
-<aside>(0:20 · acumulado 16:30) Âncora: obrigado; tudo se refaz com um comando.
+<aside>(0:20 · acumulado 17:40) Âncora: obrigado; tudo se refaz com um comando.
 
 Obrigado. O código, os dados e o artigo estão no repositório, e um único comando refaz todos os números. Fico à disposição.
 
