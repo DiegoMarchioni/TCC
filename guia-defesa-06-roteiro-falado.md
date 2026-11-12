@@ -297,13 +297,13 @@ completo está no apêndice.”*
 diferentes.
 
 > Na memória alocada aparece a armadilha da fórmula. Em Arith, a razão do
-> OCaml é doze, e a do Haskell, 2,2. Parece uma diferença de uma ordem de
+> OCaml é 11,5, e a do Haskell, 2,2. Parece uma diferença de uma ordem de
 > grandeza.
 >
 > Mas olhem as barras. O excedente, em bytes por expressão, é parecido: cento
 > e sessenta e oito no OCaml e cento e cinquenta no Haskell. A diferença está
-> na base. A imperativa do OCaml aloca quinze bytes por expressão,
-> praticamente só o resultado; a do Haskell aloca cento e vinte e sete. Uma
+> na base. A imperativa do OCaml aloca dezesseis bytes por expressão,
+> só o resultado; a do Haskell aloca cento e vinte e sete. Uma
 > base que quase não aloca torna enorme qualquer razão: é o um mais delta
 > sobre a base na sua forma mais aguda.
 >
@@ -311,7 +311,7 @@ diferentes.
 > alocados fora do heap e, por isso, ficam fora desta medida. É justamente
 > fora dela que está o primeiro achado que eu não esperava.
 
-*Aponte o pequeno trecho cinza da barra do OCaml ao dizer “quinze bytes”.*
+*Aponte o pequeno trecho cinza da barra do OCaml ao dizer “dezesseis bytes”.*
 
 ### Slide 13: Achados não previstos (1:40 · 16:20)
 
@@ -549,10 +549,14 @@ continuaram valendo.”*
 > está guardado, com o registro da repetição.
 
 **“Como mediu a alocação, e por que as fibers não aparecem?”**
-> No OCaml, conto as palavras do heap menor, convertidas em bytes; no
-> Haskell, os bytes que o runtime reporta. As fibers do OCaml são alocadas
-> fora do heap do coletor, então não entram nessa coluna. Eu digo isso no
-> texto, e foi o que me levou ao experimento do vazamento.
+> No OCaml, por contagem direta: as palavras do heap menor alocadas entre
+> duas coletas forçadas, convertidas em bytes. É um valor exato e
+> determinístico. Eu não usei a regressão do Bechamel porque o contador que
+> ele lê só avança a cada coleta menor, e isso subestimava a base em até 4,7%.
+> No Haskell, o Criterion já sincroniza o contador a cada amostra. As fibers
+> do OCaml são alocadas fora do heap do coletor, então não entram nessa
+> coluna; eu digo isso no texto, e foi o que me levou ao experimento do
+> vazamento.
 
 **“O vazamento é um bug do OCaml?”**
 > Eu não chamaria de bug. No OCaml 5, a continuação é de uso único e deve ser

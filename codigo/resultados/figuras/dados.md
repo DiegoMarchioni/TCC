@@ -12,7 +12,7 @@ Visão em tabela de cada figura (acessibilidade e conferência).
 | excedente-tempo | haskell/exn | 4.8 ns |
 | excedente-tempo | ocaml/output | 110.7 ns |
 | excedente-tempo | haskell/output | -2.2 ns |
-| alocacao-arith | ocaml | base 15.3 B, Δ 167.8 B, razão 11.99 |
+| alocacao-arith | ocaml | base 16.0 B, Δ 168.0 B, razão 11.50 |
 | alocacao-arith | haskell | base 127.3 B, Δ 150.1 B, razão 2.18 |
 | boilerplate | handlers | 67 linhas B de 78 fora de eval |
 | boilerplate | imperativa | 3 linhas B de 4 fora de eval |

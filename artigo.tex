@@ -38,10 +38,10 @@
 \newcommand{\BaseByHaskellExn}{119}
 \newcommand{\BaseByHaskellOutput}{104}
 \newcommand{\BaseByHaskellState}{117}
-\newcommand{\BaseByOcamlArith}{15}
-\newcommand{\BaseByOcamlExn}{15}
+\newcommand{\BaseByOcamlArith}{16}
+\newcommand{\BaseByOcamlExn}{16}
 \newcommand{\BaseByOcamlOutput}{64}
-\newcommand{\BaseByOcamlState}{47}
+\newcommand{\BaseByOcamlState}{48}
 \newcommand{\BaseNsHaskellArith}{96}
 \newcommand{\BaseNsHaskellExn}{95}
 \newcommand{\BaseNsHaskellOutput}{41}
@@ -63,7 +63,7 @@
 \newcommand{\DeltaByHaskellState}{9}
 \newcommand{\DeltaByOcamlArith}{168}
 \newcommand{\DeltaByOcamlExn}{187}
-\newcommand{\DeltaByOcamlOutput}{359}
+\newcommand{\DeltaByOcamlOutput}{360}
 \newcommand{\DeltaByOcamlState}{382}
 \newcommand{\DeltaNsHaskellArith}{10}
 \newcommand{\DeltaNsHaskellExn}{5}
@@ -73,12 +73,13 @@
 \newcommand{\DeltaNsOcamlExn}{49}
 \newcommand{\DeltaNsOcamlOutput}{111}
 \newcommand{\DeltaNsOcamlState}{84}
-\newcommand{\DispAlocMax}{0,2}
+\newcommand{\DispAlocFrase}{inferior a 0,1\%}
+\newcommand{\DispAlocMax}{0,0}
 \newcommand{\DispTempoMax}{18,3}
 \newcommand{\FaixaRAHaskell}{1,1 e 2,2}
-\newcommand{\FaixaRAOcaml}{6,7 e 13,2}
+\newcommand{\FaixaRAOcaml}{6,6 e 12,7}
 \newcommand{\FaixaRAenHaskell}{1.1 and 2.2}
-\newcommand{\FaixaRAenOcaml}{6.7 and 13.2}
+\newcommand{\FaixaRAenOcaml}{6.6 and 12.7}
 \newcommand{\FaixaRTHaskell}{0,97 e 1,08}
 \newcommand{\FaixaRTOcaml}{1,59 e 4,26}
 \newcommand{\FaixaRTenHaskell}{0.97 and 1.08}
@@ -113,10 +114,10 @@
 \newcommand{\MecByHaskellExn}{254}
 \newcommand{\MecByHaskellOutput}{112}
 \newcommand{\MecByHaskellState}{126}
-\newcommand{\MecByOcamlArith}{183}
-\newcommand{\MecByOcamlExn}{202}
-\newcommand{\MecByOcamlOutput}{423}
-\newcommand{\MecByOcamlState}{429}
+\newcommand{\MecByOcamlArith}{184}
+\newcommand{\MecByOcamlExn}{203}
+\newcommand{\MecByOcamlOutput}{424}
+\newcommand{\MecByOcamlState}{430}
 \newcommand{\MecNsHaskellArith}{106}
 \newcommand{\MecNsHaskellExn}{99}
 \newcommand{\MecNsHaskellOutput}{39}
@@ -137,10 +138,10 @@
 \newcommand{\RAHaskellExn}{2,1}
 \newcommand{\RAHaskellOutput}{1,1}
 \newcommand{\RAHaskellState}{1,1}
-\newcommand{\RAOcamlArith}{12,0}
-\newcommand{\RAOcamlExn}{13,2}
-\newcommand{\RAOcamlOutput}{6,7}
-\newcommand{\RAOcamlState}{9,1}
+\newcommand{\RAOcamlArith}{11,5}
+\newcommand{\RAOcamlExn}{12,7}
+\newcommand{\RAOcamlOutput}{6,6}
+\newcommand{\RAOcamlState}{9,0}
 \newcommand{\RTHaskellArith}{1,08}
 \newcommand{\RTHaskellExn}{1,05}
 \newcommand{\RTHaskellOutput}{0,97}
@@ -163,6 +164,7 @@
 \newcommand{\SensMedicoes}{16}
 \newcommand{\SensRdoisAbaixo}{0}
 \newcommand{\UmaMaquina}{uma única máquina virtual}
+\newcommand{\ViesAlocMax}{4,7}
 %%%% <</GERADO:numeros>>
 
 %% ── Configuração de listings ────────────────────────────────────────────────
@@ -652,9 +654,13 @@ carga. Os de estado e de saída poderiam ser instalados uma vez por carga, mas
 os três são instalados juntos, o que triplica a criação de segmentos de
 pilha. Esse custo aparece no tempo, e não na alocação: o OCaml~5
 aloca os segmentos fora do \textit{heap} do coletor \cite{sivaramakrishnan:21},
-e a alocação ali medida, em palavras do \textit{heap} menor convertidas em
-bytes, registra só os fechamentos e registros de cada instalação; no Haskell, é
-a que o \textit{runtime} reporta. \textsc{Arith}, sem \texttt{Var},
+e a alocação registra só os fechamentos e registros de cada instalação. Ela é
+contada diretamente, em palavras do \textit{heap} menor entre duas coletas
+forçadas, convertidas em bytes, porque a regressão do Bechamel, cujo contador
+só avança a cada coleta menor, subestimava a base em até
+\ViesAlocMax\%; %% AFIRMACAO:vies-regressao-alocacao
+no Haskell, é a que o Criterion apura do \textit{runtime}. \textsc{Arith},
+sem \texttt{Var},
 \texttt{Let} ou \texttt{Print}, não realiza operação de efeito alguma, mas
 instala os \textit{handlers} 10.000 vezes: no OCaml, mede o custo de
 \textit{estar} sob o mecanismo, e não o de realizar efeitos; no Haskell, em que
@@ -895,7 +901,7 @@ A campanha correu em um Intel Xeon @ 2,10~GHz em máquina virtual de nuvem, com 
   \caption{Por expressão avaliada, mediana das sementes: valor da base,
            excedente $\Delta$ do mecanismo e razão $1+\Delta/T_{\mathrm{base}}$,
            em tempo (ns) e alocação (bytes). Dispersão entre sementes de até
-           \DispTempoMax\% no tempo e \DispAlocMax\% na alocação.}
+           \DispTempoMax\% no tempo e \DispAlocFrase{} na alocação.}
   \label{tab:perf-prelim}
   \footnotesize\setlength{\tabcolsep}{3.4pt}\renewcommand{\arraystretch}{1.05}
   \begin{tabular}{@{}l*{12}{r}@{}}
@@ -1059,11 +1065,11 @@ pede um estudo com participantes, único instrumento capaz de validar os
 
 Em conformidade com os Arts.~6\textsuperscript{o} a 8\textsuperscript{o} do
 Regulamento Geral de TCC, declara-se o uso do modelo Claude (Anthropic, versão
-\textbf{[PREENCHER]}): na revisão crítica de todas as seções e na edição de
-estilo do texto, exceto os resumos e o primeiro parágrafo da introdução, para
-verificar a consistência interna e a correspondência entre afirmações e
-referências, identificar redundâncias, sugerir redação e concisão e corrigir
-afirmações factuais; na redação preliminar dos trechos que reportam e discutem os
+\textbf{[PREENCHER]}): na revisão crítica de todas as seções, para verificar a
+consistência interna e a correspondência entre afirmações e referências,
+identificar redundâncias, sugerir redação e concisão e corrigir afirmações
+factuais; na edição de estilo do texto, exceto nos resumos e no primeiro
+parágrafo da introdução; na redação preliminar dos trechos que reportam e discutem os
 resultados (síntese da Seção~\ref{sec:intro} e
 Seções~\ref{sec:oraculo}, \ref{sec:resultados} e~\ref{sec:consideracoes}),
 revisada pelo autor; na geração do código-fonte publicado no repositório

@@ -19,11 +19,11 @@
 <text x="1270.0" y="710.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">300</text>
 <text x="785.0" y="750.0" font-size="20" fill="#898781" font-weight="400" text-anchor="middle" dominant-baseline="middle">bytes por expressão</text>
 <text x="270.0" y="352.0" font-size="28" fill="#0b0b0b" font-weight="600" text-anchor="end" dominant-baseline="middle">OCaml</text>
-<rect x="300.0" y="340.0" width="49.4" height="24.0" fill="#c3c2b7"/>
-<path d="M351.4,340.0 H888.0 Q892.0,340.0 892.0,344.0 V360.0 Q892.0,364.0 888.0,364.0 H351.4 Z" fill="#2a78d6"/>
-<text x="906.0" y="352.0" font-size="26" fill="#0b0b0b" font-weight="600" text-anchor="start" dominant-baseline="middle">razão 12,0×</text>
-<text x="300.0" y="394.0" font-size="20" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">base 15 B</text>
-<text x="892.0" y="394.0" font-size="20" fill="#52514e" font-weight="400" text-anchor="end" dominant-baseline="middle">Δ 168 B</text>
+<rect x="300.0" y="340.0" width="51.7" height="24.0" fill="#c3c2b7"/>
+<path d="M353.7,340.0 H890.9 Q894.9,340.0 894.9,344.0 V360.0 Q894.9,364.0 890.9,364.0 H353.7 Z" fill="#2a78d6"/>
+<text x="908.9" y="352.0" font-size="26" fill="#0b0b0b" font-weight="600" text-anchor="start" dominant-baseline="middle">razão 11,5×</text>
+<text x="300.0" y="394.0" font-size="20" fill="#52514e" font-weight="400" text-anchor="start" dominant-baseline="middle">base 16 B</text>
+<text x="894.9" y="394.0" font-size="20" fill="#52514e" font-weight="400" text-anchor="end" dominant-baseline="middle">Δ 168 B</text>
 <text x="270.0" y="542.0" font-size="28" fill="#0b0b0b" font-weight="600" text-anchor="end" dominant-baseline="middle">Haskell</text>
 <rect x="300.0" y="530.0" width="411.8" height="24.0" fill="#c3c2b7"/>
 <path d="M713.8,530.0 H1193.0 Q1197.0,530.0 1197.0,534.0 V550.0 Q1197.0,554.0 1193.0,554.0 H713.8 Z" fill="#eb6834"/>
