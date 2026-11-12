@@ -1,0 +1,19 @@
+<section id="ap-quarto-efeito" data-transition="fade" style="background:#EFEBE3;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Apêndice</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">O quarto efeito em cada versão</h2>
+</div>
+<table style="width:1664px;font-size:26px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC">
+<tr><th style="width:18%;text-align:left;font-weight:600;color:#646A78">Versão</th><th style="width:58%;text-align:left;font-weight:600;color:#646A78">O que mudou em declarações existentes</th><th style="width:12%;text-align:right;font-weight:600;color:#646A78">Pontos</th><th style="width:12%;text-align:right;font-weight:600;color:#646A78">Adições</th></tr>
+<tr><td style="text-align:left">Handlers</td><td style="text-align:left">run e run_acc passam a instalar o handler de Input</td><td style="text-align:right">2</td><td style="text-align:right">2</td></tr>
+<tr><td style="text-align:left">Imperativa</td><td style="text-align:left">nada; a leitura é uma função nova</td><td style="text-align:right">0</td><td style="text-align:right">1</td></tr>
+<tr><td style="text-align:left">Mônadas</td><td style="text-align:left">o tipo da pilha ganha StateT [Int] e run passa a executá-la; a leitura usa dois lift</td><td style="text-align:right">2</td><td style="text-align:right">1</td></tr>
+<tr><td style="text-align:left">IORef</td><td style="text-align:left">nada; a leitura é uma função nova</td><td style="text-align:right">0</td><td style="text-align:right">1</td></tr>
+</table>
+<p style="font-size:24px;line-height:1.4;color:#4A5160;width:1600px">Ponto de modificação: declaração preexistente cujo texto mudou. Excluídos por serem iguais nas quatro versões: o construtor Read e o seu braço em eval. Com o efeito, a suíte passa com 73/73 em cada linguagem.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">A3</p>
+<aside>Use se perguntarem como o Input foi inserido ou se a definição de ponto de modificação favorece as bases.
+
+Pontos para citar: a definição foi fixada antes da implementação. Nas bases, o efeito é ambiente: um efeito novo é uma função nova. Nos mecanismos, o efeito precisa ser instalado, e o ponto de instalação já existe: as duas composições nos handlers; o tipo da pilha e o executor nas mônadas. A segunda camada de estado obrigou dois lift explícitos, porque o mtl alcança uma só camada de estado por pilha. A suíte estendida passa com 73 de 73 em cada linguagem.</aside>
+</section>

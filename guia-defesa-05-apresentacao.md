@@ -36,28 +36,33 @@ nas notas do apresentador de cada slide. Abaixo, o mapa de tempos.
 
 | # | Slide | Tempo | Acumulado |
 |---|---|---:|---:|
-| 1 | Capa | 0:20 | 0:20 |
-| 2 | Dois mecanismos para efeitos | 1:20 | 1:40 |
-| 3 | Comparação por razões intralinguagem | 1:30 | 3:10 |
-| 4 | Questões de pesquisa | 1:20 | 4:30 |
-| 5 | Um interpretador com três efeitos | 1:20 | 5:50 |
-| 6 | Quatro versões e a verificação | 1:30 | 7:20 |
-| 7 | O mesmo braço de eval, com e sem handlers | 1:10 | 8:30 |
-| 8 | Legibilidade de eval (QP1) | 0:50 | 9:20 |
-| 9 | Composabilidade e boilerplate (QP2, QP3) | 1:40 | 11:00 |
-| 10 | Destaque: 45 ns | 0:40 | 11:40 |
-| 11 | Custo de tempo por expressão (QP4) | 1:40 | 13:20 |
-| 12 | Alocação por expressão (QP4) | 1:20 | 14:40 |
-| 13 | Achados não previstos | 1:40 | 16:20 |
-| 14 | Frente à literatura e ao TCC I | 1:20 | 17:40 |
-| 15 | Conclusões e trabalhos futuros | 1:40 | 19:20 |
-| 16 | Obrigado / perguntas | 0:10 | 19:30 |
+| 1 | Capa | 0:30 | 0:30 |
+| 2 | Dois mecanismos para efeitos | 1:20 | 1:50 |
+| 3 | Cada mecanismo contra uma base | 1:30 | 3:20 |
+| 4 | Questões de pesquisa | 1:10 | 4:30 |
+| 5 | Um interpretador com três efeitos | 1:10 | 5:40 |
+| 6 | Quatro versões e a verificação | 1:10 | 6:50 |
+| 7 | O mesmo trecho de eval, com e sem handlers | 0:50 | 7:40 |
+| 8 | Legibilidade de eval | 0:40 | 8:20 |
+| 9 | Composabilidade e infraestrutura | 1:20 | 9:40 |
+| 10 | Destaque: 45 ns | 0:40 | 10:20 |
+| 11 | Custo de tempo por expressão | 1:20 | 11:40 |
+| 12 | Memória por expressão | 1:00 | 12:40 |
+| 13 | Achados não previstos | 1:10 | 13:50 |
+| 14 | Frente à literatura e ao TCC I | 1:00 | 14:50 |
+| 15 | Conclusões e trabalhos futuros | 1:20 | 16:10 |
+| 16 | Obrigado | 0:20 | 16:30 |
 | A1–A5 | Apêndice: Tabela 2 completa, protocolo, quarto efeito, sensibilidade, uso de IA | arguição | |
 
-Sobram 30 segundos de folga. Os apêndices não entram na fala: abra-os só se a
+Sobram cerca de 3 minutos e meio de folga. Os apêndices não entram na fala: abra-os só se a
 banca perguntar.
 
-### 1. Capa (0:20)
+*Os blocos abaixo são material de estudo: o contexto técnico por trás de cada
+slide, para você entender e responder se perguntarem. Desde a simplificação de
+12/11/2026, a fala (Guia 06) e os slides evitam esses termos; não é preciso
+dizê-los na apresentação.*
+
+### 1. Capa (0:30)
 Título, autor, orientador, PUC Minas. Uma frase: "comparo duas formas de
 lidar com efeitos em linguagens funcionais, em quatro dimensões, sobre o mesmo
 programa".
@@ -71,7 +76,7 @@ programa".
   pergunta prática, "qual escolher e a que custo", não tem evidência que junte
   custo de escrita e custo de execução.
 
-### 3. Comparação por razões intralinguagem (1:30)
+### 3. Cada mecanismo contra uma base (1:30)
 - O mecanismo não se separa do *runtime*: mônadas rodam no GHC, *handlers* no
   OCaml. Comparar tempos absolutos é comparar duas variáveis de uma vez.
 - Solução: **cada mecanismo contra uma base imperativa na própria linguagem**
@@ -80,7 +85,7 @@ programa".
 - Fórmula para guardar: razão = 1 + Δ / T_base. Uma base cara *deflaciona* a
   razão (vai voltar no slide 11).
 
-### 4. Questões de pesquisa (1:20)
+### 4. Questões de pesquisa (1:10)
 - QP1 legibilidade: LOC, operações de efeito e aninhamento de `eval`
   (*proxies* estruturais, não legibilidade percebida).
 - QP2 composabilidade: pontos de modificação para inserir um 4º efeito
@@ -89,7 +94,7 @@ programa".
 - QP4 desempenho: tempo e alocação, Bechamel e Criterion, 3 sementes.
 - Toda comparação de código é **dentro da mesma linguagem**.
 
-### 5. Um interpretador com três efeitos (1:20)
+### 5. Um interpretador com três efeitos (1:10)
 - Interpretador de 8 construtores (`Num`, `Var`, `Add`, `Mul`, `Div`, `Let`,
   `Seq`, `Print`), três efeitos.
 - Semântica *small-step* com contextos de avaliação: determinismo, progresso,
@@ -97,7 +102,7 @@ programa".
   mensagem de erro.
 - Limitações assumidas: ambiente global, exceção só abortiva, n = 1.
 
-### 6. Quatro versões e a verificação (1:30)
+### 6. Quatro versões e a verificação (1:10)
 - *Handlers* × imperativa (OCaml); mônadas × `IORef` (Haskell).
 - Oráculo: 28 casos × 2 versões + 5 conferências = **61/61 nas duas
   linguagens**; é pré-condição da medição.
@@ -106,7 +111,7 @@ programa".
 - Gerador replicado em OCaml, Haskell e Python: os *hashes* das 12 cargas batem
   nas três.
 
-### 7. O mesmo braço de `eval`, com e sem *handlers* (1:10)
+### 7. O mesmo trecho de eval, com e sem handlers (0:50)
 Mostre o braço `Var` lado a lado (é o slide de código; mantenha curto):
 
 ```ocaml
@@ -120,12 +125,12 @@ Mostre o braço `Var` lado a lado (é o slide de código; mantenha curto):
 "Cada operação direta da base virou exatamente uma operação de efeito. A
 diferença não está aqui."
 
-### 8. Legibilidade de `eval` (0:50)
+### 8. Legibilidade de eval (0:40)
 Tabela pequena: 29/5/2 (OCaml, nas duas) e 27/18/1 (Haskell, nas duas), igual
 também construtor a construtor. **Pelos *proxies*, o mecanismo não pesa na
 leitura do avaliador.**
 
-### 9. Composabilidade e *boilerplate* (1:40)
+### 9. Composabilidade e infraestrutura (1:20)
 Gráfico de barras do *boilerplate* e os pontos de modificação ao lado.
 - *Handlers*: 67 linhas de *boilerplate* contra 3 da base (registros de
   `match_with`, repasses `| _ -> None`, `continue`, composições); 18 delas só
@@ -142,7 +147,7 @@ Gráfico de barras do *boilerplate* e os pontos de modificação ao lado.
 Slide azul, um número só. Fale devagar: "no OCaml, só instalar três *handlers*
 em cada expressão custa 45 ns, sem nenhuma operação de efeito". Avance.
 
-### 11. Custo de tempo por expressão (1:40)
+### 11. Custo de tempo por expressão (1:20)
 Gráfico de barras do excedente por cenário. **Este é o slide central.**
 - Arith no OCaml não faz operação de efeito nenhuma: os **45 ns** por expressão
   são só instalar três *handlers*. É o número mais limpo do trabalho.
@@ -151,7 +156,7 @@ Gráfico de barras do excedente por cenário. **Este é o slide central.**
   intervalos de confiança incluem 1. O GHC quase apaga a pilha.
 - Razões: OCaml 1,59 a 4,26; Haskell 0,97 a 1,08.
 
-### 12. Alocação por expressão (1:20)
+### 12. Memória por expressão (1:00)
 Barras empilhadas: base em cinza, excedente na cor de cada linguagem.
 - 11,5× contra 2,2× parece uma ordem de grandeza.
 - Em bytes, o excedente é parecido: 168 contra 150 B por expressão.
@@ -160,7 +165,7 @@ Barras empilhadas: base em cinza, excedente na cor de cada linguagem.
 - Ressalva honesta: as pilhas das *fibers* ficam fora do *heap* e fora dessa
   coluna.
 
-### 13. Achados não previstos (1:40)
+### 13. Achados não previstos (1:10)
 Dois cartões com os números; o detalhe da sensibilidade está no apêndice A4.
 - **Vazamento:** abandonar a continuação (em vez de `discontinue`) vaza o
   segmento de pilha: 2 milhões de erros → ~1,2 GB contra ~6 MB. Nenhuma métrica
@@ -169,7 +174,7 @@ Dois cartões com os números; o detalhe da sensibilidade está no apêndice A4.
   deslocou as razões em até 28%. Configuração de amostragem é ameaça à
   validade.
 
-### 14. Frente à literatura e ao TCC I (1:20)
+### 14. Frente à literatura e ao TCC I (1:00)
 - Sivaramakrishnan et al. 2021: 1% é para programas *sem* *handlers*; 6,7–12,3×
   é recursão não-*tail* sob *handler*. As razões daqui ficam abaixo, e os
   45 ns são da mesma ordem dos 23 ns que eles medem por *fiber*.
@@ -178,7 +183,7 @@ Dois cartões com os números; o detalhe da sensibilidade está no apêndice A4.
 - **TCC I:** previa *handlers* < 1,5× e mônadas > 2×. Falhou nas duas metades.
   Diga sem rodeio.
 
-### 15. Conclusões e trabalhos futuros (1:40)
+### 15. Conclusões e trabalhos futuros (1:20)
 - Escrita: o custo dos mecanismos está na **infraestrutura**, não no avaliador;
   nos *handlers*, localizado e pago uma vez; nas mônadas, cresce com a pilha.
 - Execução: *handlers* têm custo fixo por instalação e por operação; mônadas,
@@ -189,7 +194,7 @@ Dois cartões com os números; o detalhe da sensibilidade está no apêndice A4.
   segurança de efeitos (Koka), estudo com pessoas.
 - Feche com uma frase sua sobre o que você recomendaria a quem vai escolher.
 
-### 16. Obrigado / perguntas (0:10)
+### 16. Obrigado (0:20)
 Agradeça e passe a palavra à banca. Deixe este slide aberto durante a
 arguição; os apêndices A1 a A5 estão logo depois, para responder com números.
 

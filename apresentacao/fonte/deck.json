@@ -1,0 +1,43 @@
+{
+  "v": 4,
+  "createdOnFiles": {"v": 1, "at": "2026-11-10T01:50:00Z"},
+  "lists": "css",
+  "title": "Defesa do TCC: Mônadas e Efeitos Algébricos",
+  "cover": "cover",
+  "order": [
+    "cover",
+    "problema",
+    "metodo",
+    "qps",
+    "caso-de-uso",
+    "implementacoes",
+    "codigo",
+    "qp1",
+    "qp2-qp3",
+    "destaque",
+    "tempo",
+    "alocacao",
+    "achados",
+    "literatura",
+    "conclusoes",
+    "perguntas",
+    "ap-tabela2",
+    "ap-protocolo",
+    "ap-quarto-efeito",
+    "ap-sensibilidade",
+    "ap-ia"
+  ],
+  "sections": {
+    "s1": {"description": "Abertura: o problema e como medir sem confundir mecanismo e runtime", "start": "cover"},
+    "s2": {"description": "Caso de uso, as quatro implementações e a verificação", "start": "caso-de-uso"},
+    "s3": {"description": "Resultados das quatro questões de pesquisa", "start": "qp1"},
+    "s4": {"description": "Achados, literatura, conclusões e perguntas", "start": "achados"},
+    "s5": {"description": "Apêndice para a arguição", "start": "ap-tabela2"}
+  },
+  "faces": {
+    "source-serif-4": {"family": "Source Serif 4", "href": "https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&display=swap"},
+    "ibm-plex-sans": {"family": "IBM Plex Sans", "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap"},
+    "jetbrains-mono": {"family": "JetBrains Mono", "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap"}
+  },
+  "designSystems": []
+}

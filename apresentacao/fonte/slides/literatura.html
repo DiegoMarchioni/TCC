@@ -1,0 +1,26 @@
+<section id="literatura" data-transition="fade" style="background:#F7F5F0;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Discussão</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Frente à literatura e ao TCC I</h2>
+</div>
+<table style="width:1664px;font-size:28px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC">
+<tr><th style="width:30%;text-align:left;font-weight:600;color:#646A78">Fonte</th><th style="width:38%;text-align:left;font-weight:600;color:#646A78">O que a fonte mede</th><th style="width:32%;text-align:left;font-weight:600;color:#646A78">Neste trabalho</th></tr>
+<tr><td>Sivaramakrishnan et al., 2021</td><td>cerca de 23 ns para instalar um handler</td><td>45 ns para instalar três handlers</td></tr>
+<tr><td>Kammar et al., 2013; Xie e Leijen, 2020</td><td>mônadas de 1,0 a 1,3× uma versão sem efeitos</td><td>0,97 a 1,08× a base</td></tr>
+<tr style="background:#F6E9E0"><td>TCC I (previsão)</td><td>handlers abaixo de 1,5×; mônadas acima de 2×</td><td>aconteceu o contrário nos dois casos</td></tr>
+</table>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Cada trabalho mede uma situação diferente; a comparação é só de ordem de grandeza.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">14</p>
+<aside>(1:00 · acumulado 14:50) Âncora: mesma ordem de grandeza da literatura; a previsão do TCC I não se confirmou.
+
+Comparando com outros trabalhos, sabendo que cada um mede uma situação diferente.
+
+O artigo que trouxe os handlers para o OCaml mede cerca de vinte e três nanossegundos para instalar um handler. Os meus quarenta e cinco, para três handlers, estão na mesma ordem de grandeza.
+
+No Haskell, outros trabalhos encontram mônadas de 1,0 a 1,3 vez o custo de uma versão sem efeitos. As minhas razões ficaram perto de 1, o que combina com isso.
+
+E o mais interessante: no TCC I, eu previ handlers abaixo de 1,5 vez a base e mônadas acima de duas vezes. Aconteceu o contrário nos dois casos.
+
+[Diga a última frase com tranquilidade, sem tom de desculpa: uma previsão que não se confirma também é resultado.]</aside>
+</section>

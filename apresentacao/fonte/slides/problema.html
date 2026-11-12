@@ -1,0 +1,40 @@
+<section id="problema" data-transition="fade" style="background:#F7F5F0;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Contexto</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Dois mecanismos para efeitos</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:48px">
+<div style="display:flex;gap:16px;align-items:center">
+<div style="width:20px;height:20px;background:#EB6834;border-radius:4px"></div>
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">Haskell · mtl</p>
+</div>
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Mônadas e transformadores</h3>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:28px;line-height:1.5;color:#B4441A">exceção · estado · IO</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Cada efeito é uma camada da pilha e aparece no tipo da função.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:48px">
+<div style="display:flex;gap:16px;align-items:center">
+<div style="width:20px;height:20px;background:#2A78D6;border-radius:4px"></div>
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">OCaml 5 · nativo desde 2022</p>
+</div>
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Efeitos algébricos e handlers</h3>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:28px;line-height:1.5;color:#1F5FAF">perform (Get x)</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">O código pede a operação, e o handler decide o que ela faz.</p>
+</div>
+</div>
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;line-height:1.35;color:#17212F;width:1500px">Na teoria, os dois expressam as mesmas coisas para estes efeitos (Schrijvers et al., 2019). Falta medir quanto custa escrever e executar com cada um.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">2</p>
+<aside>(1:20 · acumulado 1:50) Âncora: na teoria os dois expressam o mesmo; falta medir quanto custam na prática.
+
+Todo programa real precisa de efeitos: guardar um valor, lançar um erro, mostrar uma saída. Em programação funcional, isso exige um mecanismo próprio, e hoje existem dois.
+
+O primeiro são as mônadas, que o Haskell usa. Cada efeito vira uma camada, e as camadas são empilhadas. O efeito aparece no tipo da função.
+
+O segundo são os efeitos algébricos, que o OCaml tem desde a versão 5, de 2022. O código só pede a operação, com perform, e outra parte do código, o handler, decide o que fazer com esse pedido.
+
+Trabalhos teóricos já mostraram que, para efeitos como estes, os dois mecanismos conseguem expressar as mesmas coisas. O que falta é a parte prática: quanto custa escrever com cada um, e quanto custa executar. Eu não encontrei um estudo que medisse as duas coisas no mesmo programa. É isso que este trabalho faz.
+
+[Aponte o cartão laranja ao falar das mônadas e o azul ao falar dos handlers.]</aside>
+</section>

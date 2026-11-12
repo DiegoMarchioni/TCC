@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Defesa do TCC: Mônadas e Efeitos Algébricos</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+@page { size: 1920px 1080px; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { background: #2b2f36; }
+section { position: relative; width: 1920px; height: 1080px; overflow: hidden; margin: 0 auto 24px; break-after: page; }
+section > aside { display: none; }
+table { border-collapse: collapse; }
+th, td { padding: 14px 20px; border-bottom: 1px solid #DDD8CC; vertical-align: top; }
+ul, ol { padding-left: 1.2em; }
+pre, code { font-family: 'JetBrains Mono', monospace; }
+@media print { html, body { background: none; } section { margin: 0; } }
+</style></head><body>
+<section id="cover" data-transition="fade" style="background:#17212F;color:#F3EFE6;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:space-between;gap:48px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#B9C2CF">Trabalho de Conclusão de Curso II · Ciência da Computação</p>
+<div style="display:flex;flex-direction:column;gap:32px">
+<h1 style="font-family:'Source Serif 4', Georgia, serif;font-size:88px;font-weight:600;line-height:1.1;color:#F3EFE6;width:1500px">Mônadas e Efeitos Algébricos em Linguagens Funcionais</h1>
+<p style="font-size:36px;line-height:1.35;color:#B9C2CF;width:1300px">Uma análise comparativa em legibilidade, composabilidade, poder de abstração e desempenho</p>
+<div style="display:flex;gap:56px;align-items:center">
+<div style="display:flex;gap:16px;align-items:center">
+<div style="width:24px;height:24px;background:#EB6834;border-radius:4px"></div>
+<p style="font-size:28px;color:#F3EFE6">Mônadas · Haskell</p>
+</div>
+<div style="display:flex;gap:16px;align-items:center">
+<div style="width:24px;height:24px;background:#2A78D6;border-radius:4px"></div>
+<p style="font-size:28px;color:#F3EFE6">Efeitos algébricos · OCaml 5</p>
+</div>
+</div>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:48px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:36px;font-weight:600;color:#F3EFE6">Diego Marchioni</p>
+<p style="font-size:28px;color:#B9C2CF">Orientador: Marco Rodrigo</p>
+</div>
+<p style="font-size:24px;line-height:1.5;color:#B9C2CF;text-align:right;width:820px">Pontifícia Universidade Católica de Minas Gerais<br>Instituto de Ciências Exatas e Informática · dezembro de 2026</p>
+</div>
+<aside>(0:30 · acumulado 0:30) Âncora: comparei mônadas e efeitos algébricos usando o mesmo programa nas duas.
+
+Bom dia. Eu sou o Diego Marchioni, e este é o meu trabalho de conclusão de curso, orientado pelo professor Marco Rodrigo. Eu comparei duas formas de lidar com efeitos em programação funcional, as mônadas e os efeitos algébricos, usando o mesmo programa nas duas.
+
+[Olhe para a câmera, não para a tela. Fale devagar.]</aside>
+</section>
+
+<section id="problema" data-transition="fade" style="background:#F7F5F0;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Contexto</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Dois mecanismos para efeitos</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:48px">
+<div style="display:flex;gap:16px;align-items:center">
+<div style="width:20px;height:20px;background:#EB6834;border-radius:4px"></div>
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">Haskell · mtl</p>
+</div>
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Mônadas e transformadores</h3>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:28px;line-height:1.5;color:#B4441A">exceção · estado · IO</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Cada efeito é uma camada da pilha e aparece no tipo da função.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:48px">
+<div style="display:flex;gap:16px;align-items:center">
+<div style="width:20px;height:20px;background:#2A78D6;border-radius:4px"></div>
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">OCaml 5 · nativo desde 2022</p>
+</div>
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Efeitos algébricos e handlers</h3>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:28px;line-height:1.5;color:#1F5FAF">perform (Get x)</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">O código pede a operação, e o handler decide o que ela faz.</p>
+</div>
+</div>
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;line-height:1.35;color:#17212F;width:1500px">Na teoria, os dois expressam as mesmas coisas para estes efeitos (Schrijvers et al., 2019). Falta medir quanto custa escrever e executar com cada um.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">2</p>
+<aside>(1:20 · acumulado 1:50) Âncora: na teoria os dois expressam o mesmo; falta medir quanto custam na prática.
+
+Todo programa real precisa de efeitos: guardar um valor, lançar um erro, mostrar uma saída. Em programação funcional, isso exige um mecanismo próprio, e hoje existem dois.
+
+O primeiro são as mônadas, que o Haskell usa. Cada efeito vira uma camada, e as camadas são empilhadas. O efeito aparece no tipo da função.
+
+O segundo são os efeitos algébricos, que o OCaml tem desde a versão 5, de 2022. O código só pede a operação, com perform, e outra parte do código, o handler, decide o que fazer com esse pedido.
+
+Trabalhos teóricos já mostraram que, para efeitos como estes, os dois mecanismos conseguem expressar as mesmas coisas. O que falta é a parte prática: quanto custa escrever com cada um, e quanto custa executar. Eu não encontrei um estudo que medisse as duas coisas no mesmo programa. É isso que este trabalho faz.
+
+[Aponte o cartão laranja ao falar das mônadas e o azul ao falar dos handlers.]</aside>
+</section>
+
+<section id="metodo" data-transition="fade" style="background:#F7F5F0;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Método</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Cada mecanismo contra uma base</h2>
+</div>
+<div style="display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;align-items:center;gap:24px">
+<div style="display:flex;align-items:center;gap:16px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:12px;padding:20px 28px;width:520px">
+<div style="width:20px;height:20px;background:#2A78D6;border-radius:4px"></div>
+<p style="font-size:36px;color:#17212F">Handlers (OCaml 5)</p>
+</div>
+<p style="font-size:36px;color:#646A78">÷</p>
+<div style="display:flex;align-items:center;gap:16px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:12px;padding:20px 28px;width:520px">
+<div style="width:20px;height:20px;background:#8E8C82;border-radius:4px"></div>
+<p style="font-size:36px;color:#17212F">Imperativa (OCaml 5)</p>
+</div>
+<p style="font-size:36px;color:#646A78">=</p>
+<p style="font-size:36px;font-weight:600;color:#17212F;background:#E3ECF7;border-radius:12px;padding:20px 28px">razão do OCaml</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px">
+<div style="display:flex;align-items:center;gap:16px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:12px;padding:20px 28px;width:520px">
+<div style="width:20px;height:20px;background:#EB6834;border-radius:4px"></div>
+<p style="font-size:36px;color:#17212F">Mônadas (Haskell)</p>
+</div>
+<p style="font-size:36px;color:#646A78">÷</p>
+<div style="display:flex;align-items:center;gap:16px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:12px;padding:20px 28px;width:520px">
+<div style="width:20px;height:20px;background:#8E8C82;border-radius:4px"></div>
+<p style="font-size:36px;color:#17212F">IORef (Haskell)</p>
+</div>
+<p style="font-size:36px;color:#646A78">=</p>
+<p style="font-size:36px;font-weight:600;color:#17212F;background:#F7E6DC;border-radius:12px;padding:20px 28px">razão do Haskell</p>
+</div>
+<p style="font-size:28px;line-height:1.4;color:#4A5160;width:1300px">Comparar tempos entre linguagens mediria também os compiladores. Por isso, cada mecanismo é comparado com uma base simples na própria linguagem, com a mesma estrutura de dados.</p>
+</div>
+<div style="display:flex;align-items:center;gap:64px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:40px 48px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-style:italic;color:#17212F;white-space:nowrap">razão = 1 + Δ / base</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5160;width:800px">Δ é o custo a mais do mecanismo. Uma base muito barata deixa a razão grande; por isso a comparação entre linguagens é só indicativa.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">3</p>
+<aside>(1:30 · acumulado 3:20) Âncora: cada mecanismo contra uma base na mesma linguagem; a razão depende da base.
+
+O primeiro problema é que cada mecanismo vive numa linguagem diferente. Se eu comparasse os tempos do Haskell com os do OCaml, estaria comparando também os compiladores, e não só os mecanismos.
+
+Por isso, eu comparo cada mecanismo com uma versão simples na mesma linguagem, que eu chamo de base. No OCaml, a base é imperativa: uma tabela e exceções normais. No Haskell, a base guarda o estado numa variável mutável, o IORef. Em cada linguagem, o mecanismo e a base usam a mesma estrutura de dados, então a diferença é só o mecanismo.
+
+O resultado é uma razão: quanto o mecanismo custa em relação à base. A fórmula mostra um cuidado. A razão é um mais o custo extra dividido pelo custo da base. Se a base for muito barata, a razão fica grande, mesmo com um custo extra pequeno. Por isso eu mostro também os valores absolutos, e a comparação entre as duas linguagens é só indicativa.
+
+[Aponte a fórmula. Ela volta no slide 12.]</aside>
+</section>
+
+<section id="qps" data-transition="fade" style="background:#F7F5F0;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Método</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Questões de pesquisa</h2>
+</div>
+<div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:32px">
+<div style="display:flex;flex-direction:column;gap:12px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:40px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;color:#646A78">QP1</p>
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Legibilidade</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Linhas, operações de efeito e aninhamento de <i>eval</i>, como medidas indiretas.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:40px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;color:#646A78">QP2</p>
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Composabilidade</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Partes do código existente que mudam ao acrescentar um quarto efeito.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:40px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;color:#646A78">QP3</p>
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Poder de abstração</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Código de infraestrutura fora de <i>eval</i> e quanto dele é reaproveitado.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:40px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;color:#646A78">QP4</p>
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Desempenho</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Tempo e memória contra a base da mesma linguagem, em quatro cenários.</p>
+</div>
+</div>
+<p style="font-size:28px;line-height:1.4;color:#4A5160;width:1500px">Comparações de código só dentro da mesma linguagem: handlers × imperativa, mônadas × IORef.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">4</p>
+<aside>(1:10 · acumulado 4:30) Âncora: quatro perguntas: legibilidade, composabilidade, abstração e desempenho.
+
+Com isso, eu fiz quatro perguntas.
+
+A primeira é legibilidade. O coração de um interpretador é uma função chamada eval: ela recebe uma expressão e calcula o resultado. Eu meço três coisas nessa função: o número de linhas, o número de operações de efeito e o quanto o código é aninhado. São medidas indiretas: ler o código com pessoas seria outro estudo.
+
+A segunda é composabilidade: quantas partes do código que já existe precisam mudar para acrescentar um quarto efeito.
+
+A terceira é abstração: quanto código de infraestrutura existe fora da eval, e quanto dele é reaproveitado.
+
+A quarta é desempenho: tempo e memória, sempre comparados com a base.
+
+E as métricas de código só comparam versões da mesma linguagem.</aside>
+</section>
+
+<section id="caso-de-uso" data-transition="fade" style="background:#EFEBE3;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Caso de uso</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Um interpretador com três efeitos</h2>
+</div>
+<div style="display:flex;gap:64px">
+<div style="width:760px;display:flex;flex-direction:column;gap:20px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">Oito construtores</p>
+<div style="display:flex;flex-wrap:wrap;gap:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:36px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:10px;padding:12px 24px">Num</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:36px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:10px;padding:12px 24px">Var</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:36px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:10px;padding:12px 24px">Add</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:36px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:10px;padding:12px 24px">Mul</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:36px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:10px;padding:12px 24px">Div</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:36px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:10px;padding:12px 24px">Let</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:36px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:10px;padding:12px 24px">Seq</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:36px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:10px;padding:12px 24px">Print</p>
+</div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;flex-direction:column;gap:6px">
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Estado</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Var lê uma variável e Let guarda um valor.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Exceção</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Divisão por zero e variável inexistente dão erro.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Saída</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Print mostra um valor na saída.</p>
+</div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;line-height:1.35;color:#17212F;width:1600px">Especificação formal escrita antes do código. Duas versões são equivalentes se dão o mesmo valor, o mesmo estado, a mesma saída e o mesmo erro.</p>
+<p style="font-size:24px;color:#646A78">Simplificações: variáveis globais, o erro sempre encerra a expressão, um único programa.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">5</p>
+<aside>(1:10 · acumulado 5:40) Âncora: um interpretador pequeno com estado, exceção e saída; equivalência definida antes.
+
+Para comparar, eu precisava de um programa que usasse os três efeitos. Escolhi um interpretador de uma linguagem pequena, com estes oito comandos. Var lê uma variável e Let guarda um valor: esse é o estado. Dividir por zero ou ler uma variável que não existe dá erro: essa é a exceção. E Print mostra um valor: essa é a saída.
+
+Antes de programar, eu escrevi uma especificação formal que diz qual é o resultado certo de cada expressão. Com ela, duas versões são equivalentes se dão o mesmo valor, deixam o mesmo estado, mostram a mesma saída e dão a mesma mensagem de erro.
+
+Fiz três simplificações, de propósito: as variáveis são globais, o erro sempre encerra a expressão, e é um único programa.</aside>
+</section>
+
+<section id="implementacoes" data-transition="fade" style="background:#F7F5F0;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Implementação</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Quatro versões e a verificação</h2>
+</div>
+<div style="display:flex;flex-direction:column;gap:24px">
+<table style="width:1664px;font-size:28px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC">
+<tr><th style="width:18%;text-align:left;font-weight:600;color:#646A78">Linguagem</th><th style="width:41%;text-align:left;font-weight:600;color:#646A78">Mecanismo</th><th style="width:41%;text-align:left;font-weight:600;color:#646A78">Linha de base</th></tr>
+<tr><td>OCaml 5</td><td>Handlers para Get, Set, Fail e Output</td><td>Imperativa: tabela hash e exceções</td></tr>
+<tr><td>Haskell</td><td>Mônadas: pilha de exceção, estado e IO</td><td>Variável mutável (IORef), mesma estrutura de dados</td></tr>
+</table>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Nada é medido antes de os testes passarem nas quatro versões.</p>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:40px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:88px;font-weight:600;line-height:1;color:#17212F">61/61</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">testes passando em cada linguagem</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:40px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:88px;font-weight:600;line-height:1;color:#17212F">8/8</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">erros colocados de propósito, todos detectados</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:40px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:88px;font-weight:600;line-height:1;color:#17212F">12</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">cargas de expressões idênticas nas duas linguagens</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">6</p>
+<aside>(1:10 · acumulado 6:50) Âncora: quatro versões; nada é medido antes de os testes passarem.
+
+Então eu implementei quatro versões: no OCaml, com handlers e a base imperativa; no Haskell, com mônadas e a base com IORef.
+
+Antes de medir qualquer coisa, eu verifiquei que as quatro fazem a mesma coisa. Três números resumem isso.
+
+Sessenta e um testes em cada linguagem, todos passando.
+
+Oito de oito erros que eu coloquei de propósito no código foram detectados pelos testes. Isso mostra que os testes pegam erros de verdade.
+
+E as duas linguagens rodam exatamente as mesmas doze cargas de expressões nas medições.
+
+O código foi gerado com apoio de IA, como está declarado no artigo, e revisado por mim. Esses testes são o que permite confiar nele, e tudo roda com um único comando.
+
+[A frase sobre a IA é recomendada: a declaração está no artigo, e dizê-la você mesmo, ligada aos testes, vira um ponto forte.]</aside>
+</section>
+
+<section id="codigo" data-transition="fade" style="background:#EFEBE3;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Implementação</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">O mesmo trecho de eval, com e sem handlers</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:28px">
+<div style="display:flex;gap:16px;align-items:center">
+<div style="width:20px;height:20px;background:#2A78D6;border-radius:4px"></div>
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">Handlers · interp_effects.ml</p>
+</div>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.6;white-space:nowrap;color:#17212F">| Var x -&gt; (<br>&#160;&#160;&#160;&#160;match <span style="color:#1F5FAF;font-weight:600">perform (Get x)</span> with<br>&#160;&#160;&#160;&#160;| Some v -&gt; v<br>&#160;&#160;&#160;&#160;| None -&gt; <span style="color:#1F5FAF;font-weight:600">perform (Fail (msg_unbound x))</span>)</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:28px">
+<div style="display:flex;gap:16px;align-items:center">
+<div style="width:20px;height:20px;background:#8E8C82;border-radius:4px"></div>
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">Imperativa · interp_imp.ml</p>
+</div>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.6;white-space:nowrap;color:#17212F">| Var x -&gt; (<br>&#160;&#160;&#160;&#160;match <span style="color:#17212F;font-weight:600">Hashtbl.find_opt env x</span> with<br>&#160;&#160;&#160;&#160;| Some v -&gt; v<br>&#160;&#160;&#160;&#160;| None -&gt; <span style="color:#17212F;font-weight:600">raise (Runtime_error (msg_unbound x))</span>)</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;line-height:1.35;color:#17212F;width:1500px">Cada operação direta da base deu lugar a exatamente uma operação de efeito.</p>
+<p style="font-size:24px;color:#646A78">Código completo, testes e scripts: github.com/DiegoMarchioni/TCC, pasta codigo/</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">7</p>
+<aside>(0:50 · acumulado 7:40) Âncora: a estrutura é a mesma; só a operação muda.
+
+Este é o mesmo trecho da eval nas duas versões em OCaml: o que lê uma variável.
+
+À esquerda, com handlers, o código pede o valor com perform. À direita, a base lê direto da tabela. Se a variável não existe, um pede o erro com perform, e o outro lança a exceção com raise.
+
+A estrutura é a mesma, linha por linha. Eu escrevi as versões como espelho uma da outra, para que a diferença medida fosse só o mecanismo.
+
+[Passe o cursor pelas linhas em destaque enquanto fala.]</aside>
+</section>
+
+<section id="qp1" data-transition="fade" style="background:#F7F5F0;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Resultados · QP1</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Legibilidade de eval</h2>
+</div>
+<table style="width:1664px;font-size:28px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC;font-variant-numeric:tabular-nums">
+<tr><th style="width:34%;text-align:left;font-weight:600;color:#646A78">Versão</th><th style="width:22%;text-align:right;font-weight:600;color:#646A78">Linhas de eval</th><th style="width:22%;text-align:right;font-weight:600;color:#646A78">Operações de efeito</th><th style="width:22%;text-align:right;font-weight:600;color:#646A78">Aninhamento</th></tr>
+<tr><td style="text-align:left">Handlers (OCaml)</td><td style="text-align:right">29</td><td style="text-align:right">5</td><td style="text-align:right">2</td></tr>
+<tr><td style="text-align:left">Imperativa (OCaml)</td><td style="text-align:right">29</td><td style="text-align:right">5</td><td style="text-align:right">2</td></tr>
+<tr style="background:#F1EDE5"><td style="text-align:left">Mônadas (Haskell)</td><td style="text-align:right">27</td><td style="text-align:right">18</td><td style="text-align:right">1</td></tr>
+<tr style="background:#F1EDE5"><td style="text-align:left">IORef (Haskell)</td><td style="text-align:right">27</td><td style="text-align:right">18</td><td style="text-align:right">1</td></tr>
+</table>
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;line-height:1.35;color:#17212F;width:1500px">Os números coincidem também construtor a construtor. Pelas três medidas, o mecanismo não muda a leitura de eval.</p>
+<p style="font-size:24px;line-height:1.4;color:#646A78;width:1500px">Contagem automática sobre o código formatado. Cada linguagem tem as suas operações de efeito, por isso só se compara dentro da mesma.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">8</p>
+<aside>(0:40 · acumulado 8:20) Âncora: a eval empata; o mecanismo não muda a leitura.
+
+Os números confirmam. No OCaml, as duas versões têm a mesma eval: vinte e nove linhas, cinco operações de efeito e aninhamento dois. No Haskell, também empatam: vinte e sete, dezoito e um.
+
+Então, a resposta à primeira pergunta: o mecanismo não muda a leitura da eval. Se existe diferença na hora de escrever, ela está em outro lugar.</aside>
+</section>
+
+<section id="qp2-qp3" data-transition="fade" style="background:#F7F5F0;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Resultados · QP2 e QP3</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Composabilidade e infraestrutura</h2>
+</div>
+<div style="display:flex;gap:64px;align-items:stretch">
+<div style="width:980px;display:flex;flex-direction:column;gap:20px">
+<p style="font-size:28px;color:#4A5160">Linhas de infraestrutura fora de eval</p>
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">OCaml</p>
+<div style="display:flex;align-items:center;gap:20px">
+<p style="width:200px;font-size:28px;font-weight:600;color:#17212F">Handlers</p>
+<div style="width:620px;height:32px;background:#2A78D6;border-radius:0px 6px 6px 0px"></div>
+<p style="font-size:28px;color:#4A5160">67</p>
+</div>
+<div style="display:flex;align-items:center;gap:20px">
+<p style="width:200px;font-size:28px;font-weight:600;color:#17212F">Imperativa</p>
+<div style="width:28px;height:32px;background:#8E8C82;border-radius:0px 6px 6px 0px"></div>
+<p style="font-size:28px;color:#4A5160">3</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">Haskell</p>
+<div style="display:flex;align-items:center;gap:20px">
+<p style="width:200px;font-size:28px;font-weight:600;color:#17212F">Mônadas</p>
+<div style="width:185px;height:32px;background:#EB6834;border-radius:0px 6px 6px 0px"></div>
+<p style="font-size:28px;color:#4A5160">20</p>
+</div>
+<div style="display:flex;align-items:center;gap:20px">
+<p style="width:200px;font-size:28px;font-weight:600;color:#17212F">IORef</p>
+<div style="width:204px;height:32px;background:#8E8C82;border-radius:0px 6px 6px 0px"></div>
+<p style="font-size:28px;color:#4A5160">22</p>
+</div>
+</div>
+<p style="font-size:24px;line-height:1.4;color:#646A78">18 das 67 linhas dos handlers servem só aos testes.</p>
+<div style="flex:1"></div>
+<p style="font-size:28px;line-height:1.4;color:#17212F">Reaproveitamento só nos handlers: os de estado e de exceção são usados em dois lugares.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:24px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:32px">
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Pontos de modificação para o quarto efeito</h3>
+<div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:16px">
+<div style="display:flex;flex-direction:column;gap:4px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:88px;font-weight:600;line-height:1;color:#17212F">2</p>
+<div style="display:flex;gap:10px;align-items:center"><div style="width:16px;height:16px;background:#2A78D6;border-radius:3px"></div><p style="font-size:24px;color:#4A5160">Handlers</p></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:4px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:88px;font-weight:600;line-height:1;color:#17212F">0</p>
+<div style="display:flex;gap:10px;align-items:center"><div style="width:16px;height:16px;background:#8E8C82;border-radius:3px"></div><p style="font-size:24px;color:#4A5160">Imperativa</p></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:4px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:88px;font-weight:600;line-height:1;color:#17212F">2</p>
+<div style="display:flex;gap:10px;align-items:center"><div style="width:16px;height:16px;background:#EB6834;border-radius:3px"></div><p style="font-size:24px;color:#4A5160">Mônadas</p></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:4px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:88px;font-weight:600;line-height:1;color:#17212F">0</p>
+<div style="display:flex;gap:10px;align-items:center"><div style="width:16px;height:16px;background:#8E8C82;border-radius:3px"></div><p style="font-size:24px;color:#4A5160">IORef</p></div>
+</div>
+</div>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Só os mecanismos mudaram declarações existentes; as bases só ganharam funções novas.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">9</p>
+<aside>(1:20 · acumulado 9:40) Âncora: o custo de escrever está no código em volta da eval.
+
+Esse outro lugar é o código em volta da eval.
+
+No OCaml, a versão com handlers tem sessenta e sete linhas de infraestrutura, contra três da base. É o código que instala os handlers e liga um ao outro. Dezoito dessas linhas existem só para os testes. No Haskell, quase não há diferença: vinte linhas na versão com mônadas e vinte e duas na base.
+
+Para acrescentar um quarto efeito, só as versões com mecanismo precisaram mudar código existente: dois pontos em cada. Nos handlers, os dois lugares onde eles são instalados. Nas mônadas, o tipo da pilha e a função que executa. As bases só ganharam uma função nova.
+
+Em troca, só os handlers têm reaproveitamento: dois handlers são usados em mais de um lugar. Isso permite trocar o que a saída faz sem mexer na eval.</aside>
+</section>
+
+<section id="destaque" data-transition="fade" style="background:#1F5FAF;color:#F7F5F0;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:32px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#D6E4F7">QP4 · OCaml, cenário Arith</p>
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:160px;font-weight:600;line-height:1;color:#F7F5F0">45 ns</p>
+<p style="font-size:36px;line-height:1.35;color:#F7F5F0;width:1300px">por expressão, só para instalar três handlers, sem nenhuma operação de efeito.</p>
+<p style="font-size:28px;line-height:1.4;color:#D6E4F7;width:1300px">No Haskell, a maior diferença sobre a base foi de 10 ns por expressão.</p>
+<aside>(0:40 · acumulado 10:20) Âncora: 45 ns só para instalar os handlers, sem nenhum efeito.
+
+Agora, o desempenho. Começo pelo número mais claro do trabalho.
+
+No cenário Arith, as expressões só fazem contas, sem nenhum efeito. Mesmo assim, no OCaml, a versão com handlers gasta quarenta e cinco nanossegundos a mais por expressão. Esse é o custo só de instalar os handlers. No Haskell, a maior diferença do experimento inteiro foi de dez nanossegundos.
+
+[Fale mais devagar e faça uma pausa depois de “quarenta e cinco nanossegundos”.]</aside>
+</section>
+
+<section id="tempo" data-transition="fade" style="background:#F7F5F0;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Resultados · QP4</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Custo de tempo por expressão</h2>
+</div>
+<div style="display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;gap:48px;align-items:center">
+<div style="display:flex;gap:12px;align-items:center"><div style="width:20px;height:20px;background:#2A78D6;border-radius:4px"></div><p style="font-size:28px;color:#4A5160">Handlers sobre imperativa (OCaml)</p></div>
+<div style="display:flex;gap:12px;align-items:center"><div style="width:20px;height:20px;background:#EB6834;border-radius:4px"></div><p style="font-size:28px;color:#4A5160">Mônadas sobre IORef (Haskell)</p></div>
+</div>
+<div style="position:relative;display:flex;flex-direction:column;gap:28px;width:1664px">
+<div style="display:flex;align-items:center">
+<div style="width:260px;display:flex;flex-direction:column;gap:2px">
+<p style="font-size:28px;font-weight:600;color:#17212F">Arith</p>
+<p style="font-size:24px;color:#646A78">sem Var/Let/Print</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px">
+<div style="display:flex;align-items:center;height:40px">
+<div style="width:180px"></div>
+<div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:365px;height:32px;background:#2A78D6;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">45 ns</p></div>
+</div>
+<div style="display:flex;align-items:center;height:40px">
+<div style="width:180px"></div>
+<div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:81px;height:32px;background:#EB6834;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">10 ns</p></div>
+</div>
+</div>
+</div>
+<div style="display:flex;align-items:center">
+<div style="width:260px"><p style="font-size:28px;font-weight:600;color:#17212F">State</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px">
+<div style="display:flex;align-items:center;height:40px">
+<div style="width:180px"></div>
+<div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:680px;height:32px;background:#2A78D6;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">84 ns</p></div>
+</div>
+<div style="display:flex;align-items:center;height:40px">
+<div style="width:180px;display:flex;align-items:center;justify-content:flex-end;gap:12px"><p style="font-size:28px;color:#4A5160">−4 ns</p><div style="width:32px;height:32px;background:#EB6834;border-radius:6px 0px 0px 6px"></div></div>
+<div style="flex:1"></div>
+</div>
+</div>
+</div>
+<div style="display:flex;align-items:center">
+<div style="width:260px"><p style="font-size:28px;font-weight:600;color:#17212F">Exn</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px">
+<div style="display:flex;align-items:center;height:40px">
+<div style="width:180px"></div>
+<div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:397px;height:32px;background:#2A78D6;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">49 ns</p></div>
+</div>
+<div style="display:flex;align-items:center;height:40px">
+<div style="width:180px"></div>
+<div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:41px;height:32px;background:#EB6834;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">5 ns</p></div>
+</div>
+</div>
+</div>
+<div style="display:flex;align-items:center">
+<div style="width:260px"><p style="font-size:28px;font-weight:600;color:#17212F">Output</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px">
+<div style="display:flex;align-items:center;height:40px">
+<div style="width:180px"></div>
+<div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:899px;height:32px;background:#2A78D6;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">111 ns</p></div>
+</div>
+<div style="display:flex;align-items:center;height:40px">
+<div style="width:180px;display:flex;align-items:center;justify-content:flex-end;gap:12px"><p style="font-size:28px;color:#4A5160">−2 ns</p><div style="width:16px;height:32px;background:#EB6834;border-radius:6px 0px 0px 6px"></div></div>
+<div style="flex:1"></div>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:439px;top:0px;width:2px;height:428px;background:#8E8C82"></div>
+</div>
+<p style="font-size:24px;line-height:1.4;color:#646A78;width:1600px">Tempo a mais que a base da mesma linguagem, em ns por expressão (mediana de 3 conjuntos de expressões). Razões: OCaml de 1,59 a 4,26; Haskell de 0,97 a 1,08.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">11</p>
+<aside>(1:20 · acumulado 11:40) Âncora: no OCaml, custo para instalar e a cada operação; no Haskell, quase nenhum.
+
+Este é o quadro completo: quantos nanossegundos cada mecanismo gasta a mais que a sua base, por expressão. As medições rodaram numa máquina virtual na nuvem, como está declarado no artigo, com três conjuntos de expressões diferentes.
+
+Em azul, o OCaml. Arith, quarenta e cinco, e Exn, quarenta e nove: quase só o custo de instalar. State, oitenta e quatro, e Output, cento e onze: aqui o custo de cada operação se soma.
+
+Em laranja, o Haskell: no máximo dez nanossegundos, e em dois cenários a diferença fica até um pouco negativa, o que é ruído de medição.
+
+Eu não leio isso como “um mecanismo é mais rápido que o outro”, porque as linguagens são diferentes. O que os dados mostram é como cada um cobra. No OCaml, há um custo para instalar os handlers e outro a cada operação. No Haskell, o compilador otimiza a pilha, e o custo quase desaparece.
+
+[Percorra as barras azuis de cima para baixo e depois as laranja.]</aside>
+</section>
+
+<section id="alocacao" data-transition="fade" style="background:#F7F5F0;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Resultados · QP4</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Memória por expressão</h2>
+</div>
+<div style="display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;gap:48px;align-items:center">
+<div style="display:flex;gap:12px;align-items:center"><div style="width:20px;height:20px;background:#8E8C82;border-radius:4px"></div><p style="font-size:28px;color:#4A5160">base</p></div>
+<div style="display:flex;gap:12px;align-items:center"><div style="width:20px;height:20px;background:#2A78D6;border-radius:4px"></div><p style="font-size:28px;color:#4A5160">a mais nos handlers</p></div>
+<div style="display:flex;gap:12px;align-items:center"><div style="width:20px;height:20px;background:#EB6834;border-radius:4px"></div><p style="font-size:28px;color:#4A5160">a mais nas mônadas</p></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;gap:24px">
+<p style="width:196px;font-size:36px;font-weight:600;color:#17212F">OCaml</p>
+<div style="display:flex;align-items:center;gap:3px">
+<div style="width:58px;height:44px;background:#8E8C82"></div>
+<div style="width:605px;height:44px;background:#2A78D6;border-radius:0px 6px 6px 0px"></div>
+</div>
+<p style="font-size:36px;font-weight:600;color:#17212F">razão 11,5×</p>
+</div>
+<p style="font-size:24px;color:#646A78;padding:0px 0px 0px 220px">base 16 B · a mais 168 B</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;gap:24px">
+<p style="width:196px;font-size:36px;font-weight:600;color:#17212F">Haskell</p>
+<div style="display:flex;align-items:center;gap:3px">
+<div style="width:457px;height:44px;background:#8E8C82"></div>
+<div style="width:540px;height:44px;background:#EB6834;border-radius:0px 6px 6px 0px"></div>
+</div>
+<p style="font-size:36px;font-weight:600;color:#17212F">razão 2,2×</p>
+</div>
+<p style="font-size:24px;color:#646A78;padding:0px 0px 0px 220px">base 127 B · a mais 150 B</p>
+</div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;line-height:1.35;color:#17212F;width:1500px">A razão do OCaml é alta porque a base quase não usa memória: em bytes, o que cada mecanismo usa a mais é parecido.</p>
+<p style="font-size:24px;line-height:1.4;color:#646A78;width:1500px">Cenário Arith, bytes alocados por expressão.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">12</p>
+<aside>(1:00 · acumulado 12:40) Âncora: a memória a mais é parecida; o que muda é a base.
+
+Na memória aparece o cuidado com a fórmula. No cenário Arith, a razão do OCaml é 11,5, e a do Haskell, 2,2. Parece uma diferença enorme.
+
+Mas olhem as barras. A memória a mais que cada mecanismo usa é parecida: cento e sessenta e oito bytes por expressão no OCaml e cento e cinquenta no Haskell. O que muda é a base. A base do OCaml usa só dezesseis bytes por expressão; a do Haskell, cento e vinte e sete. Como a base do OCaml é muito barata, a razão fica grande. É exatamente o efeito da fórmula.
+
+[Aponte o pequeno trecho cinza da barra do OCaml ao dizer “dezesseis bytes”.]</aside>
+</section>
+
+<section id="achados" data-transition="fade" style="background:#EFEBE3;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Resultados</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Achados não previstos</h2>
+</div>
+<div style="display:flex;gap:32px;flex:1">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:48px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">OCaml 5.2 · exceção</p>
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Abandonar a computação interrompida vaza memória</h3>
+<div style="display:flex;gap:48px;align-items:flex-end">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:88px;font-weight:600;line-height:1;color:#17212F">1,2 GB</p>
+<p style="font-size:24px;color:#646A78">abandonando a computação</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:88px;font-weight:600;line-height:1;color:#1F5FAF">6 MB</p>
+<p style="font-size:24px;color:#646A78">com discontinue</p>
+</div>
+</div>
+<div style="flex:1"></div>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Memória usada após 2 milhões de erros. O meu código usa discontinue.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:48px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">Medição</p>
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Passar no critério de qualidade não garante estabilidade</h3>
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:88px;font-weight:600;line-height:1;color:#17212F">até 28%</p>
+<p style="font-size:24px;color:#646A78">de deslocamento nas razões</p>
+</div>
+<div style="flex:1"></div>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Com um tempo de coleta 4 vezes menor, todas as medições passaram no critério (R² ≥ 0,95), e mesmo assim as razões mudaram.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">13</p>
+<aside>(1:10 · acumulado 13:50) Âncora: um vazamento de memória no OCaml e uma medição sensível à configuração.
+
+Dois resultados eu não esperava.
+
+O primeiro é um vazamento de memória no OCaml. Quando um handler trata um erro, a computação interrompida fica guardada. Se o código simplesmente a abandona, o OCaml não libera essa memória. Num teste com dois milhões de erros, a memória chegou a 1,2 gigabyte. Encerrando a computação do jeito certo, com a função discontinue, ficou em seis megabytes. O meu código usa o jeito certo, e o teste está no repositório.
+
+O segundo é sobre a medição. Eu repeti as medições com um tempo de coleta quatro vezes menor. Todas continuaram passando no critério de qualidade que eu usei. Mesmo assim, as razões mudaram até vinte e oito por cento. Ou seja: a configuração da medição muda o resultado, e isso precisa ser considerado ao ler os números.</aside>
+</section>
+
+<section id="literatura" data-transition="fade" style="background:#F7F5F0;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Discussão</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Frente à literatura e ao TCC I</h2>
+</div>
+<table style="width:1664px;font-size:28px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC">
+<tr><th style="width:30%;text-align:left;font-weight:600;color:#646A78">Fonte</th><th style="width:38%;text-align:left;font-weight:600;color:#646A78">O que a fonte mede</th><th style="width:32%;text-align:left;font-weight:600;color:#646A78">Neste trabalho</th></tr>
+<tr><td>Sivaramakrishnan et al., 2021</td><td>cerca de 23 ns para instalar um handler</td><td>45 ns para instalar três handlers</td></tr>
+<tr><td>Kammar et al., 2013; Xie e Leijen, 2020</td><td>mônadas de 1,0 a 1,3× uma versão sem efeitos</td><td>0,97 a 1,08× a base</td></tr>
+<tr style="background:#F6E9E0"><td>TCC I (previsão)</td><td>handlers abaixo de 1,5×; mônadas acima de 2×</td><td>aconteceu o contrário nos dois casos</td></tr>
+</table>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Cada trabalho mede uma situação diferente; a comparação é só de ordem de grandeza.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">14</p>
+<aside>(1:00 · acumulado 14:50) Âncora: mesma ordem de grandeza da literatura; a previsão do TCC I não se confirmou.
+
+Comparando com outros trabalhos, sabendo que cada um mede uma situação diferente.
+
+O artigo que trouxe os handlers para o OCaml mede cerca de vinte e três nanossegundos para instalar um handler. Os meus quarenta e cinco, para três handlers, estão na mesma ordem de grandeza.
+
+No Haskell, outros trabalhos encontram mônadas de 1,0 a 1,3 vez o custo de uma versão sem efeitos. As minhas razões ficaram perto de 1, o que combina com isso.
+
+E o mais interessante: no TCC I, eu previ handlers abaixo de 1,5 vez a base e mônadas acima de duas vezes. Aconteceu o contrário nos dois casos.
+
+[Diga a última frase com tranquilidade, sem tom de desculpa: uma previsão que não se confirma também é resultado.]</aside>
+</section>
+
+<section id="conclusoes" data-transition="fade" style="background:#F7F5F0;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Conclusão</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Conclusões e trabalhos futuros</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:40px">
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Escrita</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">O custo está no código em volta de eval: nos handlers, onde eles são instalados; nas mônadas, no tipo da pilha, que muda a cada efeito.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:40px">
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Execução</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Handlers custam ao ser instalados e a cada operação, mesmo sem efeito. As mônadas, otimizadas pelo compilador, quase não custam.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:40px">
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Limites</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Um único programa, uma máquina virtual e versões específicas das linguagens.</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">Trabalhos futuros</p>
+<p style="font-size:28px;line-height:1.4;color:#17212F;width:1600px">Comparar os dois numa mesma linguagem · outros programas e efeitos · legibilidade medida com pessoas</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">15</p>
+<aside>(1:20 · acumulado 16:10) Âncora: escrita: custo em volta da eval; execução: handlers cobram, mônadas quase nada.
+
+Para concluir.
+
+Na escrita, o mecanismo não muda a eval, que fica igual à da base. O custo está no código em volta. Nos handlers, ele fica concentrado onde os handlers são instalados. Nas mônadas, ele fica no tipo da pilha, que muda a cada efeito novo.
+
+Na execução, os handlers do OCaml cobram para ser instalados e a cada operação, mesmo sem efeito nenhum. As mônadas do Haskell, otimizadas pelo compilador, quase não custam.
+
+Na prática: no OCaml, o cuidado é com quantas vezes se instala um handler. No Haskell, o custo aparece quando a pilha precisa mudar, não quando o programa roda.
+
+Os limites estão no slide: um único programa, uma máquina virtual e versões específicas das linguagens. Como trabalhos futuros, eu vejo comparar os dois mecanismos numa mesma linguagem, testar outros programas e efeitos, e medir a legibilidade com pessoas.
+
+[O parágrafo “Na prática” é a sua opinião sobre os dados. Diga olhando para a câmera.]</aside>
+</section>
+
+<section id="perguntas" data-transition="fade" style="background:#17212F;color:#F3EFE6;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:32px">
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:88px;font-weight:600;line-height:1.1;color:#F3EFE6">Obrigado.</h2>
+<p style="font-size:36px;line-height:1.35;color:#B9C2CF">Perguntas e comentários da banca</p>
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:28px;color:#6EA8F0">github.com/DiegoMarchioni/TCC</p>
+<p style="font-size:24px;line-height:1.4;color:#B9C2CF">Código, resultados e artigo; make tudo refaz cada número do texto.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#B9C2CF">Diego Marchioni · Orientador: Marco Rodrigo · PUC Minas</p>
+<aside>(0:20 · acumulado 16:30) Âncora: obrigado; tudo se refaz com um comando.
+
+Obrigado. O código, os dados e o artigo estão no repositório, e um único comando refaz todos os números. Fico à disposição.
+
+[Deixe este slide aberto durante a arguição. Os apêndices vêm logo depois.]</aside>
+</section>
+
+<section id="ap-tabela2" data-transition="fade" style="background:#EFEBE3;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Apêndice</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Tabela 2 completa</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="width:816px;display:flex;flex-direction:column;gap:12px">
+<p style="font-size:28px;font-weight:600;color:#17212F">Tempo, em ns por expressão</p>
+<div style="width:816px;display:flex;background:#E4DED2;border-radius:8px 8px 0px 0px">
+<p style="width:22%;font-size:24px;padding:8px 12px;color:#17212F">&#160;</p>
+<p style="width:39%;font-size:24px;font-weight:600;text-align:center;padding:8px 12px;color:#17212F">OCaml</p>
+<p style="width:39%;font-size:24px;font-weight:600;text-align:center;padding:8px 12px;color:#17212F">Haskell</p>
+</div>
+<table style="width:816px;font-size:24px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC;font-variant-numeric:tabular-nums">
+<tr><th style="width:22%;text-align:left;font-weight:600;color:#646A78">Cenário</th><th style="width:13%;text-align:right;font-weight:600;color:#646A78">base</th><th style="width:13%;text-align:right;font-weight:600;color:#646A78">Δ</th><th style="width:13%;text-align:right;font-weight:600;color:#646A78">razão</th><th style="width:13%;text-align:right;font-weight:600;color:#646A78">base</th><th style="width:13%;text-align:right;font-weight:600;color:#646A78">Δ</th><th style="width:13%;text-align:right;font-weight:600;color:#646A78">razão</th></tr>
+<tr><td style="text-align:left">Arith</td><td style="text-align:right">77</td><td style="text-align:right">45</td><td style="text-align:right">1,59</td><td style="text-align:right">96</td><td style="text-align:right">10</td><td style="text-align:right">1,08</td></tr>
+<tr><td style="text-align:left">State</td><td style="text-align:right">87</td><td style="text-align:right">84</td><td style="text-align:right">1,98</td><td style="text-align:right">346</td><td style="text-align:right">−4</td><td style="text-align:right">0,99</td></tr>
+<tr><td style="text-align:left">Exn</td><td style="text-align:right">77</td><td style="text-align:right">49</td><td style="text-align:right">1,63</td><td style="text-align:right">95</td><td style="text-align:right">5</td><td style="text-align:right">1,05</td></tr>
+<tr><td style="text-align:left">Output</td><td style="text-align:right">34</td><td style="text-align:right">111</td><td style="text-align:right">4,26</td><td style="text-align:right">41</td><td style="text-align:right">−2</td><td style="text-align:right">0,97</td></tr>
+</table>
+</div>
+<div style="width:816px;display:flex;flex-direction:column;gap:12px">
+<p style="font-size:28px;font-weight:600;color:#17212F">Alocação, em bytes por expressão</p>
+<div style="width:816px;display:flex;background:#E4DED2;border-radius:8px 8px 0px 0px">
+<p style="width:22%;font-size:24px;padding:8px 12px;color:#17212F">&#160;</p>
+<p style="width:39%;font-size:24px;font-weight:600;text-align:center;padding:8px 12px;color:#17212F">OCaml</p>
+<p style="width:39%;font-size:24px;font-weight:600;text-align:center;padding:8px 12px;color:#17212F">Haskell</p>
+</div>
+<table style="width:816px;font-size:24px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC;font-variant-numeric:tabular-nums">
+<tr><th style="width:22%;text-align:left;font-weight:600;color:#646A78">Cenário</th><th style="width:13%;text-align:right;font-weight:600;color:#646A78">base</th><th style="width:13%;text-align:right;font-weight:600;color:#646A78">Δ</th><th style="width:13%;text-align:right;font-weight:600;color:#646A78">razão</th><th style="width:13%;text-align:right;font-weight:600;color:#646A78">base</th><th style="width:13%;text-align:right;font-weight:600;color:#646A78">Δ</th><th style="width:13%;text-align:right;font-weight:600;color:#646A78">razão</th></tr>
+<tr><td style="text-align:left">Arith</td><td style="text-align:right">16</td><td style="text-align:right">168</td><td style="text-align:right">11,5</td><td style="text-align:right">127</td><td style="text-align:right">150</td><td style="text-align:right">2,2</td></tr>
+<tr><td style="text-align:left">State</td><td style="text-align:right">48</td><td style="text-align:right">382</td><td style="text-align:right">9,0</td><td style="text-align:right">117</td><td style="text-align:right">9</td><td style="text-align:right">1,1</td></tr>
+<tr><td style="text-align:left">Exn</td><td style="text-align:right">16</td><td style="text-align:right">187</td><td style="text-align:right">12,7</td><td style="text-align:right">119</td><td style="text-align:right">136</td><td style="text-align:right">2,1</td></tr>
+<tr><td style="text-align:left">Output</td><td style="text-align:right">64</td><td style="text-align:right">360</td><td style="text-align:right">6,6</td><td style="text-align:right">104</td><td style="text-align:right">8</td><td style="text-align:right">1,1</td></tr>
+</table>
+</div>
+</div>
+<p style="font-size:24px;line-height:1.4;color:#4A5160;width:1600px">IC de 95% da razão de tempo: nenhum inclui 1 no OCaml; no Haskell, só o de Arith o exclui ([1,04; 1,18]). Dispersão entre sementes de até 18,3% no tempo e inferior a 0,1% na alocação. Menor R²: 0,954 no Bechamel e 0,973 no Criterion. Medianas de 3 sementes.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">A1</p>
+<aside>Use se pedirem um número específico. Leia a linha: base, delta e razão.
+
+Pontos para citar: no OCaml, nenhum intervalo de 95% da razão de tempo inclui 1; no Haskell, só o de Arith exclui 1 (1,04 a 1,18). A dispersão de 18,3% no tempo vem do Haskell Output, em que a base oscilou numa semente (477 microssegundos contra cerca de 400 nas outras); por isso a mediana. A alocação quase não varia entre sementes (menos de 0,1%); no OCaml, ela é contada diretamente e é exata, porque o contador que o Bechamel lê só avança a cada coleta menor e subestimava a base em até 4,7%.</aside>
+</section>
+
+<section id="ap-protocolo" data-transition="fade" style="background:#EFEBE3;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Apêndice</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Protocolo de medição</h2>
+</div>
+<table style="width:1664px;font-size:24px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC">
+<tr><th style="width:20%;text-align:left;font-weight:600;color:#646A78">Item</th><th style="width:80%;text-align:left;font-weight:600;color:#646A78">Configuração</th></tr>
+<tr><td>Máquina</td><td>Intel Xeon @ 2,10 GHz, 4 vCPU, máquina virtual de nuvem, Ubuntu 24.04.5; afinidade fixa num núcleo</td></tr>
+<tr><td>Compilação</td><td>OCaml 5.2.1 + flambda com -O3; GHC 9.4.7 com -O2; flags iguais para mecanismo e base</td></tr>
+<tr><td>Harnesses</td><td>Bechamel 0.5.0, cota de 20 s e limit 5000; Criterion 1.6.1.0, 1.000 reamostragens</td></tr>
+<tr><td>Cargas</td><td>4 cenários × 10.000 expressões × 3 sementes (42, 43, 44), geradas fora da região medida</td></tr>
+<tr><td>Instalação</td><td>três handlers por expressão no OCaml; a pilha executada uma vez por expressão no Haskell</td></tr>
+<tr><td>Regras</td><td>oráculo como pré-condição; mesmo resultado conferido no harness; ordem alternada; R² ≥ 0,95</td></tr>
+<tr><td>Repetição</td><td>um par com R² 0,949 foi remedido (0,962), com o descarte registrado</td></tr>
+<tr><td>Execução</td><td>pela ferramenta de IA, em sessão na nuvem, como declara o artigo</td></tr>
+<tr><td>Reprodução</td><td>make tudo: testes, métricas, campanha, sensibilidade, artigo e figuras</td></tr>
+</table>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">A2</p>
+<aside>Use se perguntarem sobre a máquina, os flags, a cota, as sementes ou o R².
+
+Pontos para citar: flags iguais dentro de cada linguagem (-O3 no OCaml, -O2 no Haskell); cargas geradas fora da região medida; resultado forçado no Haskell e protegido com Sys.opaque_identity no OCaml; o harness confere soma, erros e traço antes de medir; um par com R² de 0,949 foi refeito pelo protocolo e deu 0,962. A máquina virtual está declarada, e a replicação em máquina dedicada é recomendada no texto.</aside>
+</section>
+
+<section id="ap-quarto-efeito" data-transition="fade" style="background:#EFEBE3;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Apêndice</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">O quarto efeito em cada versão</h2>
+</div>
+<table style="width:1664px;font-size:26px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC">
+<tr><th style="width:18%;text-align:left;font-weight:600;color:#646A78">Versão</th><th style="width:58%;text-align:left;font-weight:600;color:#646A78">O que mudou em declarações existentes</th><th style="width:12%;text-align:right;font-weight:600;color:#646A78">Pontos</th><th style="width:12%;text-align:right;font-weight:600;color:#646A78">Adições</th></tr>
+<tr><td style="text-align:left">Handlers</td><td style="text-align:left">run e run_acc passam a instalar o handler de Input</td><td style="text-align:right">2</td><td style="text-align:right">2</td></tr>
+<tr><td style="text-align:left">Imperativa</td><td style="text-align:left">nada; a leitura é uma função nova</td><td style="text-align:right">0</td><td style="text-align:right">1</td></tr>
+<tr><td style="text-align:left">Mônadas</td><td style="text-align:left">o tipo da pilha ganha StateT [Int] e run passa a executá-la; a leitura usa dois lift</td><td style="text-align:right">2</td><td style="text-align:right">1</td></tr>
+<tr><td style="text-align:left">IORef</td><td style="text-align:left">nada; a leitura é uma função nova</td><td style="text-align:right">0</td><td style="text-align:right">1</td></tr>
+</table>
+<p style="font-size:24px;line-height:1.4;color:#4A5160;width:1600px">Ponto de modificação: declaração preexistente cujo texto mudou. Excluídos por serem iguais nas quatro versões: o construtor Read e o seu braço em eval. Com o efeito, a suíte passa com 73/73 em cada linguagem.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">A3</p>
+<aside>Use se perguntarem como o Input foi inserido ou se a definição de ponto de modificação favorece as bases.
+
+Pontos para citar: a definição foi fixada antes da implementação. Nas bases, o efeito é ambiente: um efeito novo é uma função nova. Nos mecanismos, o efeito precisa ser instalado, e o ponto de instalação já existe: as duas composições nos handlers; o tipo da pilha e o executor nas mônadas. A segunda camada de estado obrigou dois lift explícitos, porque o mtl alcança uma só camada de estado por pilha. A suíte estendida passa com 73 de 73 em cada linguagem.</aside>
+</section>
+
+<section id="ap-sensibilidade" data-transition="fade" style="background:#EFEBE3;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Apêndice</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Sensibilidade à configuração de amostragem</h2>
+</div>
+<div style="display:flex;flex-direction:column;gap:32px">
+<div style="position:relative;display:flex;flex-direction:column;gap:24px;width:1664px">
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;height:44px"><p style="width:300px;font-size:28px;font-weight:600;color:#17212F">OCaml · Arith</p><div style="width:300px"></div><div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:291px;height:32px;background:#2A78D6;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">+14%</p></div></div>
+<div style="display:flex;align-items:center;height:44px"><p style="width:300px;font-size:28px;font-weight:600;color:#17212F">OCaml · State</p><div style="width:300px"></div><div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:599px;height:32px;background:#2A78D6;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">+28%</p></div></div>
+<div style="display:flex;align-items:center;height:44px"><p style="width:300px;font-size:28px;font-weight:600;color:#17212F">OCaml · Exn</p><div style="width:300px"></div><div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:231px;height:32px;background:#2A78D6;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">+11%</p></div></div>
+<div style="display:flex;align-items:center;height:44px"><p style="width:300px;font-size:28px;font-weight:600;color:#17212F">OCaml · Output</p><div style="width:300px"></div><div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:107px;height:32px;background:#2A78D6;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">+5%</p></div></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;height:44px"><p style="width:300px;font-size:28px;font-weight:600;color:#17212F">Haskell · Arith</p><div style="width:300px"></div><div style="flex:1;display:flex;align-items:center;gap:16px"><div style="width:43px;height:32px;background:#EB6834;border-radius:0px 6px 6px 0px"></div><p style="font-size:28px;color:#4A5160">+2%</p></div></div>
+<div style="display:flex;align-items:center;height:44px"><p style="width:300px;font-size:28px;font-weight:600;color:#17212F">Haskell · State</p><div style="width:300px;display:flex;align-items:center;justify-content:flex-end;gap:12px"><p style="font-size:28px;color:#4A5160">−8%</p><div style="width:169px;height:32px;background:#EB6834;border-radius:6px 0px 0px 6px"></div></div><div style="flex:1"></div></div>
+<div style="display:flex;align-items:center;height:44px"><p style="width:300px;font-size:28px;font-weight:600;color:#17212F">Haskell · Exn</p><div style="width:300px;display:flex;align-items:center;justify-content:flex-end;gap:12px"><p style="font-size:28px;color:#4A5160">−9%</p><div style="width:195px;height:32px;background:#EB6834;border-radius:6px 0px 0px 6px"></div></div><div style="flex:1"></div></div>
+<div style="display:flex;align-items:center;height:44px"><p style="width:300px;font-size:28px;font-weight:600;color:#17212F">Haskell · Output</p><div style="width:300px;display:flex;align-items:center;justify-content:flex-end;gap:12px"><p style="font-size:28px;color:#4A5160">−1%</p><div style="width:13px;height:32px;background:#EB6834;border-radius:6px 0px 0px 6px"></div></div><div style="flex:1"></div></div>
+</div>
+<div style="position:absolute;left:599px;top:0px;width:2px;height:436px;background:#8E8C82"></div>
+</div>
+<p style="font-size:24px;line-height:1.4;color:#646A78;width:1600px">Desvio relativo da razão de tempo: corrida com cota de 5 s e 2.000 amostras (semente 42) contra a mesma semente da campanha, com cota de 20 s. Todos os R² da corrida curta ficaram ≥ 0,95.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">A4</p>
+<aside>Use se perguntarem sobre o achado do R².
+
+Pontos para citar: a corrida curta (cota de 5 s, 2.000 amostras, semente 42) teve todos os R² acima de 0,95 e mesmo assim deslocou as razões: até +28% no OCaml State e −9% no Haskell Exn, comparando com a mesma semente na campanha. A conclusão é metodológica: a configuração de amostragem precisa ser testada, e o R² sozinho não denuncia uma configuração insuficiente.</aside>
+</section>
+
+<section id="ap-ia" data-transition="fade" style="background:#EFEBE3;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Apêndice</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Uso de IA, conforme o Regulamento</h2>
+</div>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Ferramenta: Claude (Anthropic), com a versão informada na declaração do artigo. Finalidades:</p>
+<ul style="font-size:28px;line-height:1.5;color:#17212F;width:1500px">
+<li>revisão crítica de todas as seções do texto, com sugestões de redação e correção de afirmações factuais;</li>
+<li>redação preliminar dos trechos que reportam e discutem os resultados, revisada pelo autor;</li>
+<li>geração do código-fonte publicado: implementações, suítes de teste, harnesses e scripts de métricas;</li>
+<li>execução da campanha de medição e das métricas de código, em máquina virtual de nuvem.</li>
+</ul>
+<div style="flex:1"></div>
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;line-height:1.35;color:#17212F;width:1500px">O conteúdo técnico, os resultados e a redação final são de responsabilidade do autor (Arts. 6º a 9º do Regulamento).</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">A5</p>
+<aside>Use se perguntarem sobre o uso de IA. Responda com tranquilidade e sem minimizar.
+
+Resposta sugerida: “O código foi gerado com assistência de IA, e isso está declarado no artigo, como o Regulamento exige, junto com a execução das medições e a redação preliminar dos resultados. O meu papel foi definir o problema e o método, revisar, entender e verificar cada decisão. Foi por isso que eu investi tanto em verificação: oráculo, mutação e conformidade. Posso explicar qualquer parte do código.” Se pedirem, abra um arquivo e explique um trecho (Guia 04).</aside>
+</section>
+
+</body></html>
