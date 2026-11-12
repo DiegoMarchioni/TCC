@@ -116,6 +116,46 @@ reescritos para a versão atual, e há um guia 04 que explica o código.
 
 ---
 
+## Revisão final (12/11/2026): o que mudou e o que falta
+
+**Defeitos encontrados e corrigidos nesta rodada:**
+
+- **`make campanha` falhava num clone novo:** o executável do benchmark Haskell
+  não era compilado. Achado rodando `make tudo` numa cópia limpa; corrigido
+  (`cabal.project`, alvo pedido pelo nome, conferência dos executáveis).
+- **Alocação do OCaml com viés:** o contador que o Bechamel lê só avança a cada
+  coleta menor, e a regressão subestimava a base em até 4,7%. A alocação passou
+  a ser contada diretamente (exata e determinística): base de 16 B em Arith,
+  razões de 6,6 a 12,7 (antes, 6,7 a 13,2). Os tempos não mudaram.
+- **Artigo:** `>>=` saía impresso como `»=`; o domínio de 𝓔₆₄ estava impreciso;
+  o Art. 4º, § 1º, III, pede figuras na metodologia, e não havia nenhuma (entrou
+  a Figura 1); os resumos passavam de 10 linhas e da primeira página (agora têm
+  10 linhas, só com cortes) e traziam um erro de fato (retirado).
+- **Bibliografia:** o relatório do TCC I saía com "CONFERIR" impresso e ano
+  2025; passou para 2026 (o histórico do repositório mostra a escolha do tema
+  em março de 2026). **Confirme o ano.**
+- **Pipeline:** `make tudo` estritamente sequencial; mensagens de afirmação
+  quebrada com linha e conteúdo; registro de ambiente independente do idioma do
+  sistema.
+
+**Estado:** 16 páginas na réplica do modelo SBC, resumos na 1ª página, 21
+afirmações conferidas contra os dados, suíte completa passando numa cópia
+limpa (28/28, 61/61 nas duas linguagens, 8/8 mutantes, 73/73 com o quarto
+efeito).
+
+**O que só você pode fazer:**
+
+1. Preencher a versão do modelo em `[PREENCHER]` (Agradecimentos), com as
+   versões informadas na conversa.
+2. Confirmar o ano do TCC I (2026) e o e-mail do orientador.
+3. Integrar o ramo de trabalho à `main`: a URL do código no artigo aponta para
+   ela, e a `main` ainda tem a versão antiga.
+4. Compilar no Overleaf com o modelo oficial e conferir as 16 páginas.
+5. Reescrever com as suas palavras os trechos `VOZ` e `NOVO (10/11)`, como o
+   orientador pediu (`marcacoes-estilo.md`).
+
+---
+
 ## 1. Resumo executivo
 
 **A versão nova avançou bastante.** Coube em 16 páginas (com Times), tem a
