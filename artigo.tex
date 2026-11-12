@@ -253,12 +253,12 @@ Composabilidade, Poder de Abstração e Desempenho}
 %%      ratio"/"razao de tempo": com os numeros da campanha, o Haskell fica
 %%      abaixo de 1, e "sobrecusto de 0,97" seria impreciso.
 %% O que continua faltando, e e seu:
-%%  - TAMANHO: na replica do modelo, cada resumo ainda ocupa 12 linhas, e o
-%%    limite do modelo SBC e 10. Os dois ja cabem na 1a pagina. Para chegar a
-%%    10 so cortando: retire ", and the two ratios are then contrasted" e
+%%  - TAMANHO: para caber no limite de 10 linhas do modelo SBC, retirei
+%%    tambem, so cortando, ", and the two ratios are then contrasted" e
 %%    ", together with a semantics-derived oracle test suite and a
 %%    deterministic cross-language workload generator" (e os trechos
-%%    equivalentes em portugues), ou encurte o primeiro periodo.
+%%    equivalentes em portugues). Se quiser de volta a mencao a suite de
+%%    oraculo e ao gerador, encurte o primeiro periodo ao reescrever.
 %%  - CONTEUDO: os resumos nao dizem nada sobre QP1 a QP3. Ao reescrever,
 %%    cabe uma frase com o achado principal: dentro de cada linguagem, o eval
 %%    do mecanismo empata com o da base, e o custo de escrita fica na
@@ -271,11 +271,9 @@ design, and two approaches concentrate the attention of the literature:
 monads, composed in Haskell via monad transformers, and algebraic effects with
 handlers, supported natively in OCaml~5. The mechanism cannot be isolated from
 the host language runtime, so the comparison is made by ratios: each mechanism
-is measured against an imperative baseline in its own language, and the two
-ratios are then contrasted. Four functionally equivalent implementations of an
-expression interpreter with mutable state, exceptions and output were built,
-together with a semantics-derived oracle test suite and a deterministic
-cross-language workload generator. The time ratio between each mechanism and
+is measured against an imperative baseline in its own language. Four
+functionally equivalent implementations of an expression interpreter with
+mutable state, exceptions and output were built. The time ratio between each mechanism and
 its baseline lies between \FaixaRTenOcaml{} in OCaml and between
 \FaixaRTenHaskell{} in Haskell.
 \end{abstract}
@@ -290,11 +288,9 @@ as mônadas, compostas em Haskell por meio de \textit{monad transformers}, e os
 efeitos algébricos com \textit{handlers}, com suporte nativo no OCaml~5. O
 mecanismo não pode ser isolado do \textit{runtime} que o hospeda, de modo que
 a comparação é feita por razões: cada mecanismo é medido contra uma linha de
-base imperativa na sua própria linguagem, e as duas razões são então
-confrontadas. Foram construídas quatro implementações funcionalmente
-equivalentes de um interpretador de expressões com estado mutável, exceções e
-saída, uma suíte de testes de oráculo derivada da semântica formal e um
-gerador determinístico de cargas replicado nas duas linguagens. A razão de
+base imperativa na sua própria linguagem. Foram construídas quatro
+implementações funcionalmente equivalentes de um interpretador de expressões
+com estado mutável, exceções e saída. A razão de
 tempo entre cada mecanismo e a sua base situa-se entre \FaixaRTOcaml{} em OCaml
 e entre \FaixaRTHaskell{} em Haskell.
 \end{resumo}
@@ -636,10 +632,27 @@ mecanismo sobre ela.
 
 \subsection{Protocolo Experimental e Ameaças à Validade}\label{sec:protocolo}
 
-A equivalência testada pela suíte de oráculo é pré-condição da medição: os
+A Figura~\ref{fig:metodo} resume as etapas do método. A equivalência testada
+pela suíte de oráculo é pré-condição da medição: os
 \textit{benchmarks} só são executados depois de ela passar nas quatro
 implementações, e cada \textit{harness} confere ainda, sobre a própria carga,
 que mecanismo e base produzem a mesma soma, os mesmos erros e o mesmo traço.
+
+%% REVISAO FINAL (10/11): figura acrescentada porque o Art. 4o, par. 1o, III, do
+%% Regulamento pede metodologia "com diagramas, fluxogramas, figuras". Usa so
+%% LaTeX padrao (sem TikZ), para compilar em qualquer instalacao.
+\begin{figure}[ht]
+  \centering
+  \footnotesize\setlength{\fboxsep}{4pt}
+  \newcommand{\etapa}[1]{\fbox{\parbox[c][2.8em][c]{2.25cm}{\centering #1}}}
+  \etapa{Semântica \textit{small-step}}\,$\rightarrow$\,%
+  \etapa{Quatro versões equivalentes}\,$\rightarrow$\,%
+  \etapa{Suíte de oráculo (pré-condição)}\,$\rightarrow$\,%
+  \etapa{Métricas de código e campanha}\,$\rightarrow$\,%
+  \etapa{Razões sobre a base, por linguagem}
+  \caption{Etapas do método: nada é medido antes de a suíte de oráculo passar.}
+  \label{fig:metodo}
+\end{figure}
 
 Os \textit{harnesses} usam Criterion \cite{criterion:08} em Haskell e
 Bechamel \cite{bechamel:21} em OCaml~5.2.1 com \textit{flambda}, com
