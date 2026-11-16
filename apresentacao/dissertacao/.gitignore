@@ -1,0 +1,9 @@
+# Arquivos auxiliares do LaTeX
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+*.vrb
+build*.out
