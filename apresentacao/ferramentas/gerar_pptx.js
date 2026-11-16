@@ -498,7 +498,7 @@ trilha(s, "Discussão");
 titulo(s, "Os resultados ficam na ordem de grandeza da literatura, mas contrariam a previsão do TCC I");
 s.addTable([
   [cab("Fonte", "left"), cab("O que a fonte mede", "left"), cab("Neste trabalho", "left")],
-  [cel("Sivaramakrishnan et al. (2021)", { align: "left" }), cel("cerca de 23 ns para instalar um handler", { align: "left" }), cel("45 ns para três handlers", { align: "left" })],
+  [cel("Sivaramakrishnan et al. (2021)", { align: "left" }), cel("cerca de 23 ns para alocar uma fiber e trocar de pilha", { align: "left" }), cel("45 ns para três handlers", { align: "left" })],
   [cel("Kammar et al. (2013), Xie e Leijen (2020)", { align: "left" }), cel("mônadas a 1,0 a 1,3× uma versão sem efeitos", { align: "left" }), cel("0,97 a 1,08×", { align: "left" })],
   [cel("TCC I (previsão)", { align: "left", bold: true }), cel("handlers abaixo de 1,5× e mônadas acima de 2×", { align: "left" }), cel("o contrário nos dois casos", { align: "left", bold: true, color: C.accent2 })],
 ], { x: 0.5, y: 1.45, w: 9.0, colW: [3.0, 3.5, 2.5], fontSize: 15, color: C.text1, border: { type: "solid", pt: 0.75, color: COR.borda }, margin: 0.08, objectName: "tabela-literatura" });
@@ -615,8 +615,24 @@ texto(s, [
 citacao(s, "O conteúdo técnico, os resultados e a redação final são de responsabilidade do autor (Arts. 6º a 9º do Regulamento)");
 
 // ---- gravar e aplicar o tema -------------------------------------------------------
+// O pptxgenjs repete <a:pPr> antes de cada trecho de um parágrafo com vários
+// trechos. Só o primeiro é válido: os outros apagariam o marcador da lista e o
+// PowerPoint pediria para reparar o arquivo. Aqui eles são removidos.
+async function corrigirParagrafos(arquivo) {
+  const JSZip = require("jszip");
+  const zip = await JSZip.loadAsync(fs.readFileSync(arquivo));
+  const nomes = Object.keys(zip.files).filter((f) => /^ppt\/(slides|slideLayouts|notesSlides)\/[^/]+\.xml$/.test(f));
+  for (const f of nomes) {
+    const xml = await zip.file(f).async("string");
+    const novo = xml.replace(/(<\/a:r>)<a:pPr\b[^>]*?(?:\/>|>[\s\S]*?<\/a:pPr>)/g, "$1");
+    if (novo !== xml) zip.file(f, novo);
+  }
+  fs.writeFileSync(arquivo, await zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE" }));
+}
+
 (async () => {
   await pres.writeFile({ fileName: SAIDA });
   await applyTheme(SAIDA, THEME);
+  await corrigirParagrafos(SAIDA);
   console.log("gravado:", path.relative(RAIZ, SAIDA));
 })();

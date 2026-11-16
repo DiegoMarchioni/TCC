@@ -583,7 +583,7 @@ let rec eval = function
     \toprule
     \textbf{Fonte} & \textbf{O que a fonte mede} & \textbf{Neste trabalho} \\
     \midrule
-    Sivaramakrishnan et al. (2021) & cerca de 23 ns para instalar um handler & 45 ns para três handlers \\
+    Sivaramakrishnan et al. (2021) & cerca de 23 ns para alocar uma \emph{fiber} e trocar de pilha & 45 ns para três handlers \\
     Kammar et al. (2013), Xie e Leijen (2020) & mônadas a $1{,}0$ a $1{,}3\times$ uma versão sem efeitos & $0{,}97$ a $1{,}08\times$ \\
     \midrule
     TCC I (previsão) & handlers abaixo de $1{,}5\times$, mônadas acima de $2\times$ & \hs{\textbf{o contrário nos dois casos}} \\

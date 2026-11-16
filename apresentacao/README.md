@@ -4,6 +4,9 @@
 
 | Arquivo | Para quê |
 |---|---|
+| `dissertacao/defesa.pptx` | **a versão no estilo de dissertação em PowerPoint, para editar** (abre no PowerPoint, no Google Slides e no Keynote). Texto, tabelas e gráficos são editáveis. Cada slide tem nas notas do apresentador o que dizer e o que cada termo do slide significa, e os termos centrais aparecem no slide num quadro "O que é" |
+| `dissertacao/explicacao-slides.md` | o mesmo texto das notas, slide a slide, para ler fora do PowerPoint |
+| `dissertacao/gerar_pptx.js` | gera os dois arquivos acima (`NODE_PATH=<node_modules com pptxgenjs> node apresentacao/dissertacao/gerar_pptx.js`). Se você editar o `.pptx` à mão, não rode o gerador de novo, porque ele sobrescreve o arquivo |
 | `dissertacao/defesa.pdf` | **versão no estilo de apresentação de dissertação**: fundo branco, rótulo de seção em laranja, título grande sem serifa (Open Sans), rodapé com linha fina, tabelas com separadores sutis, código em fonte monoespaçada sobre fundo cinza com um comentário em cada linha, e slides de transição entre as seções |
 | `dissertacao/defesa-notas.pdf` | a mesma versão com as notas do apresentador ao lado de cada slide |
 | `dissertacao/defesa.tex` | fonte dessa versão |
