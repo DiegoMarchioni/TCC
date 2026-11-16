@@ -4,6 +4,9 @@
 
 | Arquivo | Para quê |
 |---|---|
+| `beamer/defesa.pdf` | **versão acadêmica em LaTeX Beamer** (tema Madrid), feita com a skill `.claude/skills/beamer`: sumário e roteiro a cada seção, tabelas `booktabs`, gráficos `pgfplots`, código do trabalho com `listings`, referências e slides de reserva |
+| `beamer/defesa-notas.pdf` | a mesma versão Beamer com as notas do apresentador ao lado de cada slide (para o segundo monitor) |
+| `beamer/defesa.tex` | fonte da versão Beamer |
 | `slides.pdf` | apresentar: abre em qualquer leitor de PDF, uma página por slide |
 | `defesa.pptx` | versão PowerPoint, editável, com notas do apresentador em cada slide e gráficos nativos; segue as skills de `.claude/skills/` (títulos que dizem a conclusão de cada slide, citações no slide, referências, termina nas conclusões) |
 | `slides.html` | abrir no navegador. As fontes vêm do Google Fonts, então sem internet o texto aparece em Arial e Georgia |
@@ -19,6 +22,20 @@ simplificada (menos nomes de tipos e funções e menos detalhes estatísticos na
 tela e na fala, com os mesmos números) e ganhou mais código: o sumário (slide 2), os dois mecanismos no código do
 trabalho (slide 5), a função `eval` com handlers (slide 8) e o quarto efeito
 no código (slide 13).
+
+## Como regerar a versão Beamer
+
+Na pasta `apresentacao/beamer/`, com TeX Live (pacotes `texlive-xetex`,
+`texlive-luatex` e `texlive-lang-portuguese`):
+
+```sh
+xelatex defesa.tex && xelatex defesa.tex
+lualatex -jobname=defesa-notas "\def\comnotas{1}\input{defesa}"
+lualatex -jobname=defesa-notas "\def\comnotas{1}\input{defesa}"
+```
+
+A versão com notas usa LuaLaTeX porque, no XeLaTeX, o modo de notas em
+segunda tela perde a cor do texto depois de trechos coloridos.
 
 ## Como regerar o PDF
 

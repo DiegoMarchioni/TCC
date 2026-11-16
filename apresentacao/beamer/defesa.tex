@@ -1,0 +1,783 @@
+% Defesa do TCC em LaTeX Beamer, feita com a skill .claude/skills/beamer
+% (tema Madrid, XeLaTeX, sem overlays, tabelas booktabs, gráficos pgfplots).
+%
+% Compilar (na pasta apresentacao/beamer/):
+%   xelatex defesa.tex && xelatex defesa.tex
+% Versão com as notas do apresentador ao lado de cada slide (LuaLaTeX, porque
+% no XeLaTeX o pgfpages perde a cor do texto depois de trechos coloridos):
+%   lualatex -jobname=defesa-notas "\def\comnotas{1}\input{defesa}"   (duas vezes)
+
+\documentclass[aspectratio=169,10pt]{beamer}
+
+\usetheme{Madrid}
+\usecolortheme[RGB={31,58,95}]{structure}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+\setbeamertemplate{bibliography item}[text]
+\setbeamercolor{normal text}{fg=black}
+\ifdefined\comnotas
+  \setbeameroption{show notes on second screen=right}
+\fi
+
+\usepackage[brazil]{babel}
+\usepackage{amsmath,amssymb,amsthm,booktabs,mathtools}
+\usepackage{stmaryrd}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,decorations.pathreplacing,calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{listings}
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+% Cores semânticas da skill (seguras para daltonismo) e as do trabalho:
+% azul = OCaml (handlers), laranja = Haskell (mônadas), cinza = bases.
+\definecolor{positive}{HTML}{0173B2}
+\definecolor{negative}{HTML}{DE8F05}
+\definecolor{emphasis}{HTML}{029E73}
+\definecolor{neutral}{gray}{0.55}
+\definecolor{ocamlc}{HTML}{0173B2}
+\definecolor{haskellbar}{HTML}{DE8F05}
+\definecolor{haskellc}{HTML}{A85F00}
+\definecolor{basec}{gray}{0.6}
+\newcommand{\pos}[1]{\textcolor{positive}{#1}}
+\newcommand{\con}[1]{\textcolor{negative}{#1}}
+\newcommand{\HL}[1]{\textcolor{emphasis}{#1}}
+\newcommand{\oc}[1]{\textcolor{ocamlc}{#1}}
+\newcommand{\hs}[1]{\textcolor{haskellc}{#1}}
+
+\lstset{
+  basicstyle=\ttfamily\footnotesize\color{black},
+  columns=fullflexible, keepspaces=true, showstringspaces=false, upquote=true,
+  commentstyle=\color{neutral}, frame=single, rulecolor=\color{neutral!40},
+  backgroundcolor=\color{gray!6}, xleftmargin=4pt, xrightmargin=4pt,
+}
+\lstdefinelanguage{OCamlTCC}{
+  morekeywords={let,rec,function,match,with,type,fun,in,Some,None},
+  keywordstyle=\bfseries,
+  emph={perform,continue,Get,Set,Fail,Output,run_input},
+  emphstyle=\bfseries\color{ocamlc},
+  sensitive=true, morecomment=[s]{(*}{*)}, morestring=[b]",
+}
+\lstdefinelanguage{HaskellTCC}{
+  morekeywords={type,do,return,maybe,eval},
+  keywordstyle=\bfseries,
+  emph={ExceptT,StateT,get,throwError,lift},
+  emphstyle=\bfseries\color{haskellc},
+  sensitive=true, morecomment=[l]{--},
+}
+\lstdefinelanguage{DiffTCC}{
+  morecomment=[f][\color{negative!85!black}]-,
+  morecomment=[f][\color{positive}]+,
+}
+
+\title[Mônadas e efeitos algébricos]{Mônadas e Efeitos Algébricos em Linguagens Funcionais}
+\subtitle{Uma análise comparativa em legibilidade, composabilidade,\\ poder de abstração e desempenho}
+\author[Diego Marchioni]{Diego Marchioni\\[3pt]{\small Orientador: Prof.~Marco Rodrigo}}
+\institute[PUC Minas]{Ciência da Computação\\Pontifícia Universidade Católica de Minas Gerais}
+\date{Trabalho de Conclusão de Curso II\\dezembro de 2026}
+
+\AtBeginSection[]{
+  \begin{frame}{Roteiro}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+\begin{document}
+
+% ============================================================
+\begin{frame}
+  \titlepage
+  \note{\begin{itemize}
+    \item Âncora: comparei mônadas e efeitos algébricos no mesmo programa.
+    \item Apresentar-se, citar o orientador, Prof. Marco Rodrigo.
+    \item Olhar para a câmera, falar devagar.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}{Sumário}
+  \tableofcontents
+  \note{\begin{itemize}
+    \item A ordem segue o artigo.
+    \item Problema e perguntas, mecanismos no código, método e versões, resultados, discussão.
+  \end{itemize}}
+\end{frame}
+
+% ============================================================
+\section{Introdução}
+
+\begin{frame}{Dois mecanismos expressam os mesmos efeitos}
+  Efeitos (estado, exceção, saída) exigem um mecanismo próprio em programação funcional.
+  \vspace{6pt}
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \begin{block}{Mônadas \textperiodcentered{} Haskell}
+      \begin{itemize}
+        \item cada efeito é uma camada de uma pilha
+        \item o efeito aparece no \textbf{tipo} da função
+      \end{itemize}
+    \end{block}
+    \column{0.48\textwidth}
+    \begin{block}{Efeitos algébricos \textperiodcentered{} OCaml 5 (2022)}
+      \begin{itemize}
+        \item o código \textbf{pede} a operação (\texttt{perform})
+        \item um \textbf{handler} decide o que ela faz
+      \end{itemize}
+    \end{block}
+  \end{columns}
+  \vspace{10pt}
+  \textbf{Lacuna:} mesma expressividade em teoria, mas nenhum estudo mediu, no mesmo programa,
+  o custo de \textbf{escrever} e o de \textbf{executar} com cada um.
+
+  \vfill
+  {\small\color{neutral} Expressividade equivalente: Forster et al. (2017), Schrijvers et al. (2019).}
+  \note{\begin{itemize}
+    \item Âncora: na teoria expressam o mesmo, falta medir o custo prático.
+    \item Mônadas no Haskell, efeitos algébricos no OCaml 5.
+    \item Lacuna: escrever e executar, no mesmo programa.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}{O trabalho responde a quatro questões de pesquisa}
+  \vspace{4pt}
+  \begin{center}
+  \begin{tabular}{lll}
+    \toprule
+    & \textbf{Dimensão} & \textbf{O que se mede} \\
+    \midrule
+    QP1 & Legibilidade & linhas, operações de efeito e aninhamento da \texttt{eval} \\
+    QP2 & Composabilidade & código existente que muda ao inserir um quarto efeito \\
+    QP3 & Abstração & código em volta da \texttt{eval} e o que dele se reaproveita \\
+    QP4 & Desempenho & tempo e memória contra a base da mesma linguagem \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \vspace{8pt}
+  \begin{itemize}
+    \item Medidas de código são \textbf{indiretas} (\emph{proxies}) da legibilidade
+    \item Comparação de código só dentro da mesma linguagem: \oc{handlers} $\times$ imperativa, \hs{mônadas} $\times$ IORef
+  \end{itemize}
+  \note{\begin{itemize}
+    \item Âncora: quatro perguntas, uma por dimensão.
+    \item A eval é a função principal do interpretador, mostrada adiante.
+    \item Métricas de código só comparam versões da mesma linguagem.
+  \end{itemize}}
+\end{frame}
+
+% ============================================================
+\section{Fundamentação}
+
+\begin{frame}[fragile]{No Haskell o efeito está no tipo, no OCaml na operação}
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \hs{\textbf{Mônadas}} \textperiodcentered{} \texttt{Monadic.hs}
+\begin{lstlisting}[language=HaskellTCC]
+type Env = Map String Int
+type Interp a =
+  ExceptT String (StateT Env IO) a
+
+eval (Var x) = do
+  env <- get
+  maybe (throwError (msgUnbound x))
+        return (Map.lookup x env)
+\end{lstlisting}
+    {\small \texttt{get} lê o estado, \texttt{throwError} lança o erro}
+
+    \column{0.48\textwidth}
+    \oc{\textbf{Efeitos algébricos}} \textperiodcentered{} \texttt{interp\_effects.ml}
+\begin{lstlisting}[language=OCamlTCC]
+type _ Effect.t +=
+  | Get : string -> int option Effect.t
+  | Set : string * int -> unit Effect.t
+  | Fail : string -> 'a Effect.t
+  | Output : int -> unit Effect.t
+(* handler de estado *)
+| Get x -> Some (fun k ->
+    continue k (Hashtbl.find_opt tbl x))
+\end{lstlisting}
+    {\small o handler responde e retoma a computação com \texttt{continue}}
+  \end{columns}
+  \note{\begin{itemize}
+    \item Âncora: no Haskell o efeito está no tipo, no OCaml numa operação que o handler interpreta.
+    \item Interp é a pilha: exceção sobre estado sobre IO.
+    \item OCaml: declara Get, Set, Fail, Output. O handler atende Get e retoma com continue.
+  \end{itemize}}
+\end{frame}
+
+% ============================================================
+\section{Metodologia e implementação}
+
+\begin{frame}{Cada mecanismo é medido contra uma base na própria linguagem}
+  Comparar tempos entre linguagens mediria também os compiladores. Por isso, razões:
+  \vspace{4pt}
+  \begin{center}
+  \begin{tikzpicture}[
+    caixa/.style={draw=neutral!60, rounded corners, fill=gray!6, minimum width=3.4cm, minimum height=0.7cm, font=\small},
+    seta/.style={-{Stealth}, thick, neutral}]
+    \node[caixa] (h) {\oc{\textbf{Handlers}} (OCaml)};
+    \node[caixa, right=1.0cm of h] (i) {Imperativa (OCaml)};
+    \node[right=0.7cm of i, font=\small] (ro) {razão do OCaml};
+    \node[caixa, below=0.35cm of h] (m) {\hs{\textbf{Mônadas}} (Haskell)};
+    \node[caixa, right=1.0cm of m] (r) {IORef (Haskell)};
+    \node[right=0.7cm of r, font=\small] (rh) {razão do Haskell};
+    \node at ($(h)!0.5!(i)$) {$\div$};
+    \node at ($(m)!0.5!(r)$) {$\div$};
+    \draw[seta] (i) -- (ro);
+    \draw[seta] (r) -- (rh);
+  \end{tikzpicture}
+  \end{center}
+  \vspace{-2pt}
+  \[
+    \text{razão} \;=\; \frac{T_{\text{mec}}}{T_{\text{base}}} \;=\; \frac{T_{\text{base}} + \Delta}{T_{\text{base}}} \;=\; 1 + \frac{\Delta}{T_{\text{base}}}
+  \]
+  \begin{itemize}
+    \item $\Delta$: custo a mais do mecanismo. Mesma estrutura de dados nos dois lados (\texttt{Hashtbl}, \texttt{Map})
+    \item Base barata $\Rightarrow$ razão grande: comparação \textbf{entre} linguagens é só indicativa
+  \end{itemize}
+  \note{\begin{itemize}
+    \item Âncora: cada mecanismo contra uma base. A razão depende da base.
+    \item A fórmula não vem da literatura, é a definição de razão reescrita.
+    \item Ela volta no slide da memória.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}{Um interpretador pequeno com estado, exceção e saída}
+  \begin{columns}[T]
+    \column{0.42\textwidth}
+    \textbf{Oito construtores}\\[2pt]
+    \texttt{Num}, \texttt{Var}, \texttt{Add}, \texttt{Mul}, \texttt{Div}, \texttt{Let}, \texttt{Seq}, \texttt{Print}
+    \vspace{6pt}
+    \begin{itemize}
+      \item \textbf{Estado:} \texttt{Var} lê, \texttt{Let} guarda
+      \item \textbf{Exceção:} divisão por zero, variável inexistente
+      \item \textbf{Saída:} \texttt{Print} mostra um valor
+    \end{itemize}
+    \column{0.54\textwidth}
+    \begin{definition}[Equivalência funcional]
+      Uma implementação $I$ é equivalente à semântica $\mathcal{D}$ se, para todo
+      $(e,\sigma_0) \in \mathcal{E}_{64}$,
+      \[ \llbracket I \rrbracket(e,\sigma_0) = \mathcal{D}(e,\sigma_0), \]
+      isto é, mesmo valor, mesmo estado final, mesmo traço e mesma mensagem de erro.
+    \end{definition}
+  \end{columns}
+  \vfill
+  {\small\color{neutral} Semântica \emph{small-step} no estilo de Felleisen e Hieb (1992). Simplificações: variáveis globais, erro sempre aborta, um único programa.}
+  \note{\begin{itemize}
+    \item Âncora: interpretador pequeno, equivalência fixada antes do código.
+    \item Especificação formal escrita antes de programar.
+    \item Três simplificações, de propósito.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}[fragile]{A eval calcula o valor de cada expressão}
+  \begin{columns}[T]
+    \column{0.50\textwidth}
+\begin{lstlisting}[language=OCamlTCC]
+let rec eval = function
+  | Num n -> n
+  | Var x -> (
+      match perform (Get x) with
+      | Some v -> v
+      | None -> perform (Fail ...))
+  | Add (a, b) ->
+      let x = eval a in
+      let y = eval b in
+      x + y
+\end{lstlisting}
+    {\small Trecho de \texttt{interp\_effects.ml}. Os outros cinco casos seguem a mesma ideia.}
+    \column{0.46\textwidth}
+    \textbf{Exemplo:} $2 + n$, com $n = 3$
+    \begin{enumerate}
+      \item \texttt{eval (Add (Num 2, Var "n"))}: caso \texttt{Add}, avalia os dois lados
+      \item \texttt{eval (Num 2)}: devolve $2$
+      \item \texttt{eval (Var "n")}: \oc{pede $n$ com \texttt{perform}, o handler devolve $3$}
+      \item \texttt{x + y}: devolve $2 + 3 = 5$
+    \end{enumerate}
+    \vspace{4pt}
+    Os efeitos acontecem \textbf{dentro} da \texttt{eval}.
+  \end{columns}
+  \note{\begin{itemize}
+    \item Âncora: a eval recebe uma expressão e calcula o valor.
+    \item Seguir os passos 1 a 4 apontando a linha de cada caso.
+    \item Legibilidade mede dentro da eval, infraestrutura é o código em volta.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}{Nada foi medido antes de as quatro versões passarem nos testes}
+  \oc{\textbf{OCaml:}} handlers e base imperativa \qquad \hs{\textbf{Haskell:}} mônadas e base com IORef
+  \vspace{6pt}
+  \begin{center}
+  \begin{tabular}{rll}
+    \toprule
+    \textbf{Resultado} & \textbf{Verificação} & \textbf{O que garante} \\
+    \midrule
+    \HL{\textbf{61/61}} & suíte de oráculo, em cada linguagem & as versões são equivalentes \\
+    \HL{\textbf{8/8}} & erros colocados de propósito (mutantes) & os testes pegam erros reais \\
+    \HL{\textbf{12}} & cargas com o mesmo \emph{hash} nas duas linguagens & as cargas medidas são idênticas \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \vspace{6pt}
+  Código gerado com apoio de IA, declarado no artigo, e revisado pelo autor. Um comando refaz tudo: \texttt{make tudo}.
+  \note{\begin{itemize}
+    \item Âncora: quatro versões, nada medido antes dos testes passarem.
+    \item 61 testes, 8 de 8 mutantes, 12 cargas idênticas.
+    \item Dizer a frase sobre a IA ligada aos testes.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}[fragile]{Cada operação direta da base vira uma operação de efeito}
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \oc{\textbf{Handlers}} \textperiodcentered{} \texttt{interp\_effects.ml}
+\begin{lstlisting}[language=OCamlTCC]
+| Var x -> (
+    match perform (Get x) with
+    | Some v -> v
+    | None -> perform (Fail
+        (msg_unbound x)))
+\end{lstlisting}
+    \column{0.48\textwidth}
+    \textcolor{neutral}{\textbf{Imperativa}} \textperiodcentered{} \texttt{interp\_imp.ml}
+\begin{lstlisting}[language=OCamlTCC]
+| Var x -> (
+    match Hashtbl.find_opt env x with
+    | Some v -> v
+    | None -> raise (Runtime_error
+        (msg_unbound x)))
+\end{lstlisting}
+  \end{columns}
+  \vspace{8pt}
+  A estrutura é a mesma, linha por linha: a diferença medida é só o mecanismo.
+
+  \vfill
+  {\small\color{neutral} Código, testes e scripts: \texttt{github.com/DiegoMarchioni/TCC}, pasta \texttt{codigo/}.}
+  \note{\begin{itemize}
+    \item Âncora: a estrutura é a mesma, só a operação muda.
+    \item perform no lugar da leitura direta, perform Fail no lugar de raise.
+  \end{itemize}}
+\end{frame}
+
+% ============================================================
+\section{Resultados}
+
+\begin{frame}{QP1: o mecanismo não muda a leitura da eval}
+  \vspace{4pt}
+  \begin{center}
+  \begin{tabular}{lrrr}
+    \toprule
+    \textbf{Versão} & \textbf{Linhas} & \textbf{Operações de efeito} & \textbf{Aninhamento} \\
+    \midrule
+    \oc{Handlers (OCaml)} & 29 & 5 & 2 \\
+    Imperativa (OCaml) & 29 & 5 & 2 \\
+    \midrule
+    \hs{Mônadas (Haskell)} & 27 & 18 & 1 \\
+    IORef (Haskell) & 27 & 18 & 1 \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \vspace{6pt}
+  \begin{itemize}
+    \item Empate também construtor a construtor
+    \item Se há diferença ao escrever, ela está \textbf{fora} da \texttt{eval}
+  \end{itemize}
+  \vfill
+  {\small\color{neutral} Contagem automática sobre o código formatado. Aninhamento segundo a \emph{Cognitive Complexity} (Campbell, 2018).}
+  \note{\begin{itemize}
+    \item Âncora: a eval empata.
+    \item OCaml 29, 5, 2. Haskell 27, 18, 1.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}{QP3: o custo de escrita está no código em volta da eval}
+  \begin{columns}[T]
+    \column{0.58\textwidth}
+    \begin{tikzpicture}
+      \begin{axis}[
+        xbar, bar width=11pt, bar shift=0pt, width=0.80\linewidth, height=5.0cm,
+        xmin=0, xmax=80, ytick={1,2,3,4}, y dir=reverse,
+        yticklabels={Handlers (OCaml), Imperativa (OCaml), Mônadas (Haskell), IORef (Haskell)},
+        enlarge y limits=0.18, axis x line*=bottom, axis y line*=left,
+        xlabel={linhas de infraestrutura fora da \texttt{eval}},
+        nodes near coords, nodes near coords style={font=\small},
+        tick label style={font=\small}, label style={font=\small},
+        xmajorgrids, grid style={gray!20}]
+        \addplot[fill=ocamlc, draw=none] coordinates {(67,1)};
+        \addplot[fill=basec, draw=none] coordinates {(3,2) (22,4)};
+        \addplot[fill=haskellbar, draw=none] coordinates {(20,3)};
+      \end{axis}
+    \end{tikzpicture}
+    \column{0.38\textwidth}
+    \begin{itemize}
+      \item \oc{\textbf{Handlers: 67 contra 3}}, 18 só para os testes
+      \item \hs{\textbf{Haskell: 20 contra 22}}
+      \item Reaproveitamento só nos handlers: 2 usados em dois lugares
+    \end{itemize}
+  \end{columns}
+  \vfill
+  {\small\color{neutral} Cada linha classificada por regra mecânica, auditável em \texttt{codigo/resultados/boilerplate-regra/}.}
+  \note{\begin{itemize}
+    \item Âncora: o custo de escrever está no código em volta da eval.
+    \item Quarto efeito: só os mecanismos mudam código existente, o próximo slide mostra.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}[fragile]{QP2: com um quarto efeito, só os mecanismos mudam código existente}
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \oc{\textbf{Handlers}} \textperiodcentered{} composição \texttt{run} (e \texttt{run\_acc})
+\begin{lstlisting}[language=DiffTCC]
+  run_state tbl (fun () ->
+- run_output_emit (fun () ->
+-   run_exn (fun () -> eval e)))
++ run_output_emit (fun () ->
++   run_input (fun () ->
++     run_exn (fun () -> eval e))))
+\end{lstlisting}
+    \column{0.48\textwidth}
+    \hs{\textbf{Mônadas}} \textperiodcentered{} tipo da pilha e \texttt{run}
+\begin{lstlisting}[language=DiffTCC]
+- ExceptT String (StateT Env IO)
++ ExceptT String (StateT Env
++   (StateT [Int] IO))
+- run: runStateT (runExceptT ...)
++ run: runStateT (runStateT ...)
+  ler = lift (lift (state ...))
+\end{lstlisting}
+  \end{columns}
+  \vspace{6pt}
+  \begin{center}
+  \begin{tabular}{lcccc}
+    \toprule
+    & \oc{Handlers} & Imperativa & \hs{Mônadas} & IORef \\
+    \midrule
+    Pontos de modificação & \textbf{2} & 0 & \textbf{2} & 0 \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \note{\begin{itemize}
+    \item Âncora: nos mecanismos o efeito novo mexe em código existente, nas bases não.
+    \item Handlers: as duas composições passam a instalar run\_input.
+    \item Mônadas: tipo da pilha e run mudam, a leitura usa dois lift.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}{Sem nenhum efeito, os handlers já custam tempo}
+  \begin{center}
+    {\fontsize{60}{64}\selectfont \oc{\textbf{45 ns}}}\\[8pt]
+    {\large a mais por expressão no cenário \texttt{Arith}, que só faz contas:}\\[2pt]
+    {\large é o custo de \textbf{instalar} os três handlers}\\[18pt]
+    {\Large \hs{\textbf{10 ns}}}\quad é a maior diferença das mônadas em todo o experimento
+  \end{center}
+  \vfill
+  {\small\color{neutral} Mediana de 3 cargas de 10.000 expressões, em máquina virtual de nuvem (Tabela 2 do artigo).}
+  \note{\begin{itemize}
+    \item Âncora: 45 ns só para instalar os handlers.
+    \item Falar devagar, pausa depois de quarenta e cinco nanossegundos.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}{QP4: no OCaml o custo cresce com as operações, no Haskell não}
+  \begin{columns}[T]
+    \column{0.60\textwidth}
+    \begin{tikzpicture}
+      \begin{axis}[
+        xbar, bar width=7pt, width=0.96\linewidth, height=5.0cm,
+        xmin=-15, xmax=135, ytick={1,2,3,4}, yticklabels={Arith,State,Exn,Output}, y dir=reverse,
+        enlarge y limits=0.16, axis x line*=bottom, axis y line*=left,
+        xlabel={ns a mais por expressão, sobre a base},
+        nodes near coords, nodes near coords style={font=\scriptsize},
+        tick label style={font=\small}, label style={font=\small},
+        xmajorgrids, grid style={gray!20},
+        legend style={at={(0.5,1.03)}, anchor=south, legend columns=2, font=\scriptsize, draw=none}]
+        \addplot[fill=ocamlc, draw=none] coordinates {(45,1) (84,2) (49,3) (111,4)};
+        \addplot[fill=haskellbar, draw=none] coordinates {(10,1) (-4,2) (5,3) (-2,4)};
+        \legend{handlers sobre imperativa (OCaml), mônadas sobre IORef (Haskell)}
+      \end{axis}
+    \end{tikzpicture}
+    \column{0.36\textwidth}
+    \begin{itemize}
+      \item \oc{\textbf{OCaml:}} custo de instalar mais o de cada operação
+      \item \hs{\textbf{Haskell:}} o compilador apaga quase tudo
+      \item Razões: $1{,}59$ a $4{,}26$ e $0{,}97$ a $1{,}08$
+    \end{itemize}
+  \end{columns}
+  \vfill
+  {\small\color{neutral} Mediana de 3 cargas, máquina virtual de nuvem. Valores negativos são ruído de medição.}
+  \note{\begin{itemize}
+    \item Âncora: no OCaml, custo para instalar e a cada operação. No Haskell, quase nenhum.
+    \item Medições em máquina virtual na nuvem, como declarado no artigo.
+    \item Não é qual é mais rápido: as linguagens são diferentes.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}{A razão de memória do OCaml é alta porque a base quase não aloca}
+  \begin{columns}[T]
+    \column{0.60\textwidth}
+    \begin{tikzpicture}
+      \begin{axis}[
+        xbar stacked, bar width=18pt, width=\linewidth, height=4.4cm,
+        xmin=0, xmax=300, ytick={1,2}, yticklabels={OCaml,Haskell}, y dir=reverse,
+        enlarge y limits=0.45, axis x line*=bottom, axis y line*=left,
+        xlabel={bytes por expressão, cenário \texttt{Arith}},
+        point meta=explicit symbolic, nodes near coords,
+        nodes near coords style={font=\scriptsize, text=white},
+        tick label style={font=\small}, label style={font=\small},
+        legend style={at={(0.5,-0.42)}, anchor=north, legend columns=3, font=\scriptsize, draw=none}]
+        \addplot[fill=basec, draw=none] coordinates {(16,1) [16] (127,2) [127]};
+        \addplot[fill=ocamlc, draw=none] coordinates {(168,1) [168] (0,2) []};
+        \addplot[fill=haskellbar, draw=none] coordinates {(0,1) [] (150,2) [150]};
+        \legend{base, a mais nos handlers, a mais nas mônadas}
+      \end{axis}
+    \end{tikzpicture}
+    \column{0.36\textwidth}
+    \begin{itemize}
+      \item A mais: $168$ B e $150$ B, parecidos
+      \item Base: $16$ B contra $127$ B
+      \item Razões: $11{,}5$ e $2{,}2$
+    \end{itemize}
+    \vspace{4pt}
+    É o $1 + \Delta/T_{\text{base}}$ no caso extremo.
+  \end{columns}
+  \vfill
+  {\small\color{neutral} No OCaml, alocação contada diretamente entre duas coletas forçadas.}
+  \note{\begin{itemize}
+    \item Âncora: a memória a mais é parecida, o que muda é a base.
+    \item Apontar o trecho cinza da barra do OCaml ao dizer dezesseis bytes.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}{Dois achados não previstos}
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \begin{block}{Vazamento de memória no OCaml 5.2}
+      \centering {\Large \oc{\textbf{1,2 GB $\rightarrow$ 6 MB}}}\\[4pt]
+      \raggedright
+      Abandonar a computação interrompida não libera a memória. Encerrá-la com \texttt{discontinue} resolve (2 milhões de erros).
+    \end{block}
+    \column{0.48\textwidth}
+    \begin{block}{Medição sensível à configuração}
+      \centering {\Large \textbf{até 28\%}}\\[4pt]
+      \raggedright
+      Com coleta 4 vezes menor, todos os $R^2$ passam de $0{,}95$ e mesmo assim as razões mudam.
+    \end{block}
+  \end{columns}
+  \vfill
+  {\small\color{neutral} Experimento em \texttt{codigo/ocaml/experimento/continuacao.ml}. Sensibilidade no slide de reserva A4.}
+  \note{\begin{itemize}
+    \item Âncora: um vazamento de memória e uma medição sensível à configuração.
+    \item O código usa discontinue, o teste está no repositório.
+  \end{itemize}}
+\end{frame}
+
+% ============================================================
+\section{Discussão e conclusões}
+
+\begin{frame}{Os resultados ficam na ordem de grandeza da literatura}
+  \vspace{4pt}
+  \begin{center}
+  \renewcommand{\arraystretch}{1.25}
+  \begin{tabular}{L{4.1cm}L{4.6cm}L{3.4cm}}
+    \toprule
+    \textbf{Fonte} & \textbf{O que a fonte mede} & \textbf{Neste trabalho} \\
+    \midrule
+    Sivaramakrishnan et al. (2021) & cerca de 23 ns para instalar um handler & 45 ns para três handlers \\
+    Kammar et al. (2013), Xie e Leijen (2020) & mônadas a $1{,}0$ a $1{,}3\times$ uma versão sem efeitos & $0{,}97$ a $1{,}08\times$ \\
+    \midrule
+    TCC I (previsão) & handlers abaixo de $1{,}5\times$, mônadas acima de $2\times$ & \hs{\textbf{o contrário nos dois casos}} \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \vspace{6pt}
+  Cada trabalho mede uma situação diferente: a comparação é de ordem de grandeza.
+  \note{\begin{itemize}
+    \item Âncora: mesma ordem de grandeza da literatura, a previsão do TCC I não se confirmou.
+    \item Dizer a última linha com tranquilidade.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}{Conclusões}
+  \begin{enumerate}
+    \item \textbf{Escrita:} a \texttt{eval} não muda. O custo está no código em volta, nas composições dos \oc{handlers} e no tipo da pilha de \hs{mônadas}
+    \item \textbf{Execução:} handlers cobram ao ser instalados e a cada operação. As mônadas, otimizadas pelo GHC, quase não custam
+    \item \textbf{Na prática:} no OCaml, cuidado com quantas vezes se instala um handler. No Haskell, o custo aparece quando a pilha muda
+  \end{enumerate}
+  \vspace{8pt}
+  \begin{block}{Limites e trabalhos futuros}
+    Um programa, uma máquina virtual, versões específicas. Próximos passos: os dois mecanismos numa mesma linguagem, outros programas e efeitos, legibilidade medida com pessoas.
+  \end{block}
+  \note{\begin{itemize}
+    \item Âncora: escrita, custo em volta da eval. Execução, handlers cobram e mônadas quase nada.
+    \item O item Na prática é a sua opinião sobre os dados.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}{Referências}
+  \begin{thebibliography}{9}
+    \small
+    \bibitem{campbell} Campbell, G. A. (2018). Cognitive complexity: an overview and evaluation. \emph{TechDebt '18}, 57--58.
+    \bibitem{felleisen} Felleisen, M. e Hieb, R. (1992). The revised report on the syntactic theories of sequential control and state. \emph{Theoretical Computer Science}, 103(2), 235--271.
+    \bibitem{forster} Forster, Y., Kammar, O., Lindley, S. e Pretnar, M. (2017). On the expressive power of user-defined effects. \emph{PACMPL}, 1(ICFP).
+    \bibitem{kammar} Kammar, O., Lindley, S. e Oury, N. (2013). Handlers in action. \emph{ICFP '13}, 145--158.
+    \bibitem{marchioni} Marchioni, D. (2026). Mônadas e efeitos algébricos em linguagens funcionais. Relatório do TCC I, PUC Minas.
+    \bibitem{schrijvers} Schrijvers, T., Piróg, M., Wu, N. e Jaskelioff, M. (2019). Monad transformers and modular algebraic effects. \emph{Haskell 2019}, 98--113.
+    \bibitem{sivaramakrishnan} Sivaramakrishnan, K. C. et al. (2021). Retrofitting effect handlers onto OCaml. \emph{PLDI 2021}, 206--221.
+    \bibitem{xie} Xie, N. e Leijen, D. (2020). Effect handlers in Haskell, evidently. \emph{Haskell 2020}, 95--108.
+  \end{thebibliography}
+  \note{Slide de consulta, não entra na fala.}
+\end{frame}
+
+\begin{frame}{Obrigado}
+  \begin{center}
+    {\Large Obrigado}\\[12pt]
+    Código, dados e artigo: \texttt{github.com/DiegoMarchioni/TCC}\\[4pt]
+    \texttt{make tudo} refaz cada número\\[16pt]
+    {\large Perguntas e comentários são bem-vindos}
+  \end{center}
+  \note{\begin{itemize}
+    \item Obrigado. Tudo se refaz com um comando. Fico à disposição.
+    \item Voltar ao slide de Conclusões durante a arguição, se preferir.
+  \end{itemize}}
+\end{frame}
+
+% ============================================================
+\appendix
+
+\begin{frame}{Slides de reserva}
+  \begin{enumerate}
+    \item[A1] Tabela 2 completa: tempo e memória
+    \item[A2] Protocolo de medição
+    \item[A3] O quarto efeito em cada versão
+    \item[A4] Sensibilidade à configuração
+    \item[A5] Uso de IA, conforme o Regulamento
+  \end{enumerate}
+  \note{Abrir só se perguntarem.}
+\end{frame}
+
+\begin{frame}{A1 \textperiodcentered{} Todos os números de tempo e memória}
+  \begin{columns}[T]
+    \column{0.49\textwidth}
+    \centering \textbf{Tempo (ns por expressão)}\\[2pt]
+    \footnotesize
+    \begin{tabular}{lrrrrrr}
+      \toprule
+      & \multicolumn{3}{c}{\oc{OCaml}} & \multicolumn{3}{c}{\hs{Haskell}} \\
+      \cmidrule(lr){2-4}\cmidrule(lr){5-7}
+      Cenário & base & $\Delta$ & razão & base & $\Delta$ & razão \\
+      \midrule
+      Arith & 77 & 45 & 1,59 & 96 & 10 & 1,08 \\
+      State & 87 & 84 & 1,98 & 346 & $-4$ & 0,99 \\
+      Exn & 77 & 49 & 1,63 & 95 & 5 & 1,05 \\
+      Output & 34 & 111 & 4,26 & 41 & $-2$ & 0,97 \\
+      \bottomrule
+    \end{tabular}
+    \column{0.49\textwidth}
+    \centering \textbf{Memória (bytes por expressão)}\\[2pt]
+    \footnotesize
+    \begin{tabular}{lrrrrrr}
+      \toprule
+      & \multicolumn{3}{c}{\oc{OCaml}} & \multicolumn{3}{c}{\hs{Haskell}} \\
+      \cmidrule(lr){2-4}\cmidrule(lr){5-7}
+      Cenário & base & $\Delta$ & razão & base & $\Delta$ & razão \\
+      \midrule
+      Arith & 16 & 168 & 11,5 & 127 & 150 & 2,2 \\
+      State & 48 & 382 & 9,0 & 117 & 9 & 1,1 \\
+      Exn & 16 & 187 & 12,7 & 119 & 136 & 2,1 \\
+      Output & 64 & 360 & 6,6 & 104 & 8 & 1,1 \\
+      \bottomrule
+    \end{tabular}
+  \end{columns}
+  \vspace{10pt}
+  \begin{itemize}
+    \item IC de 95\% da razão de tempo: nenhum inclui 1 no OCaml. No Haskell, só o de Arith o exclui ([1,04; 1,18])
+    \item Dispersão entre sementes de até 18,3\% no tempo. Menor $R^2$: 0,954 (Bechamel) e 0,973 (Criterion)
+  \end{itemize}
+  \note{\begin{itemize}
+    \item Ler a linha: base, delta e razão.
+    \item A dispersão de 18,3\% vem do Haskell Output, por isso a mediana.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}{A2 \textperiodcentered{} O protocolo fixa máquina, compilação, cargas e critérios}
+  \vspace{4pt}
+  \begin{center}
+  \small
+  \renewcommand{\arraystretch}{1.25}
+  \begin{tabular}{lL{11.2cm}}
+    \toprule
+    \textbf{Item} & \textbf{Configuração} \\
+    \midrule
+    Máquina & Intel Xeon @ 2,10 GHz, 4 vCPU, máquina virtual de nuvem, Ubuntu 24.04.5, afinidade fixa num núcleo \\
+    Compilação & OCaml 5.2.1 + flambda com \texttt{-O3} e GHC 9.4.7 com \texttt{-O2}, iguais para mecanismo e base \\
+    Harnesses & Bechamel 0.5.0 (cota de 20 s, \texttt{limit} 5000) e Criterion 1.6.1.0 (1.000 reamostragens) \\
+    Cargas & 4 cenários $\times$ 10.000 expressões $\times$ 3 sementes (42, 43, 44), geradas fora da região medida \\
+    Regras & oráculo como pré-condição, ordem alternada, $R^2 \geq 0{,}95$ (um par com 0,949 foi remedido: 0,962) \\
+    Execução & pela ferramenta de IA, em sessão na nuvem, como declara o artigo \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \note{Flags iguais dentro de cada linguagem. Cargas fora da região medida. O harness confere soma, erros e traço antes de medir.}
+\end{frame}
+
+\begin{frame}{A3 \textperiodcentered{} O quarto efeito muda declarações só nos mecanismos}
+  \vspace{4pt}
+  \begin{center}
+  \renewcommand{\arraystretch}{1.25}
+  \begin{tabular}{lL{8.2cm}cc}
+    \toprule
+    \textbf{Versão} & \textbf{O que mudou em declarações existentes} & \textbf{Pontos} & \textbf{Adições} \\
+    \midrule
+    \oc{Handlers} & \texttt{run} e \texttt{run\_acc} passam a instalar o handler de \texttt{Input} & 2 & 2 \\
+    Imperativa & nada, a leitura é uma função nova & 0 & 1 \\
+    \hs{Mônadas} & o tipo da pilha ganha \texttt{StateT [Int]} e \texttt{run} passa a executá-la & 2 & 1 \\
+    IORef & nada, a leitura é uma função nova & 0 & 1 \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \vspace{6pt}
+  Ponto de modificação: declaração preexistente cujo texto mudou, definida antes de implementar. Com o efeito, a suíte passa com 73/73 em cada linguagem.
+  \note{A definição foi fixada antes. Nas bases o efeito é ambiente, nos mecanismos precisa ser instalado. O mtl alcança uma camada de estado, daí os dois lift.}
+\end{frame}
+
+\begin{frame}{A4 \textperiodcentered{} Com coleta 4 vezes menor, as razões mudam até 28\%}
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      xbar, bar width=9pt, bar shift=0pt, width=0.82\textwidth, height=6.0cm,
+      xmin=-15, xmax=35, ytick={1,...,8}, y dir=reverse,
+      yticklabels={OCaml Arith, OCaml State, OCaml Exn, OCaml Output, Haskell Arith, Haskell State, Haskell Exn, Haskell Output},
+      enlarge y limits=0.08, axis x line*=bottom, axis y line*=left,
+      xlabel={desvio da razão de tempo (\%), mesma semente},
+      nodes near coords={\pgfmathprintnumber[showpos]{\pgfplotspointmeta}\%},
+      nodes near coords style={font=\scriptsize},
+      tick label style={font=\small}, label style={font=\small},
+      xmajorgrids, grid style={gray!20}]
+      \addplot[fill=ocamlc, draw=none] coordinates {(14,1) (28,2) (11,3) (5,4)};
+      \addplot[fill=haskellbar, draw=none] coordinates {(2,5) (-8,6) (-9,7) (-1,8)};
+    \end{axis}
+  \end{tikzpicture}
+
+  {\small Cota de 5 s e 2.000 amostras contra a campanha (cota de 20 s). Todos os $R^2$ da corrida curta ficaram $\geq 0{,}95$.}
+  \note{O R\textsuperscript{2} sozinho não denuncia uma configuração insuficiente.}
+\end{frame}
+
+\begin{frame}{A5 \textperiodcentered{} O uso de IA está declarado no artigo}
+  \textbf{Ferramenta:} Claude (Anthropic), versão informada na declaração do artigo.
+  \vspace{4pt}
+  \begin{itemize}
+    \item revisão crítica de todas as seções
+    \item edição de estilo, exceto resumos e primeiro parágrafo da introdução
+    \item redação preliminar dos trechos de resultados, revisada pelo autor
+    \item geração do código-fonte, revisado pelo autor
+    \item execução da campanha de medição, em máquina virtual de nuvem
+  \end{itemize}
+  \vspace{6pt}
+  \begin{block}{Responsabilidade}
+    O conteúdo técnico, os resultados e a redação final são do autor (Arts. 6º a 9º do Regulamento).
+  \end{block}
+  \note{Responder com tranquilidade. Investi em verificação: oráculo, mutação e conformidade. Posso explicar qualquer parte do código.}
+\end{frame}
+
+\end{document}
