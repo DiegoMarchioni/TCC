@@ -32,12 +32,12 @@
 </div>
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
-<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">14</p>
-<aside>(1:10 · acumulado 15:00) Âncora: um vazamento de memória no OCaml e uma medição sensível à configuração.
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">17</p>
+<aside>(1:10 · acumulado 17:00) Âncora: um vazamento de memória no OCaml e uma medição sensível à configuração.
 
 Dois resultados eu não esperava.
 
 O primeiro é um vazamento de memória no OCaml. Quando um handler trata um erro, a computação interrompida fica guardada. Se o código simplesmente a abandona, o OCaml não libera essa memória. Num teste com dois milhões de erros, a memória chegou a 1,2 gigabyte. Encerrando a computação do jeito certo, com a função discontinue, ficou em seis megabytes. O meu código usa o jeito certo, e o teste está no repositório.
 
-O segundo é sobre a medição. Eu repeti as medições com um tempo de coleta quatro vezes menor. Todas continuaram passando no critério de qualidade que eu usei. Mesmo assim, as razões mudaram até vinte e oito por cento. Ou seja: a configuração da medição muda o resultado, e isso precisa ser considerado ao ler os números.</aside>
+O segundo é sobre a medição. Repeti as medições com um tempo de coleta quatro vezes menor. Todas passaram no critério de qualidade, e mesmo assim as razões mudaram até vinte e oito por cento. Ou seja, a configuração da medição muda o resultado.</aside>
 </section>

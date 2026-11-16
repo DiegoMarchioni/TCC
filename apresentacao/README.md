@@ -1,6 +1,6 @@
 # Apresentação da defesa
 
-17 slides de fala e 5 de apêndice (A1 a A5), em 1920×1080.
+20 slides de fala e 5 de apêndice (A1 a A5), em 1920×1080.
 
 | Arquivo | Para quê |
 |---|---|
@@ -14,8 +14,9 @@ O texto falado de cada slide, palavra por palavra, também está no
 [Guia 06](../guia-defesa-06-roteiro-falado.md), e o mapa de tempos, no
 [Guia 05](../guia-defesa-05-apresentacao.md). A versão de 12/11/2026 foi
 simplificada (menos nomes de tipos e funções e menos detalhes estatísticos na
-tela e na fala, com os mesmos números) e ganhou o slide 6, que explica a
-função `eval` com o código.
+tela e na fala, com os mesmos números) e ganhou mais código: o sumário (slide 2), os dois mecanismos no código do
+trabalho (slide 5), a função `eval` com handlers (slide 8) e o quarto efeito
+no código (slide 13).
 
 ## Como regerar o PDF
 
@@ -28,7 +29,7 @@ node apresentacao/ferramentas/render.js "$PWD/apresentacao/slides.html" apresent
 
 O segundo comando precisa do Playwright com o Chromium instalado
 (`npm install playwright` e `npx playwright install chromium`). Ele também
-grava um PNG por slide (`s01.png` a `s22.png`), que não são versionados.
+grava um PNG por slide (`s01.png` a `s25.png`), que não são versionados.
 
 ## Usando o PowerPoint
 

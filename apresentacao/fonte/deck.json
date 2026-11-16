@@ -9,15 +9,18 @@
   "cover": "cover",
   "order": [
     "cover",
+    "sumario",
     "problema",
-    "metodo",
     "qps",
+    "mecanismos",
+    "metodo",
     "caso-de-uso",
     "eval",
     "implementacoes",
     "codigo",
     "qp1",
     "qp2-qp3",
+    "acoplamento",
     "destaque",
     "tempo",
     "alocacao",
@@ -33,22 +36,26 @@
   ],
   "sections": {
     "s1": {
-      "description": "Abertura: o problema e como medir sem confundir mecanismo e runtime",
+      "description": "Introdução: o problema e as questões de pesquisa",
       "start": "cover"
     },
     "s2": {
-      "description": "Caso de uso, as quatro implementações e a verificação",
-      "start": "caso-de-uso"
+      "description": "Fundamentação: os dois mecanismos no código",
+      "start": "mecanismos"
     },
     "s3": {
+      "description": "Metodologia e implementação",
+      "start": "metodo"
+    },
+    "s4": {
       "description": "Resultados das quatro questões de pesquisa",
       "start": "qp1"
     },
-    "s4": {
-      "description": "Achados, literatura, conclusões e perguntas",
-      "start": "achados"
-    },
     "s5": {
+      "description": "Discussão, conclusões e perguntas",
+      "start": "literatura"
+    },
+    "s6": {
       "description": "Apêndice para a arguição",
       "start": "ap-tabela2"
     }

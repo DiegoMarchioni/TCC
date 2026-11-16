@@ -1,0 +1,56 @@
+<section id="acoplamento" data-transition="fade" style="background:#EFEBE3;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:36px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Resultados · QP2</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">O quarto efeito no código: o que muda</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:28px 28px">
+<div style="display:flex;gap:16px;align-items:center">
+<div style="width:20px;height:20px;background:#2A78D6;border-radius:4px"></div>
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">Handlers · composição run</p>
+</div>
+<div style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:20px;line-height:1.6;white-space:nowrap;color:#17212F">
+<p>&#160;&#160;run_state tbl (fun () -&gt;</p>
+<p style="background:#F8E1DA">-&#160;&#160;&#160;&#160;run_output_emit (fun () -&gt; run_exn (fun () -&gt; eval e)))</p>
+<p style="background:#DDEFE0">+&#160;&#160;&#160;&#160;run_output_emit (fun () -&gt;</p>
+<p style="background:#DDEFE0">+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<b>run_input</b> (fun () -&gt; run_exn (fun () -&gt; eval e))))</p>
+<p>&#160;</p>
+<p style="color:#646A78">&#160;&#160;(* handler novo, só adição *)</p>
+<p style="background:#DDEFE0">+ let run_input main = match_with main () {</p>
+<p style="background:#DDEFE0">+&#160;&#160;&#160;... | Input -&gt; Some (fun k -&gt;</p>
+<p style="background:#DDEFE0">+&#160;&#160;&#160;&#160;&#160;&#160;&#160;continue k (Some v)) ... }</p>
+</div>
+<p style="font-size:24px;line-height:1.4;color:#4A5160">A mesma troca em <b>run_acc</b>: <b>2 pontos</b>. O handler novo <b>run_input</b> é só adição, e a eval não muda.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:28px 28px">
+<div style="display:flex;gap:16px;align-items:center">
+<div style="width:20px;height:20px;background:#EB6834;border-radius:4px"></div>
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">Mônadas · tipo da pilha e run</p>
+</div>
+<div style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:20px;line-height:1.6;white-space:nowrap;color:#17212F">
+<p style="background:#F8E1DA">- type Interp a = ExceptT String (StateT Env IO) a</p>
+<p style="background:#DDEFE0">+ type Interp a =</p>
+<p style="background:#DDEFE0">+&#160;&#160;&#160;ExceptT String (StateT Env (<b>StateT [Int]</b> IO)) a</p>
+<p>&#160;</p>
+<p style="background:#F8E1DA">- run env e = runStateT (runExceptT (eval e)) env</p>
+<p style="background:#DDEFE0">+ run env e = do ...</p>
+<p style="background:#DDEFE0">+&#160;&#160;&#160;runStateT (runStateT (runExceptT (eval e)) env) xs</p>
+<p>&#160;</p>
+<p>&#160;&#160;ler = <b>lift (lift</b> (state proxima))</p>
+</div>
+<p style="font-size:24px;line-height:1.4;color:#4A5160"><b>2 pontos</b>: o tipo e o run. A leitura precisa de dois <b>lift</b> para chegar à camada nova.</p>
+</div>
+</div>
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;line-height:1.35;color:#17212F;width:1600px">Nas bases, imperativa e IORef, nenhuma linha existente muda: entra só uma função nova de leitura.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">13</p>
+<aside>(1:00 · acumulado 12:50) Âncora: nos mecanismos, o efeito novo mexe em código existente. Nas bases, não.
+
+Este é o código dessa mudança. À esquerda, os handlers. A eval não muda. O que muda é a composição que instala os handlers, que agora inclui o run_input. Isso acontece nas duas composições, por isso são dois pontos.
+
+À direita, as mônadas. O tipo da pilha ganha uma camada de estado para a entrada, e a função run precisa executar essa camada nova. Além disso, para ler da camada nova, o código usa dois lift, que sobem a operação até a camada certa.
+
+Nas bases, nenhuma linha existente mudou: entrou só uma função nova de leitura.
+
+[Mostre primeiro a linha vermelha e depois as verdes, em cada lado.]</aside>
+</section>

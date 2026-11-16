@@ -1,0 +1,38 @@
+<section id="mecanismos" data-transition="fade" style="background:#EFEBE3;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:40px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#646A78">Fundamentação</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#17212F">Os dois mecanismos no código do trabalho</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:28px 32px">
+<div style="display:flex;gap:16px;align-items:center">
+<div style="width:20px;height:20px;background:#EB6834;border-radius:4px"></div>
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">Mônadas · Monadic.hs (trecho)</p>
+</div>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:23px;line-height:1.55;white-space:nowrap;color:#17212F">type Env = Map String Int<br>type Interp a =<br>&#160;&#160;<span style="color:#B4441A;font-weight:600">ExceptT String (StateT Env IO)</span> a<br><br>eval (Var x) = do<br>&#160;&#160;env &lt;- <span style="color:#B4441A;font-weight:600">get</span><br>&#160;&#160;maybe (<span style="color:#B4441A;font-weight:600">throwError</span> (msgUnbound x)) return<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;(Map.lookup x env)</p>
+<p style="font-size:24px;line-height:1.4;color:#4A5160">Cada efeito é uma camada da pilha, e o tipo diz quais existem. <b>get</b> lê o estado e <b>throwError</b> lança o erro.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:28px 32px">
+<div style="display:flex;gap:16px;align-items:center">
+<div style="width:20px;height:20px;background:#2A78D6;border-radius:4px"></div>
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#646A78">Efeitos · interp_effects.ml (trecho)</p>
+</div>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:23px;line-height:1.55;white-space:nowrap;color:#17212F">type _ Effect.t +=<br>&#160;&#160;| <span style="color:#1F5FAF;font-weight:600">Get</span> : string -&gt; int option Effect.t<br>&#160;&#160;| <span style="color:#1F5FAF;font-weight:600">Set</span> : string * int -&gt; unit Effect.t<br>&#160;&#160;| <span style="color:#1F5FAF;font-weight:600">Fail</span> : string -&gt; 'a Effect.t<br>&#160;&#160;| <span style="color:#1F5FAF;font-weight:600">Output</span> : int -&gt; unit Effect.t<br><br><span style="color:#646A78">(* handler de estado, em run_state *)</span><br>| Get x -&gt; Some (fun k -&gt;<br>&#160;&#160;&#160;&#160;<span style="color:#1F5FAF;font-weight:600">continue</span> k (Hashtbl.find_opt tbl x))</p>
+<p style="font-size:24px;line-height:1.4;color:#4A5160">Cada efeito é uma operação declarada. O handler decide o que ela faz e retoma a computação com <b>continue</b>.</p>
+</div>
+</div>
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;line-height:1.35;color:#17212F;width:1600px">No Haskell, o efeito está no tipo da computação. No OCaml, está numa operação que o handler interpreta.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">5</p>
+<aside>(1:10 · acumulado 4:10) Âncora: no Haskell o efeito está no tipo, no OCaml numa operação que o handler interpreta.
+
+Antes do método, vale ver os dois mecanismos como eles aparecem no meu código.
+
+À esquerda, o Haskell. O tipo Interp é a pilha: uma camada de exceção, sobre uma de estado, sobre IO. Na eval, o caso da variável lê o estado com get e, se a variável não existe, lança o erro com throwError. O efeito está no tipo da função.
+
+À direita, o OCaml. Primeiro eu declaro as operações: Get, Set, Fail e Output. Embaixo está o handler de estado. Quando o código pede Get, ele procura a variável na tabela e retoma a computação com continue, entregando o valor.
+
+A diferença central é esta: no Haskell, quem decide o efeito é o tipo. No OCaml, é quem trata a operação.
+
+[Aponte o tipo Interp ao falar da pilha e a linha do continue ao falar do handler.]</aside>
+</section>

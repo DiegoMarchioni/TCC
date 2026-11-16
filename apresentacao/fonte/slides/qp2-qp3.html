@@ -60,14 +60,14 @@
 </div>
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
-<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">10</p>
-<aside>(1:20 · acumulado 10:50) Âncora: o custo de escrever está no código em volta da eval.
+<p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">12</p>
+<aside>(1:10 · acumulado 11:50) Âncora: o custo de escrever está no código em volta da eval.
 
 Esse outro lugar é o código em volta da eval.
 
 No OCaml, a versão com handlers tem sessenta e sete linhas de infraestrutura, contra três da base. É o código que instala os handlers e liga um ao outro. Dezoito dessas linhas existem só para os testes. No Haskell, quase não há diferença: vinte linhas na versão com mônadas e vinte e duas na base.
 
-Para acrescentar um quarto efeito, só as versões com mecanismo precisaram mudar código existente: dois pontos em cada. Nos handlers, os dois lugares onde eles são instalados. Nas mônadas, o tipo da pilha e a função que executa. As bases só ganharam uma função nova.
+Para acrescentar um quarto efeito, só as versões com mecanismo precisaram mudar código existente: dois pontos em cada. As bases só ganharam uma função nova. O próximo slide mostra essas mudanças no código.
 
 Em troca, só os handlers têm reaproveitamento: dois handlers são usados em mais de um lugar. Isso permite trocar o que a saída faz sem mexer na eval.</aside>
 </section>
