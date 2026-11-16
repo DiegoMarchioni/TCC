@@ -4,7 +4,7 @@
 
 | Arquivo | Para quê |
 |---|---|
-| `dissertacao/defesa.pdf` | **versão no estilo de apresentação de dissertação**: fundo branco, rótulo de seção em laranja, título grande sem serifa (Open Sans), rodapé com linha fina, tabelas com separadores sutis, código em fonte monoespaçada sobre fundo cinza e slides de transição entre as seções |
+| `dissertacao/defesa.pdf` | **versão no estilo de apresentação de dissertação**: fundo branco, rótulo de seção em laranja, título grande sem serifa (Open Sans), rodapé com linha fina, tabelas com separadores sutis, código em fonte monoespaçada sobre fundo cinza com um comentário em cada linha, e slides de transição entre as seções |
 | `dissertacao/defesa-notas.pdf` | a mesma versão com as notas do apresentador ao lado de cada slide |
 | `dissertacao/defesa.tex` | fonte dessa versão |
 | `beamer/defesa.pdf` | **versão acadêmica em LaTeX Beamer** (tema Madrid), feita com a skill `.claude/skills/beamer`: sumário e roteiro a cada seção, tabelas `booktabs`, gráficos `pgfplots`, código do trabalho com `listings`, referências e slides de reserva |

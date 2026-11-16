@@ -47,6 +47,7 @@
 \definecolor{linha}{HTML}{D6D6D6}
 \definecolor{base}{HTML}{B5B5B5}      % linhas de base
 \definecolor{codigofundo}{HTML}{F3F3F3}
+\definecolor{comentario}{HTML}{6E6E6E}
 
 \newcommand{\oc}[1]{\textcolor{marinho}{#1}}
 \newcommand{\hs}[1]{\textcolor{rosa}{#1}}
@@ -115,8 +116,11 @@
   backgroundcolor=\color{codigofundo}, frame=none,
   xleftmargin=2mm, xrightmargin=2mm, framexleftmargin=2mm, framexrightmargin=2mm,
   framextopmargin=1.5mm, framexbottommargin=1.5mm, aboveskip=1mm, belowskip=1mm,
-  commentstyle=\color{rodape}\itshape,
+  commentstyle=\color{comentario}\itshape,
+  escapeinside={<@}{@>},
 }
+% Comentário em cada linha de código, em cinza
+\newcommand{\cm}[1]{\textcolor{comentario}{\itshape #1}}
 \lstdefinelanguage{OCamlTCC}{
   morekeywords={let,rec,function,match,with,type,fun,in},
   keywordstyle=\color{marinho},
@@ -269,38 +273,43 @@
 \transicao{02}{Fundamentação}
 \section{Fundamentação}
 
-\begin{frame}[fragile]{Os dois mecanismos no código}
-  No Haskell o efeito está no \textbf{tipo}. No OCaml, numa \textbf{operação} que o handler interpreta.
+\begin{frame}[fragile]{Mônadas no código}
+  No Haskell, o efeito aparece no \textbf{tipo} da função. Trecho de \texttt{Monadic.hs}:
   \vskip3mm
-  \begin{columns}[T]
-    \column{0.48\textwidth}
 \begin{lstlisting}[language=HaskellTCC]
-type Env = Map String Int
-type Interp a =
-  ExceptT String (StateT Env IO) a
+type Env = Map String Int            <@\cm{-{}- o estado: cada variável com o seu valor}@>
+type Interp a =                      <@\cm{-{}- o tipo de toda computação do interpretador}@>
+  ExceptT String (StateT Env IO) a   <@\cm{-{}- é uma pilha: exceção, estado e IO}@>
 
-eval (Var x) = do
-  env <- get
-  maybe (throwError (msgUnbound x))
-        return (Map.lookup x env)
+eval (Var x) = do                    <@\cm{-{}- caso Var: ler o valor da variável x}@>
+  env <- get                         <@\cm{-{}- get lê o estado (camada StateT)}@>
+  maybe (throwError (msgUnbound x))  <@\cm{-{}- se x não está no Map, lança o erro (ExceptT)}@>
+        return (Map.lookup x env)    <@\cm{-{}- busca x no Map e, se achar, devolve o valor}@>
 \end{lstlisting}
-    \legenda{\textbf{Mônadas}, \texttt{Monadic.hs}: \texttt{get} lê o estado e \texttt{throwError} lança o erro}
-    \column{0.48\textwidth}
-\begin{lstlisting}[language=OCamlTCC]
-type _ Effect.t +=
-  | Get : string -> int option Effect.t
-  | Set : string * int -> unit Effect.t
-  | Fail : string -> 'a Effect.t
-  | Output : int -> unit Effect.t
-(* handler de estado *)
-| Get x -> Some (fun k ->
-    continue k (Hashtbl.find_opt tbl x))
-\end{lstlisting}
-    \legenda{\textbf{Efeitos algébricos}, \texttt{interp\_effects.ml}: o handler responde e retoma com \texttt{continue}}
-  \end{columns}
+  \legenda{A pilha se lê de fora para dentro: \texttt{ExceptT} envolve \texttt{StateT}, que envolve \texttt{IO}}
   \note{\begin{itemize}
-    \item Interp é a pilha: exceção sobre estado sobre IO.
-    \item OCaml: declara Get, Set, Fail e Output. O handler atende Get e retoma com continue.
+    \item Âncora: no Haskell o efeito está no tipo.
+    \item Ler a pilha de fora para dentro. get lê o estado, throwError lança o erro.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}[fragile]{Efeitos algébricos no código}
+  No OCaml, o código \textbf{pede} a operação e um \textbf{handler} decide o que ela faz. Trechos de \texttt{interp\_effects.ml}:
+  \vskip3mm
+\begin{lstlisting}[language=OCamlTCC]
+type _ Effect.t +=                        <@\cm{(* declara as operações de efeito *)}@>
+  | Get : string -> int option Effect.t   <@\cm{(* lê uma variável, que pode não existir *)}@>
+  | Set : string * int -> unit Effect.t   <@\cm{(* guarda um valor numa variável *)}@>
+  | Fail : string -> 'a Effect.t          <@\cm{(* interrompe com uma mensagem de erro *)}@>
+  | Output : int -> unit Effect.t         <@\cm{(* mostra um valor na saída *)}@>
+
+(* dentro do handler de estado, run_state *)
+| Get x -> Some (fun k ->                 <@\cm{(* atende Get x. k é o programa parado *)}@>
+    continue k (Hashtbl.find_opt tbl x))  <@\cm{(* busca x e retoma o programa com o valor *)}@>
+\end{lstlisting}
+  \note{\begin{itemize}
+    \item Âncora: no OCaml o efeito é uma operação que o handler interpreta.
+    \item k é a continuação: o resto do programa, parado no ponto do perform.
   \end{itemize}}
 \end{frame}
 
@@ -378,61 +387,64 @@ type _ Effect.t +=
 \begin{frame}[fragile]{A função eval}
   A \texttt{eval} recebe uma expressão e calcula o seu valor. Os efeitos acontecem dentro dela.
   \vskip3mm
-  \begin{columns}[T]
-    \column{0.48\textwidth}
 \begin{lstlisting}[language=OCamlTCC]
-let rec eval = function
-  | Num n -> n
-  | Var x -> (
-      match perform (Get x) with
-      | Some v -> v
-      | None -> perform (Fail ...))
-  | Add (a, b) ->
-      let x = eval a in
-      let y = eval b in
-      x + y
+let rec eval = function              <@\cm{(* recebe uma expressão, devolve um int *)}@>
+  | Num n -> n                       <@\cm{(* número: o valor é o próprio número *)}@>
+  | Var x -> (                       <@\cm{(* variável: ler o valor de x *)}@>
+      match perform (Get x) with     <@\cm{(* pede o valor de x ao handler de estado *)}@>
+      | Some v -> v                  <@\cm{(* x existe: o resultado é v *)}@>
+      | None -> perform (Fail ...))  <@\cm{(* x não existe: pede o erro ao handler *)}@>
+  | Add (a, b) ->                    <@\cm{(* soma: avaliar os dois lados *)}@>
+      let x = eval a in              <@\cm{(* primeiro o lado esquerdo *)}@>
+      let y = eval b in              <@\cm{(* depois o direito, em ordem fixa *)}@>
+      x + y                          <@\cm{(* devolve a soma dos dois *)}@>
 \end{lstlisting}
-    \legenda{Trecho de \texttt{interp\_effects.ml}}
-    \column{0.48\textwidth}
-    \textbf{Exemplo:} $2 + n$, com $n = 3$
-    \begin{enumerate}
-      \item \texttt{Add}: avalia os dois lados
-      \item \texttt{Num 2}: devolve $2$
-      \item \texttt{Var "n"}: pede $n$ com \texttt{perform}, o handler devolve $3$
-      \item \texttt{x + y}: devolve $5$
-    \end{enumerate}
-  \end{columns}
+  \legenda{Trecho de \texttt{interp\_effects.ml}. \texttt{Mul}, \texttt{Div}, \texttt{Let}, \texttt{Seq} e \texttt{Print} seguem a mesma ideia}
   \note{\begin{itemize}
-    \item Seguir os passos 1 a 4 apontando a linha de cada caso.
-    \item Legibilidade mede dentro da eval. Infraestrutura é o código em volta.
+    \item Âncora: a eval recebe uma expressão e calcula o valor.
+    \item Ler os comentários de cima para baixo. Legibilidade mede dentro da eval.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}{Exemplo: avaliando 2 + \textit{n}, com \textit{n} = 3}
+  \begin{center}\footnotesize
+  \begin{tabular}{cL{4.9cm}L{4.9cm}c}
+    \topo
+    \textbf{Passo} & \textbf{Chamada} & \textbf{O que acontece} & \textbf{Resultado} \\
+    \meio
+    1 & \texttt{eval (Add (Num 2, Var "n"))} & caso \texttt{Add}: avalia os dois lados & – \\ \sep
+    2 & \texttt{eval (Num 2)} & caso \texttt{Num}: o valor é o próprio número & 2 \\ \sep
+    3 & \texttt{eval (Var "n")} & \texttt{perform (Get "n")}: o handler lê \textit{n} e retoma com o valor & 3 \\ \sep
+    4 & \texttt{x + y} & soma os dois lados & \vd{\textbf{5}} \\
+    \fim
+  \end{tabular}
+  \end{center}
+  \vskip1mm
+  O efeito acontece no passo 3: a \texttt{eval} pede, o handler responde e a \texttt{eval} continua de onde parou.
+  \note{\begin{itemize}
+    \item Seguir os passos 1 a 4 apontando a linha do slide anterior.
   \end{itemize}}
 \end{frame}
 
 \begin{frame}[fragile]{Mesma estrutura, outro mecanismo}
-  Cada operação direta da base vira uma operação de efeito. O resto é igual, linha por linha.
-  \vskip3mm
-  \begin{columns}[T]
-    \column{0.48\textwidth}
-\begin{lstlisting}[language=OCamlTCC]
-| Var x -> (
-    match perform (Get x) with
-    | Some v -> v
-    | None -> perform (Fail
-        (msg_unbound x)))
+  \noindent{\footnotesize\oc{\textbf{Handlers}}, \texttt{interp\_effects.ml}\par}
+\begin{lstlisting}[language=OCamlTCC,basicstyle=\ttfamily\fontsize{7.2}{8.9}\selectfont\color{texto}]
+| Var x -> (                    <@\cm{(* caso Var: ler a variável x *)}@>
+    match perform (Get x) with  <@\cm{(* pede x ao handler: operação de efeito *)}@>
+    | Some v -> v               <@\cm{(* achou: devolve v *)}@>
+    | None -> perform (Fail     <@\cm{(* não achou: pede o erro ao handler *)}@>
+        (msg_unbound x)))       <@\cm{(* mensagem de erro com o nome de x *)}@>
 \end{lstlisting}
-    \legenda{\oc{\textbf{Handlers}}, \texttt{interp\_effects.ml}}
-    \column{0.48\textwidth}
-\begin{lstlisting}[language=OCamlTCC]
-| Var x -> (
-    match Hashtbl.find_opt env x with
-    | Some v -> v
-    | None -> raise (Runtime_error
-        (msg_unbound x)))
+  \vskip1.5mm
+  {\footnotesize\textbf{Imperativa}, \texttt{interp\_imp.ml}\par}
+\begin{lstlisting}[language=OCamlTCC,basicstyle=\ttfamily\fontsize{7.2}{8.9}\selectfont\color{texto}]
+| Var x -> (                           <@\cm{(* caso Var: ler a variável x *)}@>
+    match Hashtbl.find_opt env x with  <@\cm{(* lê x direto da tabela, sem efeito *)}@>
+    | Some v -> v                      <@\cm{(* achou: devolve v *)}@>
+    | None -> raise (Runtime_error     <@\cm{(* não achou: lança a exceção nativa *)}@>
+        (msg_unbound x)))              <@\cm{(* a mesma mensagem de erro *)}@>
 \end{lstlisting}
-    \legenda{\textbf{Imperativa}, \texttt{interp\_imp.ml}}
-  \end{columns}
-  \vskip3mm
-  A diferença medida é só o mecanismo, porque a estrutura de dados é a mesma (\texttt{Hashtbl}).
+  \legenda{Só a 2ª e a 4ª linha mudam: a diferença medida é o mecanismo, com a mesma \texttt{Hashtbl}}
   \note{\begin{itemize}
     \item perform no lugar da leitura direta, perform Fail no lugar de raise.
   \end{itemize}}
@@ -566,32 +578,38 @@ let rec eval = function
   \end{itemize}}
 \end{frame}
 
-\begin{frame}[fragile]{QP2: inserindo um quarto efeito}
-  Ao inserir a leitura de entrada (\texttt{Input}), só os mecanismos mudam código existente.
-  \vskip2.5mm
-  \begin{columns}[T]
-    \column{0.48\textwidth}
+\begin{frame}[fragile]{QP2: o quarto efeito nos handlers}
+  Para ler a entrada (efeito \texttt{Input}), a composição \texttt{run} passa a instalar mais um handler:
+  \vskip3mm
 \begin{lstlisting}[language=DiffTCC]
-  run_state tbl (fun () ->
-- run_output_emit (fun () ->
--   run_exn (fun () -> eval e)))
-+ run_output_emit (fun () ->
-+   run_input (fun () ->
-+     run_exn (fun () -> eval e))))
+  run_state tbl (fun () ->           <@\cm{(* instala o handler de estado (não muda) *)}@>
+- run_output_emit (fun () ->         <@\cm{(* antes: o handler de saída envolvia *)}@>
+-   run_exn (fun () -> eval e)))     <@\cm{(* o de erro, que envolvia a eval *)}@>
++ run_output_emit (fun () ->         <@\cm{(* agora: o handler de saída envolve *)}@>
++   run_input (fun () ->             <@\cm{(* o novo handler de entrada, que envolve *)}@>
++     run_exn (fun () -> eval e))))  <@\cm{(* o de erro, que envolve a eval *)}@>
 \end{lstlisting}
-    \legenda{\oc{\textbf{Handlers}}: composição \texttt{run} (e \texttt{run\_acc})}
-    \column{0.48\textwidth}
-\begin{lstlisting}[language=DiffTCC]
-- ExceptT String (StateT Env IO)
-+ ExceptT String (StateT Env
-+   (StateT [Int] IO))
-- run: runStateT (runExceptT ...)
-+ run: runStateT (runStateT ...)
-  ler = lift (lift (state ...))
-\end{lstlisting}
-    \legenda{\hs{\textbf{Mônadas}}: tipo da pilha e \texttt{run}}
-  \end{columns}
+\legenda{\textcolor{rosa}{\textbf{-}} linha removida \qquad \textcolor{verdeazul}{\textbf{+}} linha adicionada}
   \vskip2mm
+  {\small A mesma mudança acontece em \texttt{run\_acc}: \oc{\textbf{2 pontos de modificação}}. Na versão imperativa, a leitura é uma função nova e nada do que existia muda: \textbf{0 pontos}.\par}
+  \note{\begin{itemize}
+    \item Âncora: nos handlers, o efeito novo precisa ser instalado onde os outros já são.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}[fragile]{QP2: o quarto efeito nas mônadas}
+  No Haskell, o efeito novo entra no tipo da pilha, e quem executa a pilha muda junto:
+  \vskip3mm
+\begin{lstlisting}[language=DiffTCC]
+- ExceptT String (StateT Env IO)    <@\cm{-{}- antes: a pilha tinha exceção, estado e IO}@>
++ ExceptT String (StateT Env        <@\cm{-{}- agora: entra uma segunda camada de estado}@>
++   (StateT [Int] IO))              <@\cm{-{}- com a lista de entradas ainda não lidas}@>
+- run = runStateT (runExceptT ...)  <@\cm{-{}- antes: run executava a pilha antiga}@>
++ run = runStateT (runStateT ...)   <@\cm{-{}- agora: run executa também a camada nova}@>
++ ler = lift (lift (state ...))     <@\cm{-{}- função nova: desce duas camadas com lift}@>
+\end{lstlisting}
+\legenda{\textcolor{rosa}{\textbf{-}} linha removida \qquad \textcolor{verdeazul}{\textbf{+}} linha adicionada}
+  \vskip1mm
   \begin{center}\small
   \begin{tabular}{lcccc}
     \topo
@@ -602,7 +620,7 @@ let rec eval = function
   \end{tabular}
   \end{center}
   \note{\begin{itemize}
-    \item Âncora: nos mecanismos o efeito novo mexe em código existente, nas bases não.
+    \item Tipo da pilha e run mudam. A leitura usa dois lift porque o mtl alcança uma só camada de estado.
   \end{itemize}}
 \end{frame}
 
