@@ -24,3 +24,13 @@ arquivo.
   `LICENSE` do repositório de origem é MIT, e é ele que vale.
 - Dependências da pptx: `pptxgenjs` (npm), `python-pptx`, `defusedxml`,
   `lxml` e `Pillow` (pip), LibreOffice e `pdftoppm` (Poppler).
+
+## Onde foram usadas
+
+A versão PowerPoint da defesa, `apresentacao/defesa.pptx`, foi gerada com as
+duas, a partir do mesmo conteúdo dos slides em `apresentacao/fonte/`. O
+gerador está em `apresentacao/ferramentas/gerar_pptx.js`. Da academic-pptx
+vieram os títulos que dizem a conclusão de cada slide, a trilha de seções,
+as citações no slide, o slide de referências e o fim nas conclusões. Da pptx
+vieram o tema, os layouts e as seções do arquivo, os gráficos nativos e a
+validação e a conferência visual de cada slide.

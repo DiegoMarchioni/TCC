@@ -5,10 +5,12 @@
 | Arquivo | Para quê |
 |---|---|
 | `slides.pdf` | apresentar: abre em qualquer leitor de PDF, uma página por slide |
+| `defesa.pptx` | versão PowerPoint, editável, com notas do apresentador em cada slide e gráficos nativos; segue as skills de `.claude/skills/` (títulos que dizem a conclusão de cada slide, citações no slide, referências, termina nas conclusões) |
 | `slides.html` | abrir no navegador. As fontes vêm do Google Fonts, então sem internet o texto aparece em Arial e Georgia |
 | `fonte/deck.json` | ordem dos slides e fontes usadas |
 | `fonte/slides/*.html` | um arquivo por slide. As **notas do apresentador** estão dentro de `<aside>`, no fim de cada arquivo |
 | `ferramentas/montar.py`, `ferramentas/render.js` | geram `slides.html` e `slides.pdf` a partir da fonte |
+| `ferramentas/gerar_pptx.js` | gera `defesa.pptx`; as notas vêm dos mesmos arquivos da fonte |
 
 O texto falado de cada slide, palavra por palavra, também está no
 [Guia 06](../guia-defesa-06-roteiro-falado.md), e o mapa de tempos, no
@@ -31,9 +33,19 @@ O segundo comando precisa do Playwright com o Chromium instalado
 (`npm install playwright` e `npx playwright install chromium`). Ele também
 grava um PNG por slide (`s01.png` a `s25.png`), que não são versionados.
 
+## Como regerar o PowerPoint
+
+Na raiz do repositório, com o `pptxgenjs` instalado (`npm install pptxgenjs`):
+
+```sh
+NODE_PATH=<pasta node_modules com o pptxgenjs> node apresentacao/ferramentas/gerar_pptx.js
+python3 .claude/skills/pptx/scripts/office/validate.py apresentacao/defesa.pptx
+```
+
+O segundo comando é a validação da skill pptx.
+
 ## Usando o PowerPoint
 
 O PDF abre direto no modo de apresentação de qualquer leitor. Para ter as notas
-do apresentador na tela do notebook, use a versão online dos slides (o link
-privado está com você) e baixe como `.pptx` pelo menu da página: as notas vão
-junto.
+do apresentador na tela do notebook, abra o `defesa.pptx` no PowerPoint (ou no
+Google Slides) e use o modo do apresentador.
