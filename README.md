@@ -8,6 +8,7 @@ Diego Marchioni · orientador: Marco Rodrigo · Ciência da Computação, PUC Mi
 | `medir.sh` | mede o artigo contra o Regulamento: páginas, resumo na 1ª página, pendências impressas (precisa de `sbc-template.sty` e `sbc.bst` do modelo SBC) |
 | `codigo/` | implementações, testes, *harnesses*, métricas, resultados e scripts ([README](codigo/README.md)) |
 | `apresentacao/` | os slides da defesa: `slides.pdf` para apresentar, `slides.html` para abrir no navegador, a fonte de cada slide com as notas do apresentador ([README](apresentacao/README.md)) |
+| `.claude/skills/` | skills do Claude usadas na apresentação (academic-pptx e pptx), com origem e licença ([README](.claude/skills/README.md)) |
 | `codigo/resultados/figuras/` | figuras da apresentação (SVG e PNG), com os números em `dados.md` |
 | `guia-defesa-0*.md` | guias de estudo para a banca: 01 Introdução, 02 Fundamentação, 03 Trabalhos Relacionados, 04 Metodologia, código e resultados, 05 Roteiro da apresentação e arguição, 06 Roteiro falado (o texto de cada slide e as respostas da arguição) |
 | `revisao-completa.md` | revisão do artigo, com a conformidade ao Regulamento e as pendências |
