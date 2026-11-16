@@ -1,6 +1,6 @@
 # Guia de defesa, parte 4: Metodologia, Implementações, Resultados e Conclusões
 
-*Escrito em 09/11/2026; atualizado em 10/11/2026 com os resultados da campanha
+*Escrito em 09/11/2026. Atualizado em 10/11/2026 com os resultados da campanha
 final.* Cobre as Seções 4 a 7 do `artigo.tex` e o código em `codigo/`. **O
 código deste repositório foi gerado com assistência de IA, e a campanha foi
 executada pela ferramenta numa máquina virtual de nuvem.** Na banca, você
@@ -37,7 +37,7 @@ saída (traço).
   simplificação da linguagem, **não** imposição da teoria. O escopo léxico seria
   exprimível com as mesmas operações. É limitação declarada.
 - **Abortamento total**: sem condicional e sem `try`, um erro encerra a
-  expressão. O caso de uso exercita retomar uma vez e não retomar; não exercita
+  expressão. O caso de uso exercita retomar uma vez e não retomar. Não exercita
   retomada múltipla.
 - **Semântica formal**: em `codigo/docs/semantica.md` (contextos de avaliação,
   regras, propriedades) e **executável** em `codigo/referencia/semantica.py`,
@@ -48,33 +48,33 @@ saída (traço).
   terminal tem passo. **Terminação**: cada passo reduz o número de nós que não
   são literais.
 - **𝓔₆₄**: pares (e, σ₀) cuja redução fica no inteiro de 63 bits do OCaml. O par
-  inclui σ₀ porque `Var` lê valores dele (o texto do artigo define só sobre e;
+  inclui σ₀ porque `Var` lê valores dele (o texto do artigo define só sobre e,
   se perguntarem, a definição precisa é a do `semantica.md`).
 - **Equivalência funcional**: (i) mesmo inteiro, (ii) mesmo estado final, (iii)
-  mesmo traço, na ordem, (iv) mesma mensagem de erro. A suíte **testa** isso; não
+  mesmo traço, na ordem, (iv) mesma mensagem de erro. A suíte **testa** isso. Não
   **demonstra**.
 
 ---
 
 ## 2. Seção 4.2: métricas
 
-Definições exatas em `codigo/docs/protocolo-metricas.md`; ferramentas de AST em
+Definições exatas em `codigo/docs/protocolo-metricas.md`. Ferramentas de AST em
 `ocaml/tools/metricas_ocaml.ml` e `metricas-hs/MetricasHs.hs`.
 
 | Métrica | Como é contada |
 |---|---|
 | LOC de `eval` | linhas com ao menos um *token* do léxico do compilador |
 | Operações de efeito (OCaml) | `perform`, `Hashtbl.*`, `raise`, `!emit` |
-| Operações de efeito (Haskell) | cada vinculação monádica (comandos de `do` menos o último; `>>=`, `>>`) + `get`, `modify'`, `throwError`, `readIORef`, `modifyIORef'`, `throwIO`, `emit`… |
-| Aninhamento | despacho por construtor = 1; `match`/`case`/`if`/`try`/funções incrementam; `let` e `do` não (alinhado à *Cognitive Complexity*) |
-| *Boilerplate* | linhas fora de `eval` classificadas `B`/`N` por **regra mecânica** sobre os *tokens* do compilador: `N` se a linha tem um marcador da semântica de um efeito (`Hashtbl.f`, `!emit`, `:=`, `Ok`/`Error`, `discontinue`, declaração `\| Op :` no OCaml; `Map.f`, `emitRef`, `Left`/`Right`, `state`, `type Env` no Haskell), `B` nos outros casos. Auditoria linha a linha em `resultados/boilerplate-regra/*.csv` |
+| Operações de efeito (Haskell) | cada vinculação monádica (comandos de `do` menos o último, `>>=`, `>>`) + `get`, `modify'`, `throwError`, `readIORef`, `modifyIORef'`, `throwIO`, `emit`… |
+| Aninhamento | despacho por construtor = 1. `match`/`case`/`if`/`try`/funções incrementam. `let` e `do` não (alinhado à *Cognitive Complexity*) |
+| *Boilerplate* | linhas fora de `eval` classificadas `B`/`N` por **regra mecânica** sobre os *tokens* do compilador: `N` se a linha tem um marcador da semântica de um efeito (`Hashtbl.f`, `!emit`, `:=`, `Ok`/`Error`, `discontinue`, declaração `\| Op :` no OCaml. `Map.f`, `emitRef`, `Left`/`Right`, `state`, `type Env` no Haskell), `B` nos outros casos. Auditoria linha a linha em `resultados/boilerplate-regra/*.csv` |
 | Reutilização | para cada *handler*/camada, número de declarações de topo que o instalam, menos 1, somado |
 | Pontos de modificação | declarações de topo preexistentes cujo texto mudou ao inserir `Input` |
 
 **Por que só comparação vertical:** as listas de operações diferem entre as
 linguagens (o sequenciamento é explícito só em Haskell), e o idioma de cada
 linguagem pesa na LOC. Dentro de uma linguagem, as duas versões usam as
-**mesmas construções** em cada braço (`maybe`, `when`, `$!`; `match`, `let`), e
+**mesmas construções** em cada braço (`maybe`, `when`, `$!`, `match`, `let`), e
 a diferença fica na operação de efeito.
 
 **Resultados mecânicos deste código** (`make metricas`):
@@ -103,9 +103,9 @@ e dentro dela na base.
 | `IORef` | 26 | 22 | 0 |
 
 **Como defender a regra mecânica:** ela é reprodutível por terceiros e não
-depende de quem conta; cada linha tem o motivo gravado no CSV. Se a banca
+depende de quem conta. Cada linha tem o motivo gravado no CSV. Se a banca
 discordar de uma linha, abra o CSV e mostre o marcador. No Haskell, quase tudo é
-cabeçalho de módulo e importação (comum às duas versões); o que sobra é o
+cabeçalho de módulo e importação (comum às duas versões). O que sobra é o
 sinônimo da pilha e o executor (mônadas) contra o tipo da exceção, a instância
 `Exception` e o `try` (base). A dupla contagem humana continua disponível como
 validação (`python3 scripts/metricas.py concordancia`).
@@ -117,14 +117,14 @@ validação (`python3 scripts/metricas.py concordancia`).
 | Decisão | Por quê |
 |---|---|
 | Carga gerada uma vez, fora da região medida | não medir o gerador |
-| Três *handlers* instalados **por expressão** | o de exceção precisa ser (senão o 1º erro encerra a carga); os outros dois vão juntos. **Três *fibers* por expressão** |
-| Arith como controle | **em OCaml**: nenhum `perform`; mede o custo de *estar* sob o mecanismo. **Em Haskell não é controle**: cada `<-` é um *bind* da pilha, e a própria métrica conta isso como operação |
-| Ambiente OCaml limpo uma vez antes da bateria | State é idempotente (o prefixo revincula as 500 variáveis); os demais não leem variáveis |
-| Ambiente Haskell recriado por execução (`perRunEnv`, nas duas versões) | o `Map` é imutável e o `IORef` precisa nascer vazio; fora da região medida |
-| `Sys.opaque_identity`; `$!`, `modify'`, `Map.Strict` | o otimizador não elimina trabalho de um lado só; mesma disciplina de *strictness* nos dois lados |
+| Três *handlers* instalados **por expressão** | o de exceção precisa ser (senão o 1º erro encerra a carga). Os outros dois vão juntos. **Três *fibers* por expressão** |
+| Arith como controle | **em OCaml**: nenhum `perform`. Mede o custo de *estar* sob o mecanismo. **Em Haskell não é controle**: cada `<-` é um *bind* da pilha, e a própria métrica conta isso como operação |
+| Ambiente OCaml limpo uma vez antes da bateria | State é idempotente (o prefixo revincula as 500 variáveis). Os demais não leem variáveis |
+| Ambiente Haskell recriado por execução (`perRunEnv`, nas duas versões) | o `Map` é imutável e o `IORef` precisa nascer vazio. Fora da região medida |
+| `Sys.opaque_identity`. `$!`, `modify'`, `Map.Strict` | o otimizador não elimina trabalho de um lado só. Mesma disciplina de *strictness* nos dois lados |
 | Ordem alternada entre cenários | a deriva térmica não favorece sistematicamente um lado |
 | Pré-condição dentro do *harness* | mecanismo e base precisam dar a mesma soma, os mesmos erros e o mesmo traço sobre a carga, ou a medição aborta |
-| `-O3` em **todas** as bibliotecas OCaml; `-O2` no Haskell | flags idênticas dentro de cada linguagem |
+| `-O3` em **todas** as bibliotecas OCaml. `-O2` no Haskell | flags idênticas dentro de cada linguagem |
 | Ambiente registrado em `ambiente.md` | CPU, SO, *governor*, *turbo*, afinidade, virtualização, quem executou e versões: a campanha documenta onde rodou |
 | R² do tempo ≥ 0,95, senão remede o **par** | `scripts/repetir_r2.py`, chamado pela campanha: até 3 tentativas, mesma ordem do cenário, descartes guardados em `descartados/` e registrados em `ambiente.md`. Na campanha final, um par (OCaml/State/semente 43, R² 0,949) foi remedido (0,962) |
 
@@ -133,7 +133,7 @@ cara **deflaciona** a razão. A base Haskell (`Map`, logarítmico) é mais cara 
 a OCaml (`Hashtbl`) em State. Por isso o confronto entre linguagens é
 exploratório.
 
-**Sementes:** as três geram **cargas** diferentes; a dispersão entre elas mede
+**Sementes:** as três geram **cargas** diferentes. A dispersão entre elas mede
 insensibilidade à carga, não ruído de medição. O ruído é tratado pelas
 reamostragens de cada ferramenta.
 
@@ -150,14 +150,14 @@ conservador: [M_inf/B_sup ; M_sup/B_inf].
 
 - Sintaxe, mensagens canônicas, `emit` (referência a função), gerador e
   serialização com *hash* FNV-1a.
-- **Gerador replicado três vezes** (Python de referência, OCaml, Haskell); os
+- **Gerador replicado três vezes** (Python de referência, OCaml, Haskell). Os
   *hashes* das **12 cargas** (4 cenários × 3 sementes) coincidem bit a bit, e o
   teste de conformidade confere todas, não só uma amostra.
-- **Armadilha que o teste pega:** em OCaml, `land` tem a precedência de `*`;
+- **Armadilha que o teste pega:** em OCaml, `land` tem a precedência de `*`.
   `a + 12345 land m` é `a + (12345 land m)`. Por isso os parênteses no LCG.
 - **Ordem dos sorteios:** OCaml não especifica a ordem de avaliação dos
   argumentos, então os sorteios são feitos em `let` explícitos (esquerda antes
-  da direita); em Haskell, a notação `do` sequencia.
+  da direita). Em Haskell, a notação `do` sequencia.
 
 ### *Handlers* (`ocaml/effects/interp_effects.ml`)
 
@@ -196,15 +196,15 @@ conservador: [M_inf/B_sup ; M_sup/B_inf].
 ### Base `IORef` (`haskell/src/Interp/IORefBase.hs`)
 
 O **mesmo** `Map String Int` dentro de um `IORef` (e não uma tabela de
-espalhamento), para a razão isolar o mecanismo e não a estrutura de dados;
-`throwIO`; as mesmas construções da versão monádica.
+espalhamento), para a razão isolar o mecanismo e não a estrutura de dados.
+`throwIO`. As mesmas construções da versão monádica.
 
 ### Oráculo (`ocaml/test/test_oracle.ml`, `haskell/test/Spec.hs`, `shared/conformance.json`)
 
 - 28 casos × 2 implementações + 5 conferências = **61 por linguagem**.
-- Os quatro grupos que travam decisões: divisão truncada com sinais opostos;
-  ordem de avaliação com `Print` nos dois operandos; persistência e
-  revinculação de `Let`; estado e saída sobrevivendo ao erro.
+- Os quatro grupos que travam decisões: divisão truncada com sinais opostos.
+  Ordem de avaliação com `Print` nos dois operandos. Persistência e
+  revinculação de `Let`. Estado e saída sobrevivendo ao erro.
 - **Testes de mutação** (`scripts/mutantes.py`): cada decisão é revertida numa
   cópia e o caso que a trava falha. **8/8 detectados.** Esse é o argumento
   empírico da frase "cada um transforma uma decisão sutil em verificação
@@ -220,7 +220,7 @@ espalhamento), para a razão isolar o mecanismo e não a estrutura de dados;
 | `IORef` | `ler` lê a referência global | 0 | 1 |
 
 **Como ler:** os dois mecanismos exigem 2 modificações, ambas nos **pontos de
-composição**; as bases, nenhuma. Nos *handlers*, porque o novo *handler*
+composição**. As bases, nenhuma. Nos *handlers*, porque o novo *handler*
 precisa ser instalado em cada composição (há duas: execução e oráculo). Nas
 mônadas, porque o tipo da pilha e o executor mudam, mais as importações. **Não
 torça esse resultado para nenhum lado.** A pergunta "por que a versão com
@@ -248,7 +248,7 @@ afinidade fixa num núcleo (`taskset -c 3`), sementes 42, 43, 44, cota de 20 s.
 | Output, tempo (ns) | 34 | 111 | 4,26 | 41 | −2 | 0,97 |
 | Arith, alocação (B) | 16 | 168 | 11,5 | 127 | 150 | 2,2 |
 
-IC de 95% da razão de tempo: no OCaml, nenhum inclui 1; no Haskell, só o de
+IC de 95% da razão de tempo: no OCaml, nenhum inclui 1. No Haskell, só o de
 Arith exclui 1 ([1,04; 1,18]). Dispersão entre sementes: até 18,3% no tempo
 (Haskell/Output, cuja base oscilou numa semente) e menos de 0,1% na alocação.
 
@@ -267,7 +267,7 @@ Arith exclui 1 ([1,04; 1,18]). Dispersão entre sementes: até 18,3% no tempo
 3. **Não compare as razões entre linguagens diretamente:** as bases diferem
    (em State, 346 ns com `Map` × 87 com `Hashtbl`) e os *runtimes* também. O
    que vale comparar é a **forma** do custo: no OCaml, fixo por instalação e
-   por operação; no Haskell, proporcional aos *binds* e quase apagado pelo GHC
+   por operação. No Haskell, proporcional aos *binds* e quase apagado pelo GHC
    (três de quatro intervalos incluem 1).
 
 **A hipótese do TCC I** (handlers < 1,5×, mônadas > 2×) **falhou nas duas
@@ -285,11 +285,11 @@ amostragem foi suficiente. Figura: `resultados/figuras/sensibilidade.png`.
 
 - OCaml: palavras do *minor heap*, convertidas para bytes, **por contagem
   direta**: `Gc.minor_words` entre duas coletas menores forçadas, em 20
-  execuções da carga (`TCC_MODO=alocacao` do *harness*; a campanha grava em
+  execuções da carga (`TCC_MODO=alocacao` do *harness*, a campanha grava em
   `alocacao-direta/`). O valor é **exato e determinístico**: 20.003 palavras por
   execução na base de Arith, isto é, duas palavras por expressão (o `Ok v`).
   **As fibers não aparecem** (`malloc`, fora do *heap*: Sivaramakrishnan et al.
-  2021, §5.2; `runtime/fiber.c` do 5.2). A coluna mostra fechamentos, registros
+  2021, §5.2, `runtime/fiber.c` do 5.2). A coluna mostra fechamentos, registros
   de *handler* e resultados.
 - **Por que não a regressão do Bechamel:** o contador que ele lê
   (`Gc.quick_stat().minor_words`) só avança a cada coleta menor no OCaml 5.
@@ -306,12 +306,12 @@ amostragem foi suficiente. Figura: `resultados/figuras/sensibilidade.png`.
 ## 6. Seção 7: conclusões frente à literatura (conferido)
 
 - 1% (Sivaramakrishnan) = programas **sem** *handlers*.
-- 6,7–12,3× = recursão não-*tail* com *handler* e sem `perform`. As razões
+- 6,7 a 12,3× = recursão não-*tail* com *handler* e sem `perform`. As razões
   daqui (até 4,26) ficam abaixo.
 - 23 ns para alocar a *fiber* e trocar de pilha: **mesma ordem** dos 45 ns que
   custou instalar três *handlers* por expressão em Arith.
-- Haskell: mônada de estado/MTL contra versão pura = 1,0–1,3 em contadores
-  (Kammar 2013; Xie & Leijen 2020). As daqui (0,97–1,08) ficam no limite
+- Haskell: mônada de estado/MTL contra versão pura = 1,0 a 1,3 em contadores
+  (Kammar 2013, Xie & Leijen 2020). As daqui (0,97 a 1,08) ficam no limite
   inferior ou abaixo, como se espera de uma base que **não é pura**: executa em
   `IO` e compartilha o `Map`.
 - Dois achados não previstos: o vazamento ao abandonar a continuação (Seção
@@ -322,12 +322,12 @@ amostragem foi suficiente. Figura: `resultados/figuras/sensibilidade.png`.
 ## 7. Perguntas prováveis sobre o código
 
 1. **"Quem escreveu o código?"** → foi gerado com assistência de IA, como
-   declarado; você revisou, rodou e entende cada decisão (este guia). Não
+   declarado. Você revisou, rodou e entende cada decisão (este guia). Não
    minimize: a declaração é exigência do regulamento.
 2. **"Por que `discontinue`?"** → o experimento do vazamento.
-3. **"Por que três *handlers* por expressão?"** → o de exceção precisa; os outros
+3. **"Por que três *handlers* por expressão?"** → o de exceção precisa. Os outros
    poderiam ser por carga. Isso triplica as *fibers*, e o texto declara.
-4. **"Arith é controle no Haskell?"** → não; só no OCaml.
+4. **"Arith é controle no Haskell?"** → não. Só no OCaml.
 5. **"Por que `Map` na base Haskell?"** → para a razão medir o mecanismo, não a
    estrutura de dados.
 6. **"A emissão por referência a função é idiomática em mtl?"** → não. O idioma
@@ -338,18 +338,18 @@ amostragem foi suficiente. Figura: `resultados/figuras/sensibilidade.png`.
 8. **"O oráculo pega erros de verdade?"** → testes de mutação, 8/8.
 9. **"Por que o Haskell quase não tem sobrecusto?"** → o GHC especializa a pilha
    concreta (`ExceptT String (StateT Env IO)`) e elimina boa parte do custo dos
-   *binds*; o que sobra aparece em Arith, a carga com mais vinculações por
+   *binds*. O que sobra aparece em Arith, a carga com mais vinculações por
    expressão (10 ns). E a base não é pura: também paga `IO`.
 10. **"Output no OCaml tem razão 4,26: efeito de saída é caro?"** → a razão é
     alta porque a base de Output é a mais barata (34 ns: árvores de
     profundidade 2). Em valor absoluto, Output soma 111 ns, dos quais 45 ns são
-    instalação (Arith); as duas operações de saída custam o resto.
+    instalação (Arith). As duas operações de saída custam o resto.
 11. **"Os números são confiáveis numa máquina virtual?"** → as razões são tomadas
-    na mesma sessão, em ordem alternada, com afinidade fixa; o texto declara a
+    na mesma sessão, em ordem alternada, com afinidade fixa. O texto declara a
     máquina virtual e recomenda replicar em máquina dedicada. `make tudo` refaz
     tudo, e o script avisa se alguma frase do texto deixar de valer.
 12. **"Por que a regra de boilerplate e não contagem humana?"** → reprodutível e
-    auditável linha a linha; a contagem humana ficou como validação opcional.
+    auditável linha a linha. A contagem humana ficou como validação opcional.
 
 ---
 

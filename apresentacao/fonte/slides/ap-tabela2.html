@@ -35,10 +35,10 @@
 </table>
 </div>
 </div>
-<p style="font-size:24px;line-height:1.4;color:#4A5160;width:1600px">IC de 95% da razão de tempo: nenhum inclui 1 no OCaml; no Haskell, só o de Arith o exclui ([1,04; 1,18]). Dispersão entre sementes de até 18,3% no tempo e inferior a 0,1% na alocação. Menor R²: 0,954 no Bechamel e 0,973 no Criterion. Medianas de 3 sementes.</p>
+<p style="font-size:24px;line-height:1.4;color:#4A5160;width:1600px">IC de 95% da razão de tempo: nenhum inclui 1 no OCaml. No Haskell, só o de Arith o exclui ([1,04; 1,18]). Dispersão entre sementes de até 18,3% no tempo e inferior a 0,1% na alocação. Menor R²: 0,954 no Bechamel e 0,973 no Criterion. Medianas de 3 sementes.</p>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
 <p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">A1</p>
 <aside>Use se pedirem um número específico. Leia a linha: base, delta e razão.
 
-Pontos para citar: no OCaml, nenhum intervalo de 95% da razão de tempo inclui 1; no Haskell, só o de Arith exclui 1 (1,04 a 1,18). A dispersão de 18,3% no tempo vem do Haskell Output, em que a base oscilou numa semente (477 microssegundos contra cerca de 400 nas outras); por isso a mediana. A alocação quase não varia entre sementes (menos de 0,1%); no OCaml, ela é contada diretamente e é exata, porque o contador que o Bechamel lê só avança a cada coleta menor e subestimava a base em até 4,7%.</aside>
+Pontos para citar: no OCaml, nenhum intervalo de 95% da razão de tempo inclui 1. No Haskell, só o de Arith exclui 1 (1,04 a 1,18). A dispersão de 18,3% no tempo vem do Haskell Output, em que a base oscilou numa semente (477 microssegundos contra cerca de 400 nas outras). Por isso a mediana. A alocação quase não varia entre sementes (menos de 0,1%). No OCaml, ela é contada diretamente e é exata, porque o contador que o Bechamel lê só avança a cada coleta menor e subestimava a base em até 4,7%.</aside>
 </section>

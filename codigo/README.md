@@ -49,7 +49,7 @@ tabelas e ambiente em `../artigo.tex` e confere as afirmações do texto) →
 | `docs/protocolo-metricas.md` | 4.2 | definições operacionais e critério de *boilerplate* |
 | `quarto-efeito/` | 4.2, 5.3 | o quarto efeito (`Input`) como *patch*, e a medição de QP2 |
 | `scripts/` | geral | testes, normalização, métricas, mutantes, campanha, repetição por R², resumo, sensibilidade |
-| `scripts/atualizar_artigo.py` | 1, 4–7 | gera os números, as Tabelas 1 e 2 e o ambiente do artigo e confere as frases marcadas `AFIRMACAO` |
+| `scripts/atualizar_artigo.py` | 1, 4 a 7 | gera os números, as Tabelas 1 e 2 e o ambiente do artigo e confere as frases marcadas `AFIRMACAO` |
 | `scripts/figuras.py` | apresentação | figuras da apresentação (SVG, sem dependências) |
 | `resultados/` | 6 | métricas, campanha citada, sensibilidade e figuras (versionados) |
 
@@ -81,7 +81,7 @@ cabal install ormolu-0.5.3.0        # o normalizador recusa outra versão
 As dependências (`criterion`, `aeson`, `ghc-lib-parser` 9.4) vêm do Hackage na
 primeira compilação. Os limites de versão estão nos `.cabal`.
 
-**Outros:** `python3` (só a biblioteca padrão), `make`, `patch`; no Linux,
+**Outros:** `python3` (só a biblioteca padrão), `make`, `patch`. No Linux,
 `taskset` para fixar afinidade.
 
 ## Testes e verificação
@@ -96,7 +96,7 @@ make testar-completo  # + testes de mutação (8/8) + quarto efeito (73/73 + 73/
   do LCG, primeiras expressões de Arith, *hashes* das **12 cargas**, integridade
   da tabela) = 61 por linguagem.
 - **Conformidade entre linguagens**: o gerador existe em Python, OCaml e
-  Haskell; os *hashes* das 4 × 3 cargas coincidem nas três. Para localizar uma
+  Haskell. Os *hashes* das 4 × 3 cargas coincidem nas três. Para localizar uma
   divergência: `ocaml/_build/default/tools/cargas.exe exn 43` contra
   `cabal run -v0 cargas -- exn 43`.
 - **Mutantes** (`scripts/mutantes.py`): cada decisão que o oráculo deve travar
@@ -116,7 +116,7 @@ O *boilerplate* é classificado por **regra mecânica** sobre os *tokens* do
 compilador (`docs/protocolo-metricas.md`, seção 4.1), com o motivo de cada
 linha em `resultados/boilerplate-regra/<impl>.csv`. Validação humana opcional:
 duas pessoas preenchem, separadamente, as colunas `autor` e `segundo` de
-`resultados/boilerplate/*.csv` e depois a coluna `consenso`;
+`resultados/boilerplate/*.csv` e depois a coluna `consenso`.
 `python3 scripts/metricas.py concordancia` dá o kappa entre elas e entre a
 regra e o consenso.
 
@@ -136,13 +136,13 @@ em `descartados/` e registrando cada repetição em `ambiente.md`.
 `make sensibilidade` repete a medição com cota de 5 s e 2.000 amostras, para a
 comparação da Seção 6.2.
 
-**Para medir bem** (Seção 4.3; anote o que fizer):
+**Para medir bem** (Seção 4.3, anote o que fizer):
 
-- fixe o *governor* em `performance` e desligue o *turbo*;
+- fixe o *governor* em `performance` e desligue o *turbo*.
 - em CPU híbrida (o i5-1345U é 2P+8E), fixe a afinidade num núcleo P:
   `TCC_TASKSET="taskset -c 0" scripts/rodar-campanha.sh` (confira com `lscpu -e`
-  qual núcleo é P);
-- feche os outros programas e use a máquina na tomada;
+  qual núcleo é P).
+- feche os outros programas e use a máquina na tomada.
 - parâmetros: `SEMENTES`, `TCC_QUOTA` (20), `TCC_LIMIT` (5000),
   `TCC_RESAMPLES` (1000), `TCC_BOOTSTRAP` (1000), `TCC_CENARIOS`.
 
@@ -154,7 +154,7 @@ Versione a campanha que entra no artigo junto com o `artigo.tex` regenerado.
   pilha no OCaml 5.2 (`make experimento`: ~1,2 GB contra ~6 MB em 2 milhões de
   erros).
 - **Três *handlers* instalados por expressão**, como a Seção 4.3 descreve.
-- **`-O3` em todas as bibliotecas OCaml** (não só no executável); `-O2` no
+- **`-O3` em todas as bibliotecas OCaml** (não só no executável). `-O2` no
   Haskell.
 - **IC da razão no OCaml calculado pelo *harness***: o Bechamel 0.5.0 não expõe
   o IC do *bootstrap* na API.
@@ -165,7 +165,7 @@ Versione a campanha que entra no artigo junto com o `artigo.tex` regenerado.
   regressão subestima a base em até 4,7%. Por isso o *harness* conta
   diretamente (`TCC_MODO=alocacao`: `Gc.minor_words` entre duas coletas menores
   forçadas), e a campanha grava o resultado em `alocacao-direta/`. O valor é
-  exato e determinístico; o `resumo.md` mostra os dois lado a lado.
+  exato e determinístico. O `resumo.md` mostra os dois lado a lado.
 
 ## Do resultado ao artigo
 

@@ -15,12 +15,12 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 ## Como usar este roteiro
 
 1. **Leia em voz alta uma vez, com cronômetro.** O texto tem cerca de
-   1.831 palavras: uns 17 minutos e meio de fala, já contando pausas
-   curtas. Sobra margem dentro dos 20 minutos; use-a para falar devagar e
+   1.845 palavras: uns 17 minutos e meio de fala, já contando pausas
+   curtas. Sobra margem dentro dos 20 minutos. Use-a para falar devagar e
    apontar na tela.
 2. **Reescreva com as suas palavras o que não soar como você.** O orientador
-   já marcou “I.A.?” no resumo; na fala, isso pesa mais. Mantenha os números
-   e as frases-âncora; o resto pode e deve virar o seu jeito de falar.
+   já marcou “I.A.?” no resumo. Na fala, isso pesa mais. Mantenha os números
+   e as frases-âncora. O resto pode e deve virar o seu jeito de falar.
 3. **Não leia no dia.** Ensaie até precisar só da **frase-âncora** de cada
    slide. Quem fala a partir de âncoras parece, e está, dominando o assunto.
 4. **Só diga o que você explica em uma frase.** Se uma palavra do texto ainda
@@ -36,13 +36,13 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 | 4 | Questões de pesquisa | 1:00 | 4:20 | 113 |
 | 5 | Um interpretador com três efeitos | 1:10 | 5:30 | 125 |
 | 6 | A função eval | 1:20 | 6:50 | 136 |
-| 7 | Quatro versões e a verificação | 1:10 | 8:00 | 119 |
+| 7 | Quatro versões e a verificação | 1:10 | 8:00 | 131 |
 | 8 | O mesmo trecho de eval, com e sem handlers | 0:50 | 8:50 | 81 |
 | 9 | Legibilidade de eval | 0:40 | 9:30 | 59 |
 | 10 | Composabilidade e infraestrutura | 1:20 | 10:50 | 138 |
 | 11 | Destaque: 45 ns | 0:40 | 11:30 | 59 |
 | 12 | Custo de tempo por expressão | 1:20 | 12:50 | 152 |
-| 13 | Memória por expressão | 1:00 | 13:50 | 98 |
+| 13 | Memória por expressão | 1:00 | 13:50 | 100 |
 | 14 | Achados não previstos | 1:10 | 15:00 | 134 |
 | 15 | Frente à literatura e ao TCC I | 1:00 | 16:00 | 104 |
 | 16 | Conclusões e trabalhos futuros | 1:20 | 17:20 | 143 |
@@ -62,7 +62,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 
 ### Slide 2: Dois mecanismos para efeitos (1:20 · acumulado 1:50)
 
-**Âncora:** na teoria os dois expressam o mesmo; falta medir quanto custam na prática.
+**Âncora:** na teoria os dois expressam o mesmo. Falta medir quanto custam na prática.
 
 > Todo programa real precisa de efeitos: guardar um valor, lançar um erro, mostrar uma saída. Em programação funcional, isso exige um mecanismo próprio, e hoje existem dois.
 >
@@ -76,7 +76,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 
 ### Slide 3: Cada mecanismo contra uma base (1:30 · acumulado 3:20)
 
-**Âncora:** cada mecanismo contra uma base na mesma linguagem; a razão depende da base.
+**Âncora:** cada mecanismo contra uma base na mesma linguagem. A razão depende da base.
 
 > O primeiro problema é que cada mecanismo vive numa linguagem diferente. Se eu comparasse os tempos do Haskell com os do OCaml, estaria comparando também os compiladores, e não só os mecanismos.
 >
@@ -104,7 +104,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 
 ### Slide 5: Um interpretador com três efeitos (1:10 · acumulado 5:30)
 
-**Âncora:** um interpretador pequeno com estado, exceção e saída; equivalência definida antes.
+**Âncora:** um interpretador pequeno com estado, exceção e saída. Equivalência definida antes.
 
 > Para comparar, eu precisava de um programa que usasse os três efeitos. Escolhi um interpretador de uma linguagem pequena, com estes oito comandos. Var lê uma variável e Let guarda um valor: esse é o estado. Dividir por zero ou ler uma variável que não existe dá erro: essa é a exceção. E Print mostra um valor: essa é a saída.
 >
@@ -114,7 +114,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 
 ### Slide 6: A função eval (1:20 · acumulado 6:50)
 
-**Âncora:** a eval recebe uma expressão e calcula o valor; os efeitos acontecem dentro dela.
+**Âncora:** a eval recebe uma expressão e calcula o valor. Os efeitos acontecem dentro dela.
 
 > Antes de mostrar as versões, vale explicar a peça central. Todo interpretador tem uma função chamada eval, de evaluate, avaliar. Ela recebe uma expressão e calcula quanto ela vale. À esquerda está o começo dela, na versão imperativa: um caso para cada comando.
 >
@@ -126,9 +126,9 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 
 ### Slide 7: Quatro versões e a verificação (1:10 · acumulado 8:00)
 
-**Âncora:** quatro versões; nada é medido antes de os testes passarem.
+**Âncora:** quatro versões. Nada é medido antes de os testes passarem.
 
-> Então eu implementei quatro versões: no OCaml, com handlers e a base imperativa; no Haskell, com mônadas e a base com IORef.
+> Então eu implementei quatro versões, duas em cada linguagem. No OCaml, uma usa handlers e a outra é a base imperativa. No Haskell, uma usa mônadas e a outra é a base com IORef.
 >
 > Antes de medir qualquer coisa, eu verifiquei que as quatro fazem a mesma coisa. Três números resumem isso.
 >
@@ -144,7 +144,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 
 ### Slide 8: O mesmo trecho de eval, com e sem handlers (0:50 · acumulado 8:50)
 
-**Âncora:** a estrutura é a mesma; só a operação muda.
+**Âncora:** a estrutura é a mesma. Só a operação muda.
 
 > Este é o mesmo trecho da eval nas duas versões em OCaml: o que lê uma variável.
 >
@@ -156,7 +156,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 
 ### Slide 9: Legibilidade de eval (0:40 · acumulado 9:30)
 
-**Âncora:** a eval empata; o mecanismo não muda a leitura.
+**Âncora:** a eval empata. O mecanismo não muda a leitura.
 
 > Os números confirmam. No OCaml, as duas versões têm a mesma eval: vinte e nove linhas, cinco operações de efeito e aninhamento dois. No Haskell, também empatam: vinte e sete, dezoito e um.
 >
@@ -186,7 +186,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 
 ### Slide 12: Custo de tempo por expressão (1:20 · acumulado 12:50)
 
-**Âncora:** no OCaml, custo para instalar e a cada operação; no Haskell, quase nenhum.
+**Âncora:** no OCaml, custo para instalar e a cada operação. No Haskell, quase nenhum.
 
 > Este é o quadro completo: quantos nanossegundos cada mecanismo gasta a mais que a sua base, por expressão. As medições rodaram numa máquina virtual na nuvem, como está declarado no artigo, com três conjuntos de expressões diferentes.
 >
@@ -200,11 +200,11 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 
 ### Slide 13: Memória por expressão (1:00 · acumulado 13:50)
 
-**Âncora:** a memória a mais é parecida; o que muda é a base.
+**Âncora:** a memória a mais é parecida. O que muda é a base.
 
 > Na memória aparece o cuidado com a fórmula. No cenário Arith, a razão do OCaml é 11,5, e a do Haskell, 2,2. Parece uma diferença enorme.
 >
-> Mas olhem as barras. A memória a mais que cada mecanismo usa é parecida: cento e sessenta e oito bytes por expressão no OCaml e cento e cinquenta no Haskell. O que muda é a base. A base do OCaml usa só dezesseis bytes por expressão; a do Haskell, cento e vinte e sete. Como a base do OCaml é muito barata, a razão fica grande. É exatamente o efeito da fórmula.
+> Mas olhem as barras. A memória a mais que cada mecanismo usa é parecida: cento e sessenta e oito bytes por expressão no OCaml e cento e cinquenta no Haskell. O que muda é a base. A base do OCaml usa só dezesseis bytes por expressão, e a do Haskell usa cento e vinte e sete. Como a base do OCaml é muito barata, a razão fica grande. É exatamente o efeito da fórmula.
 
 *Aponte o pequeno trecho cinza da barra do OCaml ao dizer “dezesseis bytes”.*
 
@@ -220,7 +220,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 
 ### Slide 15: Frente à literatura e ao TCC I (1:00 · acumulado 16:00)
 
-**Âncora:** mesma ordem de grandeza da literatura; a previsão do TCC I não se confirmou.
+**Âncora:** mesma ordem de grandeza da literatura. A previsão do TCC I não se confirmou.
 
 > Comparando com outros trabalhos, sabendo que cada um mede uma situação diferente.
 >
@@ -234,7 +234,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 
 ### Slide 16: Conclusões e trabalhos futuros (1:20 · acumulado 17:20)
 
-**Âncora:** escrita: custo em volta da eval; execução: handlers cobram, mônadas quase nada.
+**Âncora:** escrita: custo em volta da eval. Execução: handlers cobram, mônadas quase nada.
 
 > Para concluir.
 >
@@ -250,7 +250,7 @@ seção da arguição, mais abaixo, e nos apêndices dos slides.
 
 ### Slide 17: Obrigado (0:20 · acumulado 17:40)
 
-**Âncora:** obrigado; tudo se refaz com um comando.
+**Âncora:** obrigado. Tudo se refaz com um comando.
 
 > Obrigado. O código, os dados e o artigo estão no repositório, e um único comando refaz todos os números. Fico à disposição.
 
@@ -265,11 +265,11 @@ A arguição tem 20 minutos para os três membros, e o orientador fala por últi
 
 1. **Ouça até o fim**, sem interromper. Se não entendeu, peça para repetir ou
    reformule: “Se entendi, a pergunta é se…”.
-2. **Responda em três tempos:** primeiro a resposta, numa frase; depois a
-   evidência (um número, um slide, um apêndice); por fim, o limite (“isso vale
+2. **Responda em três tempos:** primeiro a resposta, numa frase. Depois a
+   evidência (um número, um slide, um apêndice). Por fim, o limite (“isso vale
    para este caso de uso”). Até um minuto por resposta.
-3. **Não sabe?** Diga o que sabe e como verificaria: “Isso eu não medi; o que
-   os dados mostram é…; eu verificaria assim…”. Nunca invente um número: o
+3. **Não sabe?** Diga o que sabe e como verificaria: “Isso eu não medi. O que
+   os dados mostram é… Eu verificaria assim…”. Nunca invente um número: o
    apêndice A1 tem todos.
 4. **Crítica?** Reconheça o que for justo, diga como o texto trata o ponto e
    anote como sugestão: o 5º PC exige incorporar as sugestões da banca.
@@ -292,7 +292,7 @@ Use os apêndices: **A1** (todos os números), **A2** (protocolo), **A3**
 > Vale como exploratória, e o texto diz isso. O que eu não faço é afirmar que
 > um mecanismo é mais rápido que o outro. O que eu sustento é a forma do
 > custo: no OCaml, fixo por instalação e por operação, aparecendo até sem
-> efeito; no Haskell, proporcional aos binds e quase apagado pelo compilador.
+> efeito. No Haskell, proporcional aos binds e quase apagado pelo compilador.
 
 **“Por que não comparar na mesma linguagem, com uma biblioteca de efeitos em
 Haskell?”**
@@ -309,9 +309,9 @@ Haskell?”**
 > razão ali. Por isso eu leio o State do Haskell com cuidado.
 
 **“Por que três handlers por expressão? Isso não infla o custo?”**
-> O de exceção precisa ser por expressão; senão, o primeiro erro encerraria a
+> O de exceção precisa ser por expressão. Senão, o primeiro erro encerraria a
 > carga inteira. Os outros dois poderiam ser por carga, e eu os instalei
-> juntos, o que triplica a instalação; está declarado. É exatamente o regime
+> juntos, o que triplica a instalação. Está declarado. É exatamente o regime
 > que o Arith isola: 45 nanossegundos. Com escopos maiores, esse custo se
 > diluiria, mas esse regime eu não medi.
 
@@ -322,13 +322,13 @@ Haskell?”**
 
 **“Um caso de uso e três sementes bastam?”**
 > Para generalizar, não, e eu digo isso: n igual a um. As três sementes geram
-> cargas diferentes e mostram que o resultado não depende da carga sorteada;
-> não são uma amostra de programas. O que o trabalho oferece é um método
+> cargas diferentes e mostram que o resultado não depende da carga sorteada.
+> Não são uma amostra de programas. O que o trabalho oferece é um método
 > reprodutível, que pode ser aplicado a outros casos de uso.
 
 **“Como garante que o otimizador não eliminou trabalho de um lado só?”**
-> As cargas são geradas fora da região medida; o resultado é forçado no
-> Haskell e passa por Sys.opaque_identity no OCaml, nas duas versões; e os
+> As cargas são geradas fora da região medida. O resultado é forçado no
+> Haskell e passa por Sys.opaque_identity no OCaml, nas duas versões. Os
 > flags são idênticos dentro de cada linguagem, -O3 no OCaml e -O2 no
 > Haskell. Além disso, antes de medir, o harness confere que mecanismo e base
 > dão a mesma soma, os mesmos erros e o mesmo traço.
@@ -343,14 +343,14 @@ Haskell?”**
 ### Sobre as métricas
 
 **“LOC, operações e aninhamento medem legibilidade?”**
-> Não medem a legibilidade percebida; são proxies estruturais, e eu os chamo
+> Não medem a legibilidade percebida. São proxies estruturais, e eu os chamo
 > assim. O aninhamento segue a Cognitive Complexity, que tem validação
 > empírica com tempo de compreensão. Medir legibilidade de verdade exige
 > estudo com pessoas, que é trabalho futuro.
 
 **“A regra de boilerplate não é arbitrária?”**
 > Ela é fixa, publicada e mecânica: uma linha é semântica se contém um
-> marcador de efeito, como a operação na tabela ou o resultado de erro; o
+> marcador de efeito, como a operação na tabela ou o resultado de erro. O
 > resto é infraestrutura. Cada linha tem o motivo gravado num arquivo, então
 > qualquer pessoa pode auditar. Se a banca discordar de uma linha, eu mostro o
 > marcador. E deixei pronta a validação humana, com kappa, se quiserem fazer.
@@ -410,7 +410,7 @@ continuaram valendo.”*
 > ele lê só avança a cada coleta menor, e isso subestimava a base em até 4,7%.
 > No Haskell, o Criterion já sincroniza o contador a cada amostra. As fibers
 > do OCaml são alocadas fora do heap do coletor, então não entram nessa
-> coluna; eu digo isso no texto, e foi o que me levou ao experimento do
+> coluna. Eu digo isso no texto, e foi o que me levou ao experimento do
 > vazamento.
 
 **“O vazamento é um bug do OCaml?”**
@@ -431,13 +431,13 @@ continuaram valendo.”*
 > qualquer parte do código.
 
 *Estude o Guia 04 antes da banca: ele explica cada arquivo e cada decisão. Se
-pedirem, abra o código e explique um trecho; é a melhor resposta possível a
+pedirem, abra o código e explique um trecho. É a melhor resposta possível a
 essa pergunta.*
 
 **“Como garante que as quatro versões fazem a mesma coisa?”**
 > Em quatro camadas: a suíte de oráculo, 61 de 61 em cada linguagem, contra
-> resultados derivados da semântica formal; os testes de mutação, oito de
-> oito; os hashes das doze cargas, iguais nas três réplicas; e a pré-condição
+> resultados derivados da semântica formal. Os testes de mutação, oito de
+> oito. Os hashes das doze cargas, iguais nas três réplicas. A pré-condição
 > dentro do próprio harness, que compara soma, erros e traço antes de medir.
 
 **“A emissão por referência a função é idiomática no mtl?”**
@@ -472,7 +472,7 @@ essa pergunta.*
 
 ## Como eu avaliaria esta apresentação
 
-Não tenho a ficha de avaliação oficial da banca; o Regulamento diz apenas que
+Não tenho a ficha de avaliação oficial da banca. O Regulamento diz apenas que
 a apresentação é avaliada junto com o artigo. Os critérios abaixo são os que
 bancas de computação costumam usar, e é por eles que este roteiro foi
 construído.
@@ -495,7 +495,7 @@ construído.
 
 - **Falar, e não ler.** Ensaie até precisar só das âncoras.
 - **Soar como você.** Reescreva o que não for o seu jeito de falar.
-- **Dominar o código.** A pergunta sobre a IA é quase certa; a melhor
+- **Dominar o código.** A pergunta sobre a IA é quase certa. A melhor
   resposta é explicar qualquer trecho que pedirem (Guia 04).
 - **Fechar as pendências do artigo:** resumos, versão do modelo, revisão do
   orientador (Guia 05, checklist).
@@ -511,9 +511,9 @@ construído.
 | Véspera | só a abertura e o fechamento, de memória | começar e terminar firme |
 
 **No dia (online, Art. 18, § 1º):** câmera ligada e na altura dos olhos, luz
-de frente, fone com microfone; apresentação em PDF aberta em tela cheia e o
-PPTX de reserva; notificações desligadas; o repositório aberto numa aba, para
-mostrar código se pedirem; água por perto. Entre na sala 10 minutos antes e
+de frente, fone com microfone. Apresentação em PDF aberta em tela cheia e o
+PPTX de reserva. Notificações desligadas. O repositório aberto numa aba, para
+mostrar código se pedirem. Água por perto. Entre na sala 10 minutos antes e
 teste o compartilhamento de tela.
 
 **Pronúncia, para não tropeçar:** OCaml (ô-cámel), Haskell (rás-kel), handler
