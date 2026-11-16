@@ -5,9 +5,9 @@
 | Arquivo | Para quê |
 |---|---|
 | `slides.pdf` | apresentar: abre em qualquer leitor de PDF, uma página por slide |
-| `slides.html` | abrir no navegador; as fontes vêm do Google Fonts, então sem internet o texto aparece em Arial e Georgia |
+| `slides.html` | abrir no navegador. As fontes vêm do Google Fonts, então sem internet o texto aparece em Arial e Georgia |
 | `fonte/deck.json` | ordem dos slides e fontes usadas |
-| `fonte/slides/*.html` | um arquivo por slide; as **notas do apresentador** estão dentro de `<aside>`, no fim de cada arquivo |
+| `fonte/slides/*.html` | um arquivo por slide. As **notas do apresentador** estão dentro de `<aside>`, no fim de cada arquivo |
 | `ferramentas/montar.py`, `ferramentas/render.js` | geram `slides.html` e `slides.pdf` a partir da fonte |
 
 O texto falado de cada slide, palavra por palavra, também está no

@@ -73,7 +73,7 @@ Bom dia. Eu sou o Diego Marchioni, e este é o meu trabalho de conclusão de cur
 <p style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;line-height:1.35;color:#17212F;width:1500px">Na teoria, os dois expressam as mesmas coisas para estes efeitos (Schrijvers et al., 2019). Falta medir quanto custa escrever e executar com cada um.</p>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
 <p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">2</p>
-<aside>(1:20 · acumulado 1:50) Âncora: na teoria os dois expressam o mesmo; falta medir quanto custam na prática.
+<aside>(1:20 · acumulado 1:50) Âncora: na teoria os dois expressam o mesmo. Falta medir quanto custam na prática.
 
 Todo programa real precisa de efeitos: guardar um valor, lançar um erro, mostrar uma saída. Em programação funcional, isso exige um mecanismo próprio, e hoje existem dois.
 
@@ -122,11 +122,11 @@ Trabalhos teóricos já mostraram que, para efeitos como estes, os dois mecanism
 </div>
 <div style="display:flex;align-items:center;gap:64px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:40px 48px">
 <p style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-style:italic;color:#17212F;white-space:nowrap">razão = 1 + Δ / base</p>
-<p style="font-size:28px;line-height:1.4;color:#4A5160;width:800px">Δ é o custo a mais do mecanismo. Uma base muito barata deixa a razão grande; por isso a comparação entre linguagens é só indicativa.</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5160;width:800px">Δ é o custo a mais do mecanismo. Uma base muito barata deixa a razão grande. Por isso a comparação entre linguagens é só indicativa.</p>
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
 <p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">3</p>
-<aside>(1:30 · acumulado 3:20) Âncora: cada mecanismo contra uma base na mesma linguagem; a razão depende da base.
+<aside>(1:30 · acumulado 3:20) Âncora: cada mecanismo contra uma base na mesma linguagem. A razão depende da base.
 
 O primeiro problema é que cada mecanismo vive numa linguagem diferente. Se eu comparasse os tempos do Haskell com os do OCaml, estaria comparando também os compiladores, e não só os mecanismos.
 
@@ -222,7 +222,7 @@ E as métricas de código só comparam versões da mesma linguagem.</aside>
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
 <p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">5</p>
-<aside>(1:10 · acumulado 5:30) Âncora: um interpretador pequeno com estado, exceção e saída; equivalência definida antes.
+<aside>(1:10 · acumulado 5:30) Âncora: um interpretador pequeno com estado, exceção e saída. Equivalência definida antes.
 
 Para comparar, eu precisava de um programa que usasse os três efeitos. Escolhi um interpretador de uma linguagem pequena, com estes oito comandos. Var lê uma variável e Let guarda um valor: esse é o estado. Dividir por zero ou ler uma variável que não existe dá erro: essa é a exceção. E Print mostra um valor: essa é a saída.
 
@@ -264,10 +264,10 @@ Fiz três simplificações, de propósito: as variáveis são globais, o erro se
 </div>
 </div>
 </div>
-<p style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;line-height:1.35;color:#17212F;width:1600px">Os efeitos acontecem dentro da eval. A legibilidade (QP1) mede o código da eval; a infraestrutura (QP3), o código em volta dela.</p>
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;line-height:1.35;color:#17212F;width:1600px">Os efeitos acontecem dentro da eval. A legibilidade (QP1) mede o código da eval, e a infraestrutura (QP3), o código em volta dela.</p>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
 <p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">6</p>
-<aside>(1:20 · acumulado 6:50) Âncora: a eval recebe uma expressão e calcula o valor; os efeitos acontecem dentro dela.
+<aside>(1:20 · acumulado 6:50) Âncora: a eval recebe uma expressão e calcula o valor. Os efeitos acontecem dentro dela.
 
 Antes de mostrar as versões, vale explicar a peça central. Todo interpretador tem uma função chamada eval, de evaluate, avaliar. Ela recebe uma expressão e calcula quanto ela vale. À esquerda está o começo dela, na versão imperativa: um caso para cada comando.
 
@@ -307,9 +307,9 @@ Essa divisão vai importar nos resultados: a legibilidade mede o código dentro 
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
 <p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">7</p>
-<aside>(1:10 · acumulado 8:00) Âncora: quatro versões; nada é medido antes de os testes passarem.
+<aside>(1:10 · acumulado 8:00) Âncora: quatro versões. Nada é medido antes de os testes passarem.
 
-Então eu implementei quatro versões: no OCaml, com handlers e a base imperativa; no Haskell, com mônadas e a base com IORef.
+Então eu implementei quatro versões, duas em cada linguagem. No OCaml, uma usa handlers e a outra é a base imperativa. No Haskell, uma usa mônadas e a outra é a base com IORef.
 
 Antes de medir qualquer coisa, eu verifiquei que as quatro fazem a mesma coisa. Três números resumem isso.
 
@@ -351,7 +351,7 @@ O código foi gerado com apoio de IA, como está declarado no artigo, e revisado
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
 <p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">8</p>
-<aside>(0:50 · acumulado 8:50) Âncora: a estrutura é a mesma; só a operação muda.
+<aside>(0:50 · acumulado 8:50) Âncora: a estrutura é a mesma. Só a operação muda.
 
 Este é o mesmo trecho da eval nas duas versões em OCaml: o que lê uma variável.
 
@@ -380,7 +380,7 @@ A estrutura é a mesma, linha por linha. Eu escrevi as versões como espelho uma
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
 <p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">9</p>
-<aside>(0:40 · acumulado 9:30) Âncora: a eval empata; o mecanismo não muda a leitura.
+<aside>(0:40 · acumulado 9:30) Âncora: a eval empata. O mecanismo não muda a leitura.
 
 Os números confirmam. No OCaml, as duas versões têm a mesma eval: vinte e nove linhas, cinco operações de efeito e aninhamento dois. No Haskell, também empatam: vinte e sete, dezoito e um.
 
@@ -445,7 +445,7 @@ Então, a resposta à primeira pergunta: o mecanismo não muda a leitura da eval
 <div style="display:flex;gap:10px;align-items:center"><div style="width:16px;height:16px;background:#8E8C82;border-radius:3px"></div><p style="font-size:24px;color:#4A5160">IORef</p></div>
 </div>
 </div>
-<p style="font-size:28px;line-height:1.4;color:#4A5160">Só os mecanismos mudaram declarações existentes; as bases só ganharam funções novas.</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Só os mecanismos mudaram declarações existentes. As bases só ganharam funções novas.</p>
 </div>
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
@@ -543,11 +543,11 @@ No cenário Arith, as expressões só fazem contas, sem nenhum efeito. Mesmo ass
 </div>
 <div style="position:absolute;left:439px;top:0px;width:2px;height:428px;background:#8E8C82"></div>
 </div>
-<p style="font-size:24px;line-height:1.4;color:#646A78;width:1600px">Tempo a mais que a base da mesma linguagem, em ns por expressão (mediana de 3 conjuntos de expressões). Razões: OCaml de 1,59 a 4,26; Haskell de 0,97 a 1,08.</p>
+<p style="font-size:24px;line-height:1.4;color:#646A78;width:1600px">Tempo a mais que a base da mesma linguagem, em ns por expressão (mediana de 3 conjuntos de expressões). Razões: OCaml de 1,59 a 4,26 e Haskell de 0,97 a 1,08.</p>
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
 <p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">12</p>
-<aside>(1:20 · acumulado 12:50) Âncora: no OCaml, custo para instalar e a cada operação; no Haskell, quase nenhum.
+<aside>(1:20 · acumulado 12:50) Âncora: no OCaml, custo para instalar e a cada operação. No Haskell, quase nenhum.
 
 Este é o quadro completo: quantos nanossegundos cada mecanismo gasta a mais que a sua base, por expressão. As medições rodaram numa máquina virtual na nuvem, como está declarado no artigo, com três conjuntos de expressões diferentes.
 
@@ -602,11 +602,11 @@ Eu não leio isso como “um mecanismo é mais rápido que o outro”, porque as
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
 <p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">13</p>
-<aside>(1:00 · acumulado 13:50) Âncora: a memória a mais é parecida; o que muda é a base.
+<aside>(1:00 · acumulado 13:50) Âncora: a memória a mais é parecida. O que muda é a base.
 
 Na memória aparece o cuidado com a fórmula. No cenário Arith, a razão do OCaml é 11,5, e a do Haskell, 2,2. Parece uma diferença enorme.
 
-Mas olhem as barras. A memória a mais que cada mecanismo usa é parecida: cento e sessenta e oito bytes por expressão no OCaml e cento e cinquenta no Haskell. O que muda é a base. A base do OCaml usa só dezesseis bytes por expressão; a do Haskell, cento e vinte e sete. Como a base do OCaml é muito barata, a razão fica grande. É exatamente o efeito da fórmula.
+Mas olhem as barras. A memória a mais que cada mecanismo usa é parecida: cento e sessenta e oito bytes por expressão no OCaml e cento e cinquenta no Haskell. O que muda é a base. A base do OCaml usa só dezesseis bytes por expressão, e a do Haskell usa cento e vinte e sete. Como a base do OCaml é muito barata, a razão fica grande. É exatamente o efeito da fórmula.
 
 [Aponte o pequeno trecho cinza da barra do OCaml ao dizer “dezesseis bytes”.]</aside>
 </section>
@@ -663,13 +663,13 @@ O segundo é sobre a medição. Eu repeti as medições com um tempo de coleta q
 <table style="width:1664px;font-size:28px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC">
 <tr><th style="width:30%;text-align:left;font-weight:600;color:#646A78">Fonte</th><th style="width:38%;text-align:left;font-weight:600;color:#646A78">O que a fonte mede</th><th style="width:32%;text-align:left;font-weight:600;color:#646A78">Neste trabalho</th></tr>
 <tr><td>Sivaramakrishnan et al., 2021</td><td>cerca de 23 ns para instalar um handler</td><td>45 ns para instalar três handlers</td></tr>
-<tr><td>Kammar et al., 2013; Xie e Leijen, 2020</td><td>mônadas de 1,0 a 1,3× uma versão sem efeitos</td><td>0,97 a 1,08× a base</td></tr>
-<tr style="background:#F6E9E0"><td>TCC I (previsão)</td><td>handlers abaixo de 1,5×; mônadas acima de 2×</td><td>aconteceu o contrário nos dois casos</td></tr>
+<tr><td>Kammar et al. (2013) e Xie e Leijen (2020)</td><td>mônadas de 1,0 a 1,3× uma versão sem efeitos</td><td>0,97 a 1,08× a base</td></tr>
+<tr style="background:#F6E9E0"><td>TCC I (previsão)</td><td>handlers abaixo de 1,5× e mônadas acima de 2×</td><td>aconteceu o contrário nos dois casos</td></tr>
 </table>
-<p style="font-size:28px;line-height:1.4;color:#4A5160">Cada trabalho mede uma situação diferente; a comparação é só de ordem de grandeza.</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">Cada trabalho mede uma situação diferente. A comparação é só de ordem de grandeza.</p>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
 <p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">15</p>
-<aside>(1:00 · acumulado 16:00) Âncora: mesma ordem de grandeza da literatura; a previsão do TCC I não se confirmou.
+<aside>(1:00 · acumulado 16:00) Âncora: mesma ordem de grandeza da literatura. A previsão do TCC I não se confirmou.
 
 Comparando com outros trabalhos, sabendo que cada um mede uma situação diferente.
 
@@ -690,7 +690,7 @@ E o mais interessante: no TCC I, eu previ handlers abaixo de 1,5 vez a base e m�
 <div style="display:flex;gap:32px">
 <div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:40px">
 <h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Escrita</h3>
-<p style="font-size:28px;line-height:1.4;color:#4A5160">O custo está no código em volta de eval: nos handlers, onde eles são instalados; nas mônadas, no tipo da pilha, que muda a cada efeito.</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5160">O custo está no código em volta de eval. Nos handlers, fica onde eles são instalados. Nas mônadas, fica no tipo da pilha, que muda a cada efeito.</p>
 </div>
 <div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FCFBF8;border:1px solid #DDD8CC;border-radius:16px;padding:40px">
 <h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:36px;font-weight:600;line-height:1.2;color:#17212F">Execução</h3>
@@ -707,7 +707,7 @@ E o mais interessante: no TCC I, eu previ handlers abaixo de 1,5 vez a base e m�
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
 <p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">16</p>
-<aside>(1:20 · acumulado 17:20) Âncora: escrita: custo em volta da eval; execução: handlers cobram, mônadas quase nada.
+<aside>(1:20 · acumulado 17:20) Âncora: escrita: custo em volta da eval. Execução: handlers cobram, mônadas quase nada.
 
 Para concluir.
 
@@ -727,10 +727,10 @@ Os limites estão no slide: um único programa, uma máquina virtual e versões 
 <p style="font-size:36px;line-height:1.35;color:#B9C2CF">Perguntas e comentários da banca</p>
 <div style="display:flex;flex-direction:column;gap:12px">
 <p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:28px;color:#6EA8F0">github.com/DiegoMarchioni/TCC</p>
-<p style="font-size:24px;line-height:1.4;color:#B9C2CF">Código, resultados e artigo; make tudo refaz cada número do texto.</p>
+<p style="font-size:24px;line-height:1.4;color:#B9C2CF">Código, resultados e artigo: make tudo refaz cada número do texto.</p>
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#B9C2CF">Diego Marchioni · Orientador: Marco Rodrigo · PUC Minas</p>
-<aside>(0:20 · acumulado 17:40) Âncora: obrigado; tudo se refaz com um comando.
+<aside>(0:20 · acumulado 17:40) Âncora: obrigado. Tudo se refaz com um comando.
 
 Obrigado. O código, os dados e o artigo estão no repositório, e um único comando refaz todos os números. Fico à disposição.
 
@@ -774,12 +774,12 @@ Obrigado. O código, os dados e o artigo estão no repositório, e um único com
 </table>
 </div>
 </div>
-<p style="font-size:24px;line-height:1.4;color:#4A5160;width:1600px">IC de 95% da razão de tempo: nenhum inclui 1 no OCaml; no Haskell, só o de Arith o exclui ([1,04; 1,18]). Dispersão entre sementes de até 18,3% no tempo e inferior a 0,1% na alocação. Menor R²: 0,954 no Bechamel e 0,973 no Criterion. Medianas de 3 sementes.</p>
+<p style="font-size:24px;line-height:1.4;color:#4A5160;width:1600px">IC de 95% da razão de tempo: nenhum inclui 1 no OCaml. No Haskell, só o de Arith o exclui ([1,04; 1,18]). Dispersão entre sementes de até 18,3% no tempo e inferior a 0,1% na alocação. Menor R²: 0,954 no Bechamel e 0,973 no Criterion. Medianas de 3 sementes.</p>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
 <p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">A1</p>
 <aside>Use se pedirem um número específico. Leia a linha: base, delta e razão.
 
-Pontos para citar: no OCaml, nenhum intervalo de 95% da razão de tempo inclui 1; no Haskell, só o de Arith exclui 1 (1,04 a 1,18). A dispersão de 18,3% no tempo vem do Haskell Output, em que a base oscilou numa semente (477 microssegundos contra cerca de 400 nas outras); por isso a mediana. A alocação quase não varia entre sementes (menos de 0,1%); no OCaml, ela é contada diretamente e é exata, porque o contador que o Bechamel lê só avança a cada coleta menor e subestimava a base em até 4,7%.</aside>
+Pontos para citar: no OCaml, nenhum intervalo de 95% da razão de tempo inclui 1. No Haskell, só o de Arith exclui 1 (1,04 a 1,18). A dispersão de 18,3% no tempo vem do Haskell Output, em que a base oscilou numa semente (477 microssegundos contra cerca de 400 nas outras). Por isso a mediana. A alocação quase não varia entre sementes (menos de 0,1%). No OCaml, ela é contada diretamente e é exata, porque o contador que o Bechamel lê só avança a cada coleta menor e subestimava a base em até 4,7%.</aside>
 </section>
 
 <section id="ap-protocolo" data-transition="fade" style="background:#EFEBE3;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
@@ -789,12 +789,12 @@ Pontos para citar: no OCaml, nenhum intervalo de 95% da razão de tempo inclui 1
 </div>
 <table style="width:1664px;font-size:24px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC">
 <tr><th style="width:20%;text-align:left;font-weight:600;color:#646A78">Item</th><th style="width:80%;text-align:left;font-weight:600;color:#646A78">Configuração</th></tr>
-<tr><td>Máquina</td><td>Intel Xeon @ 2,10 GHz, 4 vCPU, máquina virtual de nuvem, Ubuntu 24.04.5; afinidade fixa num núcleo</td></tr>
-<tr><td>Compilação</td><td>OCaml 5.2.1 + flambda com -O3; GHC 9.4.7 com -O2; flags iguais para mecanismo e base</td></tr>
-<tr><td>Harnesses</td><td>Bechamel 0.5.0, cota de 20 s e limit 5000; Criterion 1.6.1.0, 1.000 reamostragens</td></tr>
+<tr><td>Máquina</td><td>Intel Xeon @ 2,10 GHz, 4 vCPU, máquina virtual de nuvem, Ubuntu 24.04.5. Afinidade fixa num núcleo</td></tr>
+<tr><td>Compilação</td><td>OCaml 5.2.1 + flambda com -O3. GHC 9.4.7 com -O2. Flags iguais para mecanismo e base</td></tr>
+<tr><td>Harnesses</td><td>Bechamel 0.5.0, cota de 20 s e limit 5000. Criterion 1.6.1.0, 1.000 reamostragens</td></tr>
 <tr><td>Cargas</td><td>4 cenários × 10.000 expressões × 3 sementes (42, 43, 44), geradas fora da região medida</td></tr>
-<tr><td>Instalação</td><td>três handlers por expressão no OCaml; a pilha executada uma vez por expressão no Haskell</td></tr>
-<tr><td>Regras</td><td>oráculo como pré-condição; mesmo resultado conferido no harness; ordem alternada; R² ≥ 0,95</td></tr>
+<tr><td>Instalação</td><td>três handlers por expressão no OCaml. A pilha executada uma vez por expressão no Haskell</td></tr>
+<tr><td>Regras</td><td>oráculo como pré-condição. Mesmo resultado conferido no harness. Ordem alternada. R² ≥ 0,95</td></tr>
 <tr><td>Repetição</td><td>um par com R² 0,949 foi remedido (0,962), com o descarte registrado</td></tr>
 <tr><td>Execução</td><td>pela ferramenta de IA, em sessão na nuvem, como declara o artigo</td></tr>
 <tr><td>Reprodução</td><td>make tudo: testes, métricas, campanha, sensibilidade, artigo e figuras</td></tr>
@@ -803,7 +803,7 @@ Pontos para citar: no OCaml, nenhum intervalo de 95% da razão de tempo inclui 1
 <p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">A2</p>
 <aside>Use se perguntarem sobre a máquina, os flags, a cota, as sementes ou o R².
 
-Pontos para citar: flags iguais dentro de cada linguagem (-O3 no OCaml, -O2 no Haskell); cargas geradas fora da região medida; resultado forçado no Haskell e protegido com Sys.opaque_identity no OCaml; o harness confere soma, erros e traço antes de medir; um par com R² de 0,949 foi refeito pelo protocolo e deu 0,962. A máquina virtual está declarada, e a replicação em máquina dedicada é recomendada no texto.</aside>
+Pontos para citar: flags iguais dentro de cada linguagem (-O3 no OCaml, -O2 no Haskell). Cargas geradas fora da região medida. Resultado forçado no Haskell e protegido com Sys.opaque_identity no OCaml. O harness confere soma, erros e traço antes de medir. Um par com R² de 0,949 foi refeito pelo protocolo e deu 0,962. A máquina virtual está declarada, e a replicação em máquina dedicada é recomendada no texto.</aside>
 </section>
 
 <section id="ap-quarto-efeito" data-transition="fade" style="background:#EFEBE3;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
@@ -814,16 +814,16 @@ Pontos para citar: flags iguais dentro de cada linguagem (-O3 no OCaml, -O2 no H
 <table style="width:1664px;font-size:26px;color:#17212F;background:#FCFBF8;border:1px solid #DDD8CC">
 <tr><th style="width:18%;text-align:left;font-weight:600;color:#646A78">Versão</th><th style="width:58%;text-align:left;font-weight:600;color:#646A78">O que mudou em declarações existentes</th><th style="width:12%;text-align:right;font-weight:600;color:#646A78">Pontos</th><th style="width:12%;text-align:right;font-weight:600;color:#646A78">Adições</th></tr>
 <tr><td style="text-align:left">Handlers</td><td style="text-align:left">run e run_acc passam a instalar o handler de Input</td><td style="text-align:right">2</td><td style="text-align:right">2</td></tr>
-<tr><td style="text-align:left">Imperativa</td><td style="text-align:left">nada; a leitura é uma função nova</td><td style="text-align:right">0</td><td style="text-align:right">1</td></tr>
-<tr><td style="text-align:left">Mônadas</td><td style="text-align:left">o tipo da pilha ganha StateT [Int] e run passa a executá-la; a leitura usa dois lift</td><td style="text-align:right">2</td><td style="text-align:right">1</td></tr>
-<tr><td style="text-align:left">IORef</td><td style="text-align:left">nada; a leitura é uma função nova</td><td style="text-align:right">0</td><td style="text-align:right">1</td></tr>
+<tr><td style="text-align:left">Imperativa</td><td style="text-align:left">nada. A leitura é uma função nova</td><td style="text-align:right">0</td><td style="text-align:right">1</td></tr>
+<tr><td style="text-align:left">Mônadas</td><td style="text-align:left">o tipo da pilha ganha StateT [Int] e run passa a executá-la. A leitura usa dois lift</td><td style="text-align:right">2</td><td style="text-align:right">1</td></tr>
+<tr><td style="text-align:left">IORef</td><td style="text-align:left">nada. A leitura é uma função nova</td><td style="text-align:right">0</td><td style="text-align:right">1</td></tr>
 </table>
 <p style="font-size:24px;line-height:1.4;color:#4A5160;width:1600px">Ponto de modificação: declaração preexistente cujo texto mudou. Excluídos por serem iguais nas quatro versões: o construtor Read e o seu braço em eval. Com o efeito, a suíte passa com 73/73 em cada linguagem.</p>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#646A78">Diego Marchioni · Mônadas e efeitos algébricos · TCC II</p>
 <p style="position:absolute;right:128px;bottom:64px;width:120px;font-size:24px;color:#646A78;text-align:right">A3</p>
 <aside>Use se perguntarem como o Input foi inserido ou se a definição de ponto de modificação favorece as bases.
 
-Pontos para citar: a definição foi fixada antes da implementação. Nas bases, o efeito é ambiente: um efeito novo é uma função nova. Nos mecanismos, o efeito precisa ser instalado, e o ponto de instalação já existe: as duas composições nos handlers; o tipo da pilha e o executor nas mônadas. A segunda camada de estado obrigou dois lift explícitos, porque o mtl alcança uma só camada de estado por pilha. A suíte estendida passa com 73 de 73 em cada linguagem.</aside>
+Pontos para citar: a definição foi fixada antes da implementação. Nas bases, o efeito é ambiente: um efeito novo é uma função nova. Nos mecanismos, o efeito precisa ser instalado, e o ponto de instalação já existe: as duas composições nos handlers. O tipo da pilha e o executor nas mônadas. A segunda camada de estado obrigou dois lift explícitos, porque o mtl alcança uma só camada de estado por pilha. A suíte estendida passa com 73 de 73 em cada linguagem.</aside>
 </section>
 
 <section id="ap-sensibilidade" data-transition="fade" style="background:#EFEBE3;color:#17212F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
@@ -863,9 +863,10 @@ Pontos para citar: a corrida curta (cota de 5 s, 2.000 amostras, semente 42) tev
 </div>
 <p style="font-size:28px;line-height:1.4;color:#4A5160">Ferramenta: Claude (Anthropic), com a versão informada na declaração do artigo. Finalidades:</p>
 <ul style="font-size:28px;line-height:1.5;color:#17212F;width:1500px">
-<li>revisão crítica de todas as seções do texto, com sugestões de redação e correção de afirmações factuais;</li>
-<li>redação preliminar dos trechos que reportam e discutem os resultados, revisada pelo autor;</li>
-<li>geração do código-fonte publicado: implementações, suítes de teste, harnesses e scripts de métricas;</li>
+<li>revisão crítica de todas as seções do texto, com sugestões de redação e correção de afirmações factuais.</li>
+<li>edição de estilo do texto, exceto nos resumos e no primeiro parágrafo da introdução.</li>
+<li>redação preliminar dos trechos que reportam e discutem os resultados, revisada pelo autor.</li>
+<li>geração do código-fonte publicado: implementações, suítes de teste, harnesses e scripts de métricas.</li>
 <li>execução da campanha de medição e das métricas de código, em máquina virtual de nuvem.</li>
 </ul>
 <div style="flex:1"></div>

@@ -176,8 +176,8 @@ def macros(metricas, pontos, resumo, amb, sens, vies):
     if amb["executor"] == "autor":
         m["DeclaracaoExecucao"] = " e executado pelo autor"
     else:
-        m["DeclaracaoExecucao"] = (" pelo autor; e na execução, em máquina virtual de nuvem, "
-                                   "da campanha de medição e da apuração das métricas de código "
+        m["DeclaracaoExecucao"] = (" pelo autor, e executou, em máquina virtual de nuvem, "
+                                   "a campanha de medição e a apuração das métricas de código "
                                    "reportadas na Seção~\\ref{sec:resultados}")
     return m
 
@@ -224,13 +224,13 @@ def bloco_ambiente(amb):
         f"A campanha correu em {onde}, com {amb['ncpu']} processadores lógicos, sob "
         f"{amb['so']}, com OCaml~{amb['ocaml']}+\\textit{{flambda}}, GHC~{amb['ghc']}, "
         f"Bechamel~{amb['bechamel']} e Criterion~{amb['criterion']}, sementes \\Sementes{{}}, "
-        f"corridas estritamente sequenciais{afinidade}; no Bechamel, "
+        f"corridas estritamente sequenciais{afinidade}. No Bechamel, "
         f"\\texttt{{limit:{amb['limite']}}} e cota de \\CotaS{{}}~segundos, e no Criterion, "
         f"\\Reamostras{{}} reamostragens e a regressão \\texttt{{allocated:iters}}."
     )
     if virtual:
         texto += (" Em máquina virtual compartilhada, o ruído de outros hóspedes soma-se ao da "
-                  "medição; as razões, tomadas na mesma sessão e em ordem alternada, o atenuam, e "
+                  "medição. As razões, tomadas na mesma sessão e em ordem alternada, o atenuam, e "
                   "a replicação em máquina dedicada fica indicada.")
     return texto
 

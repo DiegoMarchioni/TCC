@@ -10,14 +10,23 @@ de linha referem-se ao `artigo.tex` da revisão final.
   vírgula, parênteses, dois-pontos ou ponto, sem mudar o conteúdo. Ficaram só os
   do endereço no cabeçalho, que seguem o modelo da SBC, e as faixas de páginas da
   bibliografia, que são tipografia padrão. Os guias e os READMEs também ficaram
-  sem travessões; os slides não tinham nenhum.
+  sem travessões. Os slides não tinham nenhum.
+- **Ponto e vírgula (16/11/2026).** Tirei do artigo (cerca de 70), dos slides,
+  das notas, do roteiro, dos guias e dos READMEs, trocando por ponto ou, entre
+  parênteses, por vírgula. Onde a troca deixava uma frase sem verbo, reescrevi a
+  frase (por exemplo, a lista da declaração de IA virou frases completas). As
+  palavras-chave passaram a ser separadas por vírgula. Ficaram só os pontos e
+  vírgulas que a notação exige: os intervalos de confiança, como [1,04; 1,18],
+  em que a vírgula já é a casa decimal, e os de dentro de código. As faixas
+  escritas com traço curto (“QP1–QP4”, “1,59–4,26”) viraram “QP1 a QP4” e
+  “1,59 a 4,26”. Nos trechos `VOZ` nada mudou: eles não tinham ponto e vírgula.
 - **Construções típicas de texto gerado,** nas partes que eu tinha redigido e em
   algumas frases suas:
   - “não X, e sim Y” sem necessidade (“A composabilidade não é ausência de
-    ordenação, e sim mudança de onde ela mora”);
-  - aberturas de efeito (“As grandezas mais citadas medem outra coisa”);
-  - frases que terminam em avaliação (“É o número mais limpo do trabalho”);
-  - termos que ninguém usa falando (“Registre-se”, “cotejo”, “assenta”);
+    ordenação, e sim mudança de onde ela mora”).
+  - aberturas de efeito (“As grandezas mais citadas medem outra coisa”).
+  - frases que terminam em avaliação (“É o número mais limpo do trabalho”).
+  - termos que ninguém usa falando (“Registre-se”, “cotejo”, “assenta”).
   - ênfases do tipo “Duas grandezas, e não uma”.
 - **O que não mudou:** nenhum número, macro, citação ou referência cruzada. As
   20 afirmações conferidas contra os dados continuam valendo, e o artigo
@@ -32,8 +41,8 @@ Estes trechos estão marcados `VOZ` no fonte: o orientador pediu que você os
 escrevesse com as suas palavras. Na revisão final fiz neles só duas mudanças
 mínimas, só cortando ou trocando um termo: **retirei dos dois resumos o período
 sobre a contagem de linhas**, que tinha um erro de fato (o sequenciamento explícito
-não é exigência só do OCaml) e fazia os resumos passarem da primeira página; e
-troquei "sobrecusto" por "razão de tempo" no último período, porque com os
+não é exigência só do OCaml) e fazia os resumos passarem da primeira página.
+Troquei "sobrecusto" por "razão de tempo" no último período, porque com os
 números da campanha o Haskell fica abaixo de 1. O resto continua seu: para
 cada frase, o padrão que a denuncia e uma direção. A frase nova é sua.
 
@@ -51,7 +60,7 @@ também cortou, sem reescrever, "and the two ratios are then contrasted" e a
 oração sobre a suíte de oráculo e o gerador (e os trechos equivalentes em
 português). Na réplica do modelo, cada resumo tem agora 10 linhas, e os dois
 cabem na primeira página. Ao reescrever com as suas palavras, mantenha as 10
-linhas; se quiser de volta a suíte de oráculo, encurte o primeiro período.
+linhas. Se quiser de volta a suíte de oráculo, encurte o primeiro período.
 
 ### Primeiro parágrafo da Introdução (linha 306)
 
@@ -77,24 +86,25 @@ partes que são suas:
   Considere dividir em três.
 - **“e não X” com função de precisão:** “para que a razão isole o mecanismo e
   não a estrutura de dados”, “assentam sobre microbenchmarks, e não sobre um
-  caso de uso integrado”. Esses carregam conteúdo; pode manter.
+  caso de uso integrado”. Esses carregam conteúdo. Pode manter.
 - **Os trechos marcados `NOVO (10/11)`** (linhas 370, 816, 872 e 941)
   continuam sendo texto que eu redigi, agora sem os vícios acima. O ideal
-  continua sendo você reescrevê-los com as suas palavras; a declaração de IA
+  continua sendo você reescrevê-los com as suas palavras. A declaração de IA
   já cobre esses trechos de qualquer forma.
 
 ## Como reconhecer os padrões quando você escrever
 
 Ao reescrever, procure:
 
-1. travessões usados para inserir comentários no meio da frase;
-2. “não é X, e sim Y” e “não apenas X, mas também Y”;
-3. listas de exatamente três itens, repetidas parágrafo após parágrafo;
-4. dois-pontos que anunciam a conclusão da própria frase;
-5. frases que terminam com uma avaliação (“é o resultado mais importante”);
-6. aberturas genéricas (“X é um desafio central em Y”);
-7. palavras que você não usaria falando (“registre-se”, “cotejo”, “dirimir”);
+1. travessões usados para inserir comentários no meio da frase.
+2. “não é X, e sim Y” e “não apenas X, mas também Y”.
+3. listas de exatamente três itens, repetidas parágrafo após parágrafo.
+4. dois-pontos que anunciam a conclusão da própria frase.
+5. frases que terminam com uma avaliação (“é o resultado mais importante”).
+6. aberturas genéricas (“X é um desafio central em Y”).
+7. palavras que você não usaria falando (“registre-se”, “cotejo”, “dirimir”).
 8. frases vizinhas com a mesma estrutura (“A primeira… A segunda…”).
+9. ponto e vírgula ligando duas frases que poderiam ser duas frases com ponto.
 
 O teste mais simples: **leia em voz alta.** Se você não falaria daquele jeito
 explicando para um colega, reescreva.

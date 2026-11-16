@@ -32,7 +32,7 @@ fixar a interpretação no tipo ou no escopo.
 Uma mônada é uma tripla (T, η, μ): T endofuntor, η : Id ⇒ T e μ : T² ⇒ T
 transformações naturais, com
 
-- associatividade: μ ∘ Tμ = μ ∘ μT (as duas de T³ em T);
+- associatividade: μ ∘ Tμ = μ ∘ μT (as duas de T³ em T).
 - unidade: μ ∘ Tη = μ ∘ ηT = id_T (de T em T).
 
 **Truque no quadro:** confira os tipos de cada lado. Se não fecharem, a lei está
@@ -55,7 +55,7 @@ Os transformadores (`liang:95`) impõem uma **ordem estática**, e a ordem muda 
 significado:
 
 - estado externo: `StateT s (Except e) a ≅ s → (e + (a × s))`: **o estado se
-  perde no erro**;
+  perde no erro**.
 - exceção externa: `ExceptT e (State s) a ≅ s → ((e + a) × s)`: **o estado
   sobrevive**.
 
@@ -66,7 +66,7 @@ pilha for invertida, e o teste de mutação (`scripts/mutantes.py`) confirma iss
 
 ### mtl
 
-Cada camada exige elevações (`lift`); o **mtl** as elimina no ponto de uso,
+Cada camada exige elevações (`lift`). O **mtl** as elimina no ponto de uso,
 deslocando-as para as instâncias de classe. O trabalho usa mtl por comparar o
 transformador **como é idiomaticamente usado**, e o texto observa que isso
 reduz de antemão a vantagem que se atribuiria aos *handlers* em
@@ -104,12 +104,12 @@ comutam", a resposta é "sim, e está escrito na 2.2".
 Koka verifica estaticamente quais efeitos uma função realiza (*effect rows*,
 `leijen:14`). O OCaml 5 não: um efeito não tratado é erro **em tempo de
 execução** (exceção `Effect.Unhandled`). É a principal desvantagem da abordagem
-estudada; o texto a põe nos trabalhos futuros (segurança estática de efeitos
+estudada. O texto a põe nos trabalhos futuros (segurança estática de efeitos
 como quinta dimensão).
 
 ### OCaml 5, concretamente
 
-- Efeito: extensão do tipo `Effect.t`; disparo por `perform`.
+- Efeito: extensão do tipo `Effect.t`. Disparo por `perform`.
 - *Handler*: `match_with comp arg { retc; exnc; effc }`. `effc` devolve
   `Some (fun k -> …)` para as operações que trata e `None` para repassar ao
   *handler* externo, e é assim que *handlers* se encadeiam.
@@ -194,11 +194,11 @@ ExceptT e (State s) a = s -> (Either e a, s)      ≅ s -> ((e + a) × s)
 ```
 
 Leitura: **onde está o s de saída em relação ao +.** Dentro da soma, ele some no
-erro; fora dela, sobrevive.
+erro. Fora dela, sobrevive.
 
 ### 2. Extensão de Kleisli
 
-f : A → TB; Tf : TA → T²B; μ_B : T²B → TB; logo f* = μ_B ∘ Tf : TA → TB.
+f : A → TB, Tf : TA → T²B e μ_B : T²B → TB. Logo, f* = μ_B ∘ Tf : TA → TB.
 
 ### 3. Tipos das leis
 
@@ -210,14 +210,14 @@ Associatividade: T³ ⇒ T dos dois lados. Unidade: T ⇒ T.
 
 1. "Escreve o isomorfismo das duas ordens de pilha." → derivação 1.
 2. "Se são equivalentes, o que sobra para medir?" → o como e o a que custo.
-3. "*Handlers* comutam?" → não quando os efeitos interagem; está na 2.2. No
+3. "*Handlers* comutam?" → não quando os efeitos interagem. Está na 2.2. No
    código deste trabalho, estado e exceção comutam porque o estado está fora do
    *handler* (Guia 04).
 4. "Por que aridade zero?" → não há continuação para retomar.
 5. "Por que ambiente global?" → simplificação do caso de uso, não imposição da
    teoria (Seção 4.1).
 6. "Dá para fazer não determinismo?" → não diretamente, com continuações
-   *one-shot*; está nos trabalhos futuros.
+   *one-shot*. Está nos trabalhos futuros.
 7. "Por que mtl?" → comparar o idioma real, o que joga contra a hipótese de
    vantagem dos *handlers* em *boilerplate*.
 
@@ -226,6 +226,6 @@ Associatividade: T³ ⇒ T dos dois lados. Unidade: T ⇒ T.
 ## Pontos frágeis
 
 1. A equivalência expressiva é **local aos três efeitos**, não geral.
-2. Segurança estática de efeitos é desvantagem clara do OCaml 5; está como
+2. Segurança estática de efeitos é desvantagem clara do OCaml 5. Está como
    trabalho futuro.
-3. Efeitos escopados estão fora da classe; o caso de uso não os exercita.
+3. Efeitos escopados estão fora da classe. O caso de uso não os exercita.

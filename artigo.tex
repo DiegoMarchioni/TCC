@@ -56,7 +56,7 @@
 \newcommand{\BoilerIoref}{22}
 \newcommand{\BoilerMonadas}{20}
 \newcommand{\CotaS}{20}
-\newcommand{\DeclaracaoExecucao}{ pelo autor; e na execução, em máquina virtual de nuvem, da campanha de medição e da apuração das métricas de código reportadas na Seção~\ref{sec:resultados}}
+\newcommand{\DeclaracaoExecucao}{ pelo autor, e executou, em máquina virtual de nuvem, a campanha de medição e a apuração das métricas de código reportadas na Seção~\ref{sec:resultados}}
 \newcommand{\DeltaByHaskellArith}{150}
 \newcommand{\DeltaByHaskellExn}{136}
 \newcommand{\DeltaByHaskellOutput}{8}
@@ -278,8 +278,8 @@ its baseline lies between \FaixaRTenOcaml{} in OCaml and between
 \FaixaRTenHaskell{} in Haskell.
 \end{abstract}
 
-\noindent\textbf{Keywords:} algebraic effects; handlers; monads; monad
-transformers; OCaml; Haskell; experimental evaluation.
+\noindent\textbf{Keywords:} algebraic effects, handlers, monads, monad
+transformers, OCaml, Haskell, experimental evaluation.
 
 \begin{resumo}
 O gerenciamento de efeitos computacionais é um desafio central no design de
@@ -295,8 +295,8 @@ tempo entre cada mecanismo e a sua base situa-se entre \FaixaRTOcaml{} em OCaml
 e entre \FaixaRTHaskell{} em Haskell.
 \end{resumo}
 
-\noindent\textbf{Palavras-chave:} efeitos algébricos; \textit{handlers};
-mônadas; transformadores monádicos; OCaml; Haskell; avaliação experimental.
+\noindent\textbf{Palavras-chave:} efeitos algébricos, \textit{handlers},
+mônadas, transformadores monádicos, OCaml, Haskell, avaliação experimental.
 
 %% ============================================================
 \section{Introdução}\label{sec:intro}
@@ -356,7 +356,7 @@ argumento de equivalência expressiva, especificar a semântica e um critério
 verificável de equivalência funcional, implementar as quatro versões com a
 suíte de oráculo e o gerador de cargas, aplicar as métricas de código em pares
 intralinguagem e medir o sobrecusto contra a base de cada linguagem. Os três
-primeiros são instrumentais; os dois últimos, de avaliação.
+primeiros são instrumentais, e os dois últimos são de avaliação.
 
 \medskip
 \noindent\textbf{Contribuições e síntese dos resultados.} A contribuição
@@ -373,15 +373,15 @@ métricas de legibilidade. A diferença de escrita está no \textit{boilerplate}
 e nos pontos de modificação, que só os mecanismos exigiram para o quarto
 efeito. Em execução, a razão entre o mecanismo e a base de cada linguagem
 ficou entre \FaixaRTOcaml{} em tempo e entre \FaixaRAOcaml{} em alocação no
-OCaml; no Haskell, entre \FaixaRTHaskell{} em tempo e entre \FaixaRAHaskell{}
+OCaml. No Haskell, ficou entre \FaixaRTHaskell{} em tempo e entre \FaixaRAHaskell{}
 em alocação. Mediu-se um único caso de uso, em \UmaMaquina{}.
 
 O restante do texto organiza-se como segue: a Seção~\ref{sec:fundamentacao}
-apresenta os dois mecanismos e a relação formal entre eles; a
-Seção~\ref{sec:relacionados} posiciona o trabalho frente à literatura; a
+apresenta os dois mecanismos e a relação formal entre eles. A
+Seção~\ref{sec:relacionados} posiciona o trabalho frente à literatura. A
 Seção~\ref{sec:metodologia} fixa o caso de uso, a semântica, as métricas e o
-protocolo; a Seção~\ref{sec:impl} descreve as implementações; a
-Seção~\ref{sec:resultados} reporta e discute os resultados; e a
+protocolo. A Seção~\ref{sec:impl} descreve as implementações. A
+Seção~\ref{sec:resultados} reporta e discute os resultados. A
 Seção~\ref{sec:consideracoes} conclui.
 
 %% ============================================================
@@ -392,7 +392,7 @@ Adota-se a seguinte definição de trabalho: um \textit{efeito} é um conjunto d
 operações cuja interpretação é deixada em aberto no ponto de uso e fixada em
 outro lugar do programa. As duas abordagens diferem em onde e como essa
 interpretação é fixada. Na pilha de transformadores, ela é fixada
-estaticamente, pelo tipo da computação; nos efeitos algébricos,
+estaticamente, pelo tipo da computação. Nos efeitos algébricos, ela é fixada
 dinamicamente, por um \textit{handler} instalado sobre um escopo. As quatro
 dimensões medem as consequências dessa diferença.
 
@@ -400,7 +400,7 @@ dimensões medem as consequências dessa diferença.
 
 Uma mônada é uma tripla $(T,\eta,\mu)$ em que $T$ é um endofuntor e
 $\eta:\mathrm{Id}\Rightarrow T$ e $\mu:T^2\Rightarrow T$ são transformações
-naturais sujeitas às leis de unidade e associatividade; a contribuição central
+naturais sujeitas às leis de unidade e associatividade. A contribuição central
 é a separação entre valores, de tipo $A$, e computações, de tipo $TA$
 \cite{moggi:91}. A formulação equivalente como tripla de Kleisli é a que o
 programador manipula: $\eta$ é o \texttt{return}, e a extensão de Kleisli
@@ -411,12 +411,12 @@ equacional sob efeitos \cite{wadler:90,wadler:92}.
 Ao combinar efeitos, os \textit{monad transformers} \cite{liang:95} impõem
 uma ordenação estática, visível nos isomorfismos: com o estado externo,
 $\texttt{StateT}\,s\,(\texttt{Except}\,e)\,a \cong s \to (e + (a \times s))$,
-o estado se perde no erro; com a exceção externa,
+o estado se perde no erro. Com a exceção externa,
 $\texttt{ExceptT}\,e\,(\texttt{State}\,s)\,a \cong s \to ((e + a) \times s)$,
 ele sobrevive. São funções de tipos distintos, não variantes de estilo. Cada
 camada exige ainda operações de elevação, que bibliotecas baseadas em classes
 de tipos (\textit{mtl}) eliminam no ponto de uso ao custo de deslocá-las para
-as instâncias; adota-se \textit{mtl} por comparar o transformador como ele é
+as instâncias. Adota-se \textit{mtl} por comparar o transformador como ele é
 idiomaticamente usado, escolha que reduz de antemão a vantagem que se
 atribuiria aos \textit{handlers} em \textit{boilerplate}.
 
@@ -424,7 +424,7 @@ atribuiria aos \textit{handlers} em \textit{boilerplate}.
 
 Os efeitos computacionais foram estabelecidos como operações algébricas sobre
 uma teoria equacional \cite{plotkin:03}. Cada operação tem assinatura e
-aridade, isto é, o número de continuações que recebe; \texttt{raise} tem
+aridade, isto é, o número de continuações que recebe. \texttt{raise} tem
 aridade zero, contrapartida algébrica de o \textit{handler} de exceção
 descartar a continuação. A ordenação dos efeitos continua existindo, mas muda
 de lugar: deixa de ser fixada no tipo e passa a ser determinada pelo escopo de
@@ -466,7 +466,7 @@ sob as continuações \textit{one-shot} do OCaml~5. Segue-se que, para esses
 três efeitos, os dois mecanismos têm o mesmo alcance expressivo. Fora da
 classe ficam os efeitos escopados, operações primitivas que recebem uma
 subcomputação como argumento. A sintaxe de primeira ordem não os captura, e
-por isso eles exigiram uma extensão do modelo \cite{wu:14}; nenhum dos três
+por isso eles exigiram uma extensão do modelo \cite{wu:14}. Nenhum dos três
 efeitos deste caso de uso é desse tipo.
 
 %% ============================================================
@@ -475,18 +475,18 @@ efeitos deste caso de uso é desse tipo.
 
 Os \textit{extensible effects} \cite{kiselyov:13} propuseram-se como
 alternativa aos transformadores por meio de uniões abertas de funtores que
-evitam a rigidez da pilha ordenada; \textit{handlers} sobre mônadas livres
+evitam a rigidez da pilha ordenada. \textit{Handlers} sobre mônadas livres
 mostraram a viabilidade do modelo em Haskell sem suporte nativo, já com
 medição de custo \cite{kammar:13}, e comparações posteriores na mesma
 linguagem refinam o quadro \cite{xie:20}. Trabalho recente \cite{joriatti:25}
 percorre a direção inversa e traduz, por regras dirigidas pela sintaxe, código
 com efeitos inferidos para esse mesmo arcabouço, na formulação com mônadas
-\textit{freer} \cite{kiselyov:15}; a
+\textit{freer} \cite{kiselyov:15}. A
 tradução cobre as operações e não os seus \textit{handlers}, é validada por
 exemplos e não por preservação de semântica, e não mede custo algum, de modo
 que o resíduo ergonômico e de desempenho entre as duas abordagens permanece
 aberto. A existência desses arcabouços suscita a
-pergunta de por que não comparar as duas abordagens na mesma linguagem; a
+pergunta de por que não comparar as duas abordagens na mesma linguagem. A
 escolha, justificada na Seção~\ref{sec:protocolo}, é comparar cada mecanismo
 como ele é efetivamente suportado em produção.
 
@@ -513,9 +513,9 @@ linguagem.
 
 Nenhum dos trabalhos revisados reúne, sobre um mesmo caso de uso, as quatro
 dimensões que governam a escolha: os de fundamentação estabelecem o mecanismo
-e a sua semântica, sem medir custo \cite{plotkin:03,plotkin:09}; os de
+e a sua semântica, sem medir custo \cite{plotkin:03,plotkin:09}. Os de
 expressividade e composição tratam de legibilidade e abstração, sem medição
-\cite{swierstra:08,pretnar:15,lindley:17}; e os de desempenho medem com rigor,
+\cite{swierstra:08,pretnar:15,lindley:17}. Os de desempenho medem com rigor,
 mas não comparam \textit{handlers} com transformadores monádicos nem avaliam
 as demais dimensões \cite{sivaramakrishnan:21,karachalias:21,gaissert:25}.
 Dois grupos chegam mais perto do desenho adotado aqui. As comparações de
@@ -559,9 +559,9 @@ umas contra as outras, o que deixaria passar qualquer erro comum a duas delas.
 Especifica-se uma relação de transição \textit{small-step} sobre configurações
 que carregam a expressão, o estado $\sigma$ e o traço $\omega$, com a ordem de
 avaliação fixada à esquerda por uma gramática de contextos \cite{felleisen:92}
-cuja decomposição única dá o determinismo; este garante que a redução de cada
-expressão é um só caminho; o progresso, que há transição enquanto não se chega
-a valor ou a erro; e, como cada passo reduz o número de nós que ainda não são
+cuja decomposição única dá o determinismo. Este garante que a redução de cada
+expressão é um só caminho. O progresso garante que há transição enquanto não se chega
+a valor ou a erro. Como cada passo reduz o número de nós que ainda não são
 valores, a redução termina. A função semântica
 $\mathcal{D}:\mathcal{E}\times\Sigma\to\mathcal{R}$, das expressões e dos
 estados iniciais nos resultados, é, portanto, total. O domínio e as regras
@@ -581,7 +581,7 @@ quatro condições são verificáveis por comparação de valores e de cadeias.
 \subsection{Dimensões e Métricas}\label{sec:metricas}
 
 Todas as métricas são comparadas entre pares da mesma linguagem (efeitos
-contra imperativa em OCaml; mônadas contra \texttt{IORef} em Haskell), pela
+contra imperativa em OCaml, mônadas contra \texttt{IORef} em Haskell), pela
 razão empírica da Seção~\ref{sec:metricas-codigo}. QP3 entre linguagens é
 exploratória por motivo próprio: o \textit{boilerplate} é medido em linhas, e
 a contagem de linhas responde ao idioma de cada linguagem mesmo depois de
@@ -589,12 +589,13 @@ normalizada. Duas unidades disjuntas: legibilidade conta sobre a função
 \texttt{eval}, \textit{boilerplate} sobre o arquivo menos \texttt{eval}.
 
 \textbf{Legibilidade (QP1).} Três métricas estruturais, todas
-\textit{proxies} e não medidas diretas: a LOC efetiva de \texttt{eval}; o
-número de \textit{operações de efeito}, que conta tanto a realização abstrata
+\textit{proxies} e não medidas diretas: a LOC efetiva de \texttt{eval}, o
+número de \textit{operações de efeito} e a profundidade máxima de aninhamento.
+As operações de efeito contam tanto a realização abstrata
 quanto a direta (em OCaml, cada \texttt{perform} e cada acesso direto à
-tabela, \texttt{raise} ou emissão; em Haskell, cada vinculação monádica e cada
-operação sobre o estado, o erro ou o \texttt{IORef}), reportado também por
-construtor semântico; e a profundidade máxima de aninhamento, adotada
+tabela, \texttt{raise} ou emissão e, em Haskell, cada vinculação monádica e cada
+operação sobre o estado, o erro ou o \texttt{IORef}) e são reportadas também por
+construtor semântico. A profundidade de aninhamento foi adotada
 seguindo a \textit{Cognitive Complexity} \cite{campbell:18}, que atribui
 incremento a cada nível de aninhamento precisamente onde a complexidade
 ciclomática \cite{mccabe:76} é insensível a ele, e cuja validação empírica
@@ -659,7 +660,7 @@ Bechamel \cite{bechamel:21} em OCaml~5.2.1 com \textit{flambda}, com
 \textit{flags} idênticas para mecanismo e base: \texttt{-O3} no OCaml e
 \texttt{-O2} no Haskell. Cada medição é a inclinação da regressão do tempo
 sobre o número de execuções da carga, com intervalo de 95\% por
-\textit{bootstrap}, e é refeita se o $R^2$ ficar abaixo de 0,95; a ordem entre
+\textit{bootstrap}, e é refeita se o $R^2$ ficar abaixo de 0,95. A ordem entre
 mecanismo e base alterna entre cenários. São quatro cenários, de 10.000
 expressões cada. A instalação dos \textit{handlers} é por expressão avaliada:
 o de exceção precisa sê-lo, sob pena de a primeira divisão por zero encerrar a
@@ -671,17 +672,17 @@ e a alocação registra só os fechamentos e registros de cada instalação. Ela
 contada diretamente, em palavras do \textit{heap} menor entre duas coletas
 forçadas, convertidas em bytes, porque a regressão do Bechamel, cujo contador
 só avança a cada coleta menor, subestimava a base em até
-\ViesAlocMax\%; %% AFIRMACAO:vies-regressao-alocacao
-no Haskell, é a que o Criterion apura do \textit{runtime}. \textsc{Arith},
+\ViesAlocMax\%. %% AFIRMACAO:vies-regressao-alocacao
+No Haskell, é a que o Criterion apura do \textit{runtime}. \textsc{Arith},
 sem \texttt{Var},
 \texttt{Let} ou \texttt{Print}, não realiza operação de efeito alguma, mas
 instala os \textit{handlers} 10.000 vezes: no OCaml, mede o custo de
-\textit{estar} sob o mecanismo, e não o de realizar efeitos; no Haskell, em que
+\textit{estar} sob o mecanismo, e não o de realizar efeitos. No Haskell, em que
 cada vinculação de \texttt{eval} atravessa a pilha, executada uma vez por
 expressão, mede o custo do \textit{bind}. \textsc{State} tem
 500 variáveis e duas leituras por expressão, precedidas de um prefixo de
-\texttt{Let} de 500 níveis, avaliado uma vez por execução da carga;
-\textsc{Exn} inclui 20\% de divisões por zero; e \textsc{Output} acumula os
+\texttt{Let} de 500 níveis, avaliado uma vez por execução da carga.
+\textsc{Exn} inclui 20\% de divisões por zero. \textsc{Output} acumula os
 valores emitidos em vez de escrevê-los, para não medir o subsistema de E/S. As
 árvores têm profundidade~2 em \textsc{Output} e~3 em \textsc{Arith} e
 \textsc{Exn}: os cenários diferem também em tamanho de expressão.
@@ -693,26 +694,26 @@ numerador e denominador de forma assimétrica. O ambiente nunca é reinicializad
 dentro da região cronometrada, porque reiniciá-lo ali não faria o custo
 cancelar-se na razão, e sim diluí-la: $(M+R)/(B+R)$ tende a~1 conforme cresce o
 tempo $R$ da reinicialização. No OCaml, ele é limpo uma vez, antes da bateria,
-pois o prefixo de \texttt{Let} revincula as 500 variáveis a cada execução; no
+pois o prefixo de \texttt{Let} revincula as 500 variáveis a cada execução. No
 Haskell, é recriado na preparação que o Criterion mantém fora da medição.
 
 A principal ameaça à validade é o confundimento entre o mecanismo e o
 \textit{runtime}: GHC e OCaml têm modelos de coleta de lixo e otimização
 distintos, e comparar tempos absolutos seria comparar duas variáveis ao mesmo
 tempo. Para mitigar, cada abordagem é normalizada contra uma base imperativa
-na sua própria linguagem; em Haskell, um \texttt{IORef} com o mesmo
+na sua própria linguagem. Em Haskell, a base é um \texttt{IORef} com o mesmo
 \texttt{Map~String~Int} da versão monádica, para que a razão isole o mecanismo
 e não a estrutura de dados. Uma ressalva é devida na comparação entre as razões:
 sendo o sobrecusto aproximadamente aditivo, a razão vale
 $1+\Delta/T_{\mathrm{base}}$, e uma base mais cara a \textit{deflaciona},
 como a do Haskell em \textsc{State}, único cenário que toca o ambiente. As
 três sementes geram cargas distintas, e a dispersão entre elas mede
-insensibilidade à carga sorteada; três sorteios sobre um caso de uso não
+insensibilidade à carga sorteada. Três sorteios sobre um caso de uso não
 constituem amostragem de uma população de programas. O estado e o traço
 residem fora do \textit{handler}, de modo que o sobrecusto medido é o do
 mecanismo nesta realização. Comparam-se OCaml~5 e Haskell, e não dois
 arcabouços em uma mesma linguagem, por serem essas as formas em que cada
-mecanismo é suportado em produção; a alternativa confundiria a maturidade de
+mecanismo é suportado em produção. A alternativa confundiria a maturidade de
 uma biblioteca com as propriedades do mecanismo, e fica como trabalho futuro.
 
 %% ============================================================
@@ -730,7 +731,7 @@ e as instruções para reproduzir cada número deste texto. Três artefatos prec
 lados: o gerador de cargas, as mensagens de erro canônicas e a tabela de casos
 do oráculo. As mensagens e a tabela do oráculo são definidas em um
 arquivo neutro, o que torna o critério (iv) verificável também \textit{entre}
-as linguagens; o gerador é replicado à mão, e o arquivo guarda o
+as linguagens. O gerador é replicado à mão, e o arquivo guarda o
 \textit{hash} FNV-1a de 64 bits de cada uma das doze cargas (quatro cenários,
 três sementes), conferido pelas duas réplicas e por uma terceira, em Python:
 divergência em qualquer expressão é acusada. O gerador, um congruencial
@@ -755,8 +756,8 @@ as mesmas mensagens canônicas e a mesma fixação explícita
 da ordem de avaliação: a estrutura do avaliador é a mesma, e a diferença
 reduz-se à substituição de acessos diretos à tabela e de \texttt{raise} por
 operações de efeito. A base do Haskell usa um \texttt{IORef} contendo o mesmo
-\texttt{Map String Int} da versão monádica, com erros por \texttt{throwIO};
-sendo a estrutura idêntica, a razão entre as duas isola o custo do mecanismo,
+\texttt{Map String Int} da versão monádica, com erros por \texttt{throwIO}.
+Sendo a estrutura idêntica, a razão entre as duas isola o custo do mecanismo,
 e não o da representação do ambiente. Nas três versões sem \textit{handlers},
 a emissão passa por uma referência a função que a suíte substitui temporariamente, o que dispensa
 capturar \texttt{stdout}: a captura é sensível ao \textit{buffering} e
@@ -776,7 +777,7 @@ expressividade dos \textit{handlers}. Aqui os dois comutam, caso particular da
 ressalva da Seção~\ref{sec:fund-efeitos}: o estado reside em uma
 \texttt{Hashtbl} externa ao \textit{handler}, de modo que abortar não o perde,
 e \texttt{run\_state} é polimórfico no tipo de resposta, ao passo que
-\texttt{run\_exn} o fixa; os dois efeitos não interagem. Descartar exigiu,
+\texttt{run\_exn} o fixa. Os dois efeitos não interagem. Descartar exigiu,
 porém, encerrar a continuação com \texttt{discontinue}: apenas abandoná-la
 retém o seu segmento de pilha, fora do \textit{heap}, e em um experimento
 publicado com o código dois milhões de erros levaram a memória residente a
@@ -795,20 +796,22 @@ tripla esperada (resultado, ambiente final ordenado e traço de saída), e
 cada implementação é verificada contra a mesma tabela, definida no arquivo de
 conformidade e lida pelas duas linguagens. São 28 casos por implementação, que
 cobrem os oito construtores em sucesso e, em erro, os dois que podem falhar
-(\texttt{Div} e \texttt{Var}), totalizando 61 verificações por linguagem;
-todas passam. Vinte e oito casos testam o critério universal da
-Seção~\ref{sec:caso-de-uso}; não o demonstram.
+(\texttt{Div} e \texttt{Var}), totalizando 61 verificações por linguagem.
+Todas passam. Vinte e oito casos testam o critério universal da
+Seção~\ref{sec:caso-de-uso}, mas não o demonstram.
 
-Quatro grupos de casos travam decisões de projeto: a divisão truncada com operandos de sinais opostos e resto não
-nulo, única configuração em que \texttt{quot} e \texttt{div} divergem; a ordem de
-avaliação com \texttt{Print} nos dois operandos, única que a torna observável;
-a persistência e a revinculação de \texttt{Let}, que falham sob restauração de
-escopo; e a sobrevivência do estado e da saída ao erro, que falha se a pilha
-monádica for invertida. Cada um transforma uma decisão sutil em verificação
+Quatro grupos de casos travam decisões de projeto: a divisão truncada com
+operandos de sinais opostos e resto não nulo, a ordem de avaliação com
+\texttt{Print} nos dois operandos, a persistência e a revinculação de
+\texttt{Let} e a sobrevivência do estado e da saída ao erro. A divisão é a
+única configuração em que \texttt{quot} e \texttt{div} divergem, e a ordem
+com \texttt{Print} nos dois operandos é a única que a torna observável. Os
+casos de \texttt{Let} falham sob restauração de escopo, e o último falha se a
+pilha monádica for invertida. Cada um transforma uma decisão sutil em verificação
 automática, e a trava foi testada: as oito mutações que revertem essas
 decisões nas implementações são todas acusadas pela suíte.
 A observação do traço é feita sem modificar os avaliadores: na versão com
-efeitos, por um \textit{handler} alternativo de \texttt{Output}; nas demais,
+efeitos, por um \textit{handler} alternativo de \texttt{Output}, e, nas demais,
 substituindo a referência a função de emissão. Essa assimetria é, ela
 própria, um dado qualitativo para QP3, pois só as versões sem
 \textit{handlers} exigiram um ponto de indireção inserido de antemão.
@@ -821,7 +824,7 @@ operação lê de um fluxo de entrada, e o esgotamento do fluxo produz erro, num
 interação deliberada com o efeito de exceção. A suíte, estendida com os casos
 do novo efeito, passa sobre o ramo. Na versão com \textit{handlers}, a operação e
 o seu \textit{handler} são declarações novas, mas as composições que instalam
-os \textit{handlers} tiveram de mudar; na monádica, o tipo da pilha ganhou uma
+os \textit{handlers} tiveram de mudar. Na monádica, o tipo da pilha ganhou uma
 camada \texttt{StateT}, o executor passou a executá-la e a leitura exigiu dois
 \texttt{lift} explícitos, porque as classes do \textit{mtl} alcançam uma só
 camada de estado por pilha. As bases absorveram o efeito com uma função nova
@@ -846,8 +849,8 @@ modificação do quarto efeito (QP2).
 \begin{table}[ht]
   \centering
   \caption{Métricas de código após normalização: LOC, operações de efeito e
-           aninhamento de \texttt{eval}; \textit{boilerplate} do restante do
-           arquivo; pontos de modificação e adições puras do quarto efeito,
+           aninhamento de \texttt{eval}, \textit{boilerplate} do restante do
+           arquivo, pontos de modificação e adições puras do quarto efeito,
            excluídos o construtor novo e o seu braço em \texttt{eval}.}
   \label{tab:metricas}
   \footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.1}
@@ -892,9 +895,9 @@ base. %% AFIRMACAO:boiler-haskell-menor
 
 Em composabilidade, só os mecanismos exigiram pontos de modificação para o
 quarto efeito: \PontosHandlers{} nos \textit{handlers}, as duas composições, e
-\PontosMonadas{} nas mônadas, o tipo da pilha e o executor; as bases o
+\PontosMonadas{} nas mônadas, o tipo da pilha e o executor. As bases o
 absorveram só com adições. %% AFIRMACAO:pontos-mecanismos-bases
-Nelas o efeito é ambiente, e um efeito novo é uma referência nova; nos
+Nelas o efeito é ambiente, e um efeito novo é uma referência nova. Nos
 mecanismos ele precisa ser instalado, e o ponto de instalação é declaração
 preexistente. Só a versão com \textit{handlers} registra reutilização, com
 \ReusoHandlers{} instâncias: os \textit{handlers} de estado e de exceção são
@@ -906,7 +909,7 @@ referência a função inserida de antemão.
 \subsection{Desempenho}\label{sec:medicao}
 
 %%%% <<GERADO:ambiente>>
-A campanha correu em um Intel Xeon @ 2,10~GHz em máquina virtual de nuvem, com 4 processadores lógicos, sob Ubuntu 24.04.5 LTS, com OCaml~5.2.1+\textit{flambda}, GHC~9.4.7, Bechamel~0.5.0 e Criterion~1.6.1.0, sementes \Sementes{}, corridas estritamente sequenciais e afinidade fixada em um núcleo; no Bechamel, \texttt{limit:5000} e cota de \CotaS{}~segundos, e no Criterion, \Reamostras{} reamostragens e a regressão \texttt{allocated:iters}. Em máquina virtual compartilhada, o ruído de outros hóspedes soma-se ao da medição; as razões, tomadas na mesma sessão e em ordem alternada, o atenuam, e a replicação em máquina dedicada fica indicada.
+A campanha correu em um Intel Xeon @ 2,10~GHz em máquina virtual de nuvem, com 4 processadores lógicos, sob Ubuntu 24.04.5 LTS, com OCaml~5.2.1+\textit{flambda}, GHC~9.4.7, Bechamel~0.5.0 e Criterion~1.6.1.0, sementes \Sementes{}, corridas estritamente sequenciais e afinidade fixada em um núcleo. No Bechamel, \texttt{limit:5000} e cota de \CotaS{}~segundos, e no Criterion, \Reamostras{} reamostragens e a regressão \texttt{allocated:iters}. Em máquina virtual compartilhada, o ruído de outros hóspedes soma-se ao da medição. As razões, tomadas na mesma sessão e em ordem alternada, o atenuam, e a replicação em máquina dedicada fica indicada.
 %%%% <</GERADO:ambiente>>
 
 \begin{table}[ht]
@@ -944,8 +947,8 @@ A campanha correu em um Intel Xeon @ 2,10~GHz em máquina virtual de nuvem, com 
 O menor $R^2$ foi \RdoisMinOcaml{} no Bechamel e \RdoisMinHaskell{} no
 Criterion. \FraseRepeticoes{} A alocação praticamente não variou entre
 sementes, como se espera de uma grandeza determinística. Nenhum
-intervalo de 95\% da razão de tempo inclui~1 no OCaml; %% AFIRMACAO:ocaml-acima-de-1
-no Haskell, só o de \textsc{Arith} o exclui. %% AFIRMACAO:haskell-ic-so-arith-exclui-1
+intervalo de 95\% da razão de tempo inclui~1 no OCaml. %% AFIRMACAO:ocaml-acima-de-1
+No Haskell, só o de \textsc{Arith} o exclui. %% AFIRMACAO:haskell-ic-so-arith-exclui-1
 Um resultado não previsto veio de uma corrida subdimensionada, com cota de
 \SensCotaS{}~s e \SensLimite{} amostras. Nenhuma das suas medições teve $R^2$
 abaixo de 0,95, %% AFIRMACAO:sensibilidade-r2-ok
@@ -955,17 +958,17 @@ O $R^2$, portanto, não basta para validar a configuração de amostragem.
 
 \subsection{Discussão}\label{sec:discussao}
 
-A resposta a QP4 se apoia em duas medições; uma terceira leitura, que a
+A resposta a QP4 se apoia em duas medições. Uma terceira leitura, que a
 tabela parece sugerir, não se sustenta.
 
 A primeira é o controle do OCaml. Em \textsc{Arith} não ocorre operação de
 efeito alguma, e todo o excedente é instalação de \textit{handlers}:
 \DeltaNsOcamlArith{}~ns por expressão, o menor $\Delta$ dos quatro
-cenários; %% AFIRMACAO:ocaml-delta-arith-menor
-as operações de \textsc{State} e de \textsc{Output} elevam o total a
+cenários. %% AFIRMACAO:ocaml-delta-arith-menor
+As operações de \textsc{State} e de \textsc{Output} elevam o total a
 \DeltaNsOcamlState{} e \DeltaNsOcamlOutput{}~ns. Esse número separa o custo
 de \textit{estar} sob o mecanismo do custo de usá-lo. Com escopos curtos, como
-os daqui, a instalação domina; com um escopo que cobrisse muito trabalho, ela
+os daqui, a instalação domina. Com um escopo que cobrisse muito trabalho, ela
 se diluiria. No Haskell, o maior excedente, de
 \DeltaNsHaskellArith{}~ns, também está em \textsc{Arith}, %% AFIRMACAO:haskell-maior-delta-arith
 a carga com mais vinculações por expressão.
@@ -987,8 +990,8 @@ As bases diferem em custo (em \textsc{State}, \BaseNsHaskellState{}~ns por
 expressão com \texttt{Map}, contra \BaseNsOcamlState{} com
 \texttt{Hashtbl}), %% AFIRMACAO:haskell-base-state-cara
 e os \textit{runtimes} diferem em otimização. O que a tabela sustenta é a forma do
-custo: no OCaml, fixo por instalação e por operação, visível mesmo sem efeito;
-no Haskell, proporcional às vinculações e diluído pelo compilador a ponto de
+custo. No OCaml, ele é fixo por instalação e por operação, visível mesmo sem efeito.
+No Haskell, é proporcional às vinculações e diluído pelo compilador a ponto de
 três dos quatro intervalos incluírem~1. A expectativa do TCC~I
 \cite{marchioni:tcc1}, de sobrecusto abaixo de 1,5 vez nos \textit{handlers} e
 acima de 2 nas mônadas, não se confirmou em nenhuma das duas metades. %% AFIRMACAO:h4-ocaml-refutada %% AFIRMACAO:h4-haskell-refutada
@@ -996,7 +999,7 @@ acima de 2 nas mônadas, não se confirmou em nenhuma das duas metades. %% AFIRM
 Quanto a QP1 a QP3, o avaliador do mecanismo é idêntico ao da base pelos três
 \textit{proxies}, e o custo de escrita está na infraestrutura. Nos
 \textit{handlers}, ele se concentra nas composições, é localizado e pago uma
-vez; nas mônadas, recai sobre o tipo da pilha e cresce com ela, como mostrou a
+vez. Nas mônadas, recai sobre o tipo da pilha e cresce com ela, como mostrou a
 segunda camada de estado.
 
 %% ============================================================
@@ -1020,8 +1023,8 @@ intralinguagem, que separa o que cabe ao mecanismo do que cabe ao
 citadas da literatura medem regimes diferentes do medido aqui. Do trabalho que introduziu o mecanismo, o
 sobrecusto de cerca de 1\% refere-se a programas que \textit{não} usam
 \textit{handlers}, e as desacelerações de 6,7 a 12,3~vezes, a recursão
-não-\textit{tail} envolvida em \textit{handler} \cite{sivaramakrishnan:21};
-nenhuma é a razão sobre um caso de uso integrado, e as obtidas aqui ficam
+não-\textit{tail} envolvida em \textit{handler} \cite{sivaramakrishnan:21}.
+Nenhuma é a razão sobre um caso de uso integrado, e as obtidas aqui ficam
 abaixo daquelas desacelerações. %% AFIRMACAO:ocaml-abaixo-literatura
 A mesma fonte reporta cerca de 23~ns para alocar uma \textit{fiber} e trocar
 de pilha, da mesma ordem dos \DeltaNsOcamlArith{}~ns que a instalação de três
@@ -1029,7 +1032,7 @@ de pilha, da mesma ordem dos \DeltaNsOcamlArith{}~ns que a instalação de três
 Em Haskell, a
 literatura intralinguagem compara a mônada de estado e a pilha do
 \textit{mtl} a uma versão pura em \textit{microbenchmarks} e encontra razões
-entre 1,0 e 1,3 \cite{kammar:13,xie:20}; as daqui ficam no limite inferior
+entre 1,0 e 1,3 \cite{kammar:13,xie:20}. As daqui ficam no limite inferior
 dessa faixa ou abaixo dele, %% AFIRMACAO:haskell-limite-inferior-literatura
 como se espera de uma base que não é pura, mas executa em \texttt{IO} e
 compartilha o \texttt{Map}. Por fim, a pesquisa que remove sobrecusto por
@@ -1040,11 +1043,11 @@ algébricos em si.
 
 As conclusões restringem-se a um caso de uso, a versões específicas de
 compilador, a \UmaMaquina{}, ao regime de abortamento total do efeito de exceção,
-ao ambiente global sem escopo léxico e às quatro dimensões adotadas; a
-comparação entre as linguagens permanece exploratória; e a legibilidade medida
+ao ambiente global sem escopo léxico e às quatro dimensões adotadas. A
+comparação entre as linguagens permanece exploratória. A legibilidade medida
 é a estrutural, não a percebida. Houve ainda dois achados não previstos:
 abandonar a continuação, em vez de encerrá-la, vaza memória invisível às
-métricas de alocação (Seção~\ref{sec:impl-efeitos}); e o $R^2$ não basta para
+métricas de alocação (Seção~\ref{sec:impl-efeitos}). O $R^2$ não basta para
 validar a configuração de amostragem (Seção~\ref{sec:medicao}), ameaça à
 validade de conclusão.
 
@@ -1078,14 +1081,14 @@ pede um estudo com participantes, único instrumento capaz de validar os
 
 Em conformidade com os Arts.~6\textsuperscript{o} a 8\textsuperscript{o} do
 Regulamento Geral de TCC, declara-se o uso do modelo Claude (Anthropic, versão
-\textbf{[PREENCHER]}): na revisão crítica de todas as seções, para verificar a
+\textbf{[PREENCHER]}). O modelo foi usado na revisão crítica de todas as seções, para verificar a
 consistência interna e a correspondência entre afirmações e referências,
 identificar redundâncias, sugerir redação e concisão e corrigir afirmações
-factuais; na edição de estilo do texto, exceto nos resumos e no primeiro
-parágrafo da introdução; na redação preliminar dos trechos que reportam e discutem os
+factuais. Foi usado também na edição de estilo do texto, exceto nos resumos e no primeiro
+parágrafo da introdução, e na redação preliminar dos trechos que reportam e discutem os
 resultados (síntese da Seção~\ref{sec:intro} e
 Seções~\ref{sec:oraculo}, \ref{sec:resultados} e~\ref{sec:consideracoes}),
-revisada pelo autor; na geração do código-fonte publicado no repositório
+revisada pelo autor. Por fim, gerou o código-fonte publicado no repositório
 (implementações, suítes de teste, \textit{harnesses} e scripts de métricas),
 revisado\DeclaracaoExecucao. O conteúdo técnico, os resultados e
 a redação final são de responsabilidade do autor.

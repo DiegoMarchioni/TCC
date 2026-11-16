@@ -1,7 +1,7 @@
 # Guia de defesa, parte 5: Apresentação (20 min) e arguição (20 min)
 
 *Escrito em 10/11/2026, com os resultados da campanha final.* O Regulamento
-prevê 20 minutos de apresentação e 20 de arguição; as bancas vão de 02 a
+prevê 20 minutos de apresentação e 20 de arguição. As bancas vão de 02 a
 10/12/2026, e a entrega à banca (4º PC, já revisada pelo orientador) é até
 23/11/2026.
 
@@ -10,7 +10,7 @@ conversa), com 17 slides para os 20 minutos e 5 de apêndice para a arguição.
 Pelo menu da própria página, a apresentação baixa como **PDF** (o mais seguro
 para apresentar online) ou **PPTX** (editável: os gráficos são formas nativas,
 não imagens). Não existe modelo oficial de slides da SBC, e o Regulamento só
-exige o formato SBC para o artigo (Art. 3º); o visual é próprio, com o mesmo
+exige o formato SBC para o artigo (Art. 3º). O visual é próprio, com o mesmo
 código de cores das figuras: azul para OCaml/*handlers*, laranja para
 Haskell/mônadas, cinza para as bases.
 
@@ -24,7 +24,7 @@ PNG 2×, e se regeneram com `make figuras`. Os números de cada figura estão em
 
 > **Fale com as suas palavras.** As notas abaixo são o que cada slide precisa
 > transmitir, não um texto para ler. Ensaie com cronômetro pelo menos duas
-> vezes; 17 slides em 20 minutos dá cerca de 1min10s por slide.
+> vezes. 17 slides em 20 minutos dá cerca de 1min10s por slide.
 
 ---
 
@@ -53,14 +53,14 @@ nas notas do apresentador de cada slide. Abaixo, o mapa de tempos.
 | 15 | Frente à literatura e ao TCC I | 1:00 | 16:00 |
 | 16 | Conclusões e trabalhos futuros | 1:20 | 17:20 |
 | 17 | Obrigado | 0:20 | 17:40 |
-| A1–A5 | Apêndice: Tabela 2 completa, protocolo, quarto efeito, sensibilidade, uso de IA | arguição | |
+| A1 a A5 | Apêndice: Tabela 2 completa, protocolo, quarto efeito, sensibilidade, uso de IA | arguição | |
 
 Sobram cerca de 2 minutos e 20 segundos de folga. Os apêndices não entram na fala: abra-os só se a
 banca perguntar.
 
 *Os blocos abaixo são material de estudo: o contexto técnico por trás de cada
 slide, para você entender e responder se perguntarem. Desde a simplificação de
-12/11/2026, a fala (Guia 06) e os slides evitam esses termos; não é preciso
+12/11/2026, a fala (Guia 06) e os slides evitam esses termos. Não é preciso
 dizê-los na apresentação.*
 
 ### 1. Capa (0:30)
@@ -69,11 +69,11 @@ lidar com efeitos em linguagens funcionais, em quatro dimensões, sobre o mesmo
 programa".
 
 ### 2. Dois mecanismos para efeitos (1:20)
-- Programas reais têm efeitos (estado, exceções, saída); linguagens funcionais
+- Programas reais têm efeitos (estado, exceções, saída). Linguagens funcionais
   precisam de um mecanismo para eles.
 - Duas respostas: **mônadas** compostas por *transformers* (Haskell) e
   **efeitos algébricos com *handlers*** (nativos no OCaml 5, desde 2022).
-- A teoria já diz que elas expressam o mesmo (Schrijvers et al. 2019); a
+- A teoria já diz que elas expressam o mesmo (Schrijvers et al. 2019). A
   pergunta prática, "qual escolher e a que custo", não tem evidência que junte
   custo de escrita e custo de execução.
 
@@ -81,7 +81,7 @@ programa".
 - O mecanismo não se separa do *runtime*: mônadas rodam no GHC, *handlers* no
   OCaml. Comparar tempos absolutos é comparar duas variáveis de uma vez.
 - Solução: **cada mecanismo contra uma base imperativa na própria linguagem**
-  (imperativa com `Hashtbl` no OCaml; `IORef` com o mesmo `Map` no Haskell) e
+  (imperativa com `Hashtbl` no OCaml, `IORef` com o mesmo `Map` no Haskell) e
   só então confrontar as razões, e com cautela: **exploratório**.
 - Fórmula para guardar: razão = 1 + Δ / T_base. Uma base cara *deflaciona* a
   razão (vai voltar no slide 13).
@@ -111,22 +111,22 @@ programa".
   resultados.
 - Os efeitos acontecem dentro dela: `Var` e `Let` mexem no estado, `Div` por
   zero e variável inexistente dão erro, `Print` escreve na saída.
-- Por que importa: a QP1 mede só a `eval`; a QP3 mede o resto do arquivo (o
+- Por que importa: a QP1 mede só a `eval`. A QP3 mede o resto do arquivo (o
   código em volta dela). O resultado principal sai dessa divisão.
 - O código do slide é o de `codigo/ocaml/imperative/interp_imp.ml`, linhas 14
   a 23, com a anotação de tipo omitida e a mensagem de erro abreviada.
 
 ### 7. Quatro versões e a verificação (1:10)
-- *Handlers* × imperativa (OCaml); mônadas × `IORef` (Haskell).
+- *Handlers* × imperativa (OCaml). Mônadas × `IORef` (Haskell).
 - Oráculo: 28 casos × 2 versões + 5 conferências = **61/61 nas duas
-  linguagens**; é pré-condição da medição.
+  linguagens**. É pré-condição da medição.
 - **Testes de mutação: 8/8** decisões revertidas são detectadas (`quot`/`div`,
   ordem de avaliação, escopo de `Let`, ordem da pilha).
 - Gerador replicado em OCaml, Haskell e Python: os *hashes* das 12 cargas batem
   nas três.
 
 ### 8. O mesmo trecho de eval, com e sem handlers (0:50)
-Mostre o braço `Var` lado a lado (é o slide de código; mantenha curto):
+Mostre o braço `Var` lado a lado (é o slide de código, mantenha curto):
 
 ```ocaml
 (* handlers *)                                (* imperativa *)
@@ -147,11 +147,11 @@ leitura do avaliador.**
 ### 10. Composabilidade e infraestrutura (1:20)
 Gráfico de barras do *boilerplate* e os pontos de modificação ao lado.
 - *Handlers*: 67 linhas de *boilerplate* contra 3 da base (registros de
-  `match_with`, repasses `| _ -> None`, `continue`, composições); 18 delas só
+  `match_with`, repasses `| _ -> None`, `continue`, composições). 18 delas só
   servem ao oráculo.
 - Haskell: 20 × 22, quase tudo cabeçalho e importação comuns às duas versões.
 - 4º efeito: **só os mecanismos** precisaram mudar declarações existentes (2 e
-  2); as bases, nenhuma. Nos *handlers*, as composições que os instalam; nas
+  2). As bases, nenhuma. Nos *handlers*, as composições que os instalam. Nas
   mônadas, o tipo da pilha e o executor, e dois `lift` explícitos, porque o
   *mtl* só alcança uma camada de estado.
 - Reutilização: só os *handlers* (2): o preço do *boilerplate* compra a troca
@@ -166,9 +166,9 @@ Gráfico de barras do excedente por cenário. **Este é o slide central.**
 - Arith no OCaml não faz operação de efeito nenhuma: os **45 ns** por expressão
   são só instalar três *handlers*. É o número mais limpo do trabalho.
 - As operações somam a isso: 84 ns em State, 111 em Output.
-- No Haskell, no máximo 10 ns (Arith, a carga com mais *binds*); três dos quatro
+- No Haskell, no máximo 10 ns (Arith, a carga com mais *binds*). Três dos quatro
   intervalos de confiança incluem 1. O GHC quase apaga a pilha.
-- Razões: OCaml 1,59 a 4,26; Haskell 0,97 a 1,08.
+- Razões: OCaml 1,59 a 4,26 e Haskell 0,97 a 1,08.
 
 ### 13. Memória por expressão (1:00)
 Barras empilhadas: base em cinza, excedente na cor de cada linguagem.
@@ -180,7 +180,7 @@ Barras empilhadas: base em cinza, excedente na cor de cada linguagem.
   coluna.
 
 ### 14. Achados não previstos (1:10)
-Dois cartões com os números; o detalhe da sensibilidade está no apêndice A4.
+Dois cartões com os números. O detalhe da sensibilidade está no apêndice A4.
 - **Vazamento:** abandonar a continuação (em vez de `discontinue`) vaza o
   segmento de pilha: 2 milhões de erros → ~1,2 GB contra ~6 MB. Nenhuma métrica
   de alocação vê isso (`make experimento` reproduz).
@@ -189,18 +189,18 @@ Dois cartões com os números; o detalhe da sensibilidade está no apêndice A4.
   validade.
 
 ### 15. Frente à literatura e ao TCC I (1:00)
-- Sivaramakrishnan et al. 2021: 1% é para programas *sem* *handlers*; 6,7–12,3×
+- Sivaramakrishnan et al. 2021: 1% é para programas *sem* *handlers*. 6,7 a 12,3×
   é recursão não-*tail* sob *handler*. As razões daqui ficam abaixo, e os
   45 ns são da mesma ordem dos 23 ns que eles medem por *fiber*.
-- Kammar 2013 e Xie & Leijen 2020: 1,0–1,3 para mônadas contra versão pura;
-  aqui, limite inferior ou abaixo, porque a base não é pura.
+- Kammar 2013 e Xie & Leijen 2020: 1,0 a 1,3 para mônadas contra versão pura.
+  Aqui, limite inferior ou abaixo, porque a base não é pura.
 - **TCC I:** previa *handlers* < 1,5× e mônadas > 2×. Falhou nas duas metades.
   Diga sem rodeio.
 
 ### 16. Conclusões e trabalhos futuros (1:20)
-- Escrita: o custo dos mecanismos está na **infraestrutura**, não no avaliador;
-  nos *handlers*, localizado e pago uma vez; nas mônadas, cresce com a pilha.
-- Execução: *handlers* têm custo fixo por instalação e por operação; mônadas,
+- Escrita: o custo dos mecanismos está na **infraestrutura**, não no avaliador.
+  Nos *handlers*, localizado e pago uma vez. Nas mônadas, cresce com a pilha.
+- Execução: *handlers* têm custo fixo por instalação e por operação. Mônadas,
   com otimização, quase nada.
 - Limitações: um caso de uso, uma máquina virtual, versões específicas, exceção
   só abortiva, legibilidade estrutural.
@@ -210,7 +210,7 @@ Dois cartões com os números; o detalhe da sensibilidade está no apêndice A4.
 
 ### 17. Obrigado (0:20)
 Agradeça e passe a palavra à banca. Deixe este slide aberto durante a
-arguição; os apêndices A1 a A5 estão logo depois, para responder com números.
+arguição. Os apêndices A1 a A5 estão logo depois, para responder com números.
 
 ---
 
@@ -218,38 +218,38 @@ arguição; os apêndices A1 a A5 estão logo depois, para responder com número
 
 **Sobre o método**
 1. *"Por que razões, e não tempo absoluto?"* → mecanismo e *runtime* não se
-   separam; a razão contra a base da mesma linguagem tira o fator da linguagem.
-2. *"Então o confronto OCaml × Haskell vale?"* → é exploratório e o texto diz;
-   o que se sustenta é a **forma** do custo, não qual razão é menor.
+   separam. A razão contra a base da mesma linguagem tira o fator da linguagem.
+2. *"Então o confronto OCaml × Haskell vale?"* → é exploratório e o texto diz.
+   O que se sustenta é a **forma** do custo, não qual razão é menor.
 3. *"Por que `Map` na base Haskell?"* → para a razão medir o mecanismo, não a
    estrutura de dados. O preço é a base cara em State (346 ns).
 4. *"Por que três *handlers* por expressão?"* → o de exceção precisa (senão o
-   1º erro encerra a carga); os outros vão junto. Está declarado.
+   1º erro encerra a carga). Os outros vão junto. Está declarado.
 5. *"Arith é controle no Haskell?"* → não: lá cada `<-` é *bind* da pilha. É
    controle só no OCaml, e o texto diz.
 6. *"Três sementes bastam?"* → medem sensibilidade à carga sorteada, não
-   amostram uma população de programas; n = 1 caso de uso, declarado.
+   amostram uma população de programas: n = 1 caso de uso, declarado.
 
 **Sobre os resultados**
 7. *"Output tem 4,26: saída é cara?"* → é a base mais barata (34 ns, árvores
    menores). Em absoluto, 111 ns, dos quais 45 são instalação.
 8. *"Por que o Haskell quase não paga nada?"* → o GHC especializa a pilha
-   concreta; e a base não é pura, também paga `IO`.
+   concreta. A base não é pura, também paga `IO`.
 9. *"Os números valem numa VM?"* → razões na mesma sessão, ordem alternada,
-   afinidade fixa, R² ≥ 0,95 com repetição automática; a VM está declarada e a
+   afinidade fixa, R² ≥ 0,95 com repetição automática. A VM está declarada e a
    replicação em máquina dedicada, indicada. `make tudo` refaz tudo.
 10. *"E a dispersão de 18% no Haskell/Output?"* → a base oscilou numa semente
-    (477 µs contra ~400 µs nas outras); por isso a mediana, e por isso o
+    (477 µs contra ~400 µs nas outras). Por isso a mediana, e por isso o
     intervalo dele inclui 1.
 
 **Sobre o código e a IA**
-11. *"Quem escreveu o código?"* → gerado com assistência de IA, como declarado;
-    você revisou, rodou e explica cada decisão (Guia 04). A campanha foi
+11. *"Quem escreveu o código?"* → gerado com assistência de IA, como declarado.
+    Você revisou, rodou e explica cada decisão (Guia 04). A campanha foi
     executada pela ferramenta numa VM de nuvem, e a declaração diz isso.
 12. *"Como sabe que as quatro versões fazem a mesma coisa?"* → oráculo 61/61,
     *hashes* das cargas, pré-condição dentro do *harness* e mutação 8/8.
 13. *"A regra de *boilerplate* não é arbitrária?"* → é fixa, publicada e
-    auditável linha a linha (`boilerplate-regra/*.csv`); a contagem humana fica
+    auditável linha a linha (`boilerplate-regra/*.csv`). A contagem humana fica
     como validação.
 
 Respostas mais longas: Guias 01 a 04.
@@ -259,7 +259,7 @@ Respostas mais longas: Guias 01 a 04.
 ## Checklist antes da entrega (23/11) e da banca
 
 - [ ] Reescrever **Abstract e Resumo** com as suas palavras, até 10 linhas cada,
-      ambos na 1ª página (o orientador marcou "I.A.?"); os números já são
+      ambos na 1ª página (o orientador marcou "I.A.?"). Os números já são
       macros.
 - [ ] Preencher a versão do modelo no lugar de `[PREENCHER]` (Agradecimentos).
 - [ ] Conferir o ano e o repositório de `marchioni:tcc1` no `.bib` (a nota
@@ -271,7 +271,7 @@ Respostas mais longas: Guias 01 a 04.
 - [ ] Revisar com as suas palavras os trechos marcados `%% NOVO (10/11)` no
       fonte (Seções 1, 5.3, 6 e 7).
 - [ ] Opcional, mas recomendável: `make tudo` no seu computador, para trocar a
-      VM por uma máquina física; o script avisa se alguma frase mudar de
+      VM por uma máquina física. O script avisa se alguma frase mudar de
       sentido.
 - [ ] Baixar a apresentação em PDF (e em PPTX, de reserva) e ensaiar duas vezes
       com cronômetro, em chamada de vídeo com a câmera ligada (Art. 18, § 1º).

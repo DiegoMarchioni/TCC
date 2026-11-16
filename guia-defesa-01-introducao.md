@@ -5,7 +5,7 @@ Cobre o título, os resumos e a Seção 1. Para cada bloco: o que o texto afirma
 o que cada citação sustenta, os termos que você precisa definir de cabeça e as
 perguntas prováveis, com resposta. A última seção lista os pontos frágeis.
 
-**A banca:** orientador + dois membros; 20 min de apresentação e 20 min de
+**A banca:** orientador + dois membros. 20 min de apresentação e 20 min de
 arguição (Art. 18). O orientador fala por último.
 
 ---
@@ -14,9 +14,9 @@ arguição (Art. 18). O orientador fala por último.
 
 | Bloco | Função | Exigência do regulamento |
 |---|---|---|
-| 1º parágrafo | Contexto: transparência referencial × efeitos; os dois mecanismos | contextualização/motivação |
-| **Problema e justificativa** | A lacuna e por que ela importa agora | problema; justificativa |
-| **Objetivo e questões de pesquisa** | O que se compara, como (razões) e as QP1–QP4; os cinco objetivos específicos | objetivos geral e específicos |
+| 1º parágrafo | Contexto: transparência referencial × efeitos. Os dois mecanismos | contextualização/motivação |
+| **Problema e justificativa** | A lacuna e por que ela importa agora | problema. Justificativa |
+| **Objetivo e questões de pesquisa** | O que se compara, como (razões) e as QP1 a QP4. Os cinco objetivos específicos | objetivos geral e específicos |
 | **Contribuições e síntese dos resultados** | O que fica para a área + números principais | síntese do que foi feito e principais resultados (4º PC) |
 | Último parágrafo | Roteiro das seções | descrição das seções |
 
@@ -26,11 +26,11 @@ arguição (Art. 18). O orientador fala por último.
 
 ### O que dizem
 
-Gerenciar efeitos é um problema central; mônadas (Haskell, transformadores) e
-efeitos algébricos (OCaml 5, *handlers*) são as duas abordagens; o mecanismo não
+Gerenciar efeitos é um problema central. Mônadas (Haskell, transformadores) e
+efeitos algébricos (OCaml 5, *handlers*) são as duas abordagens. O mecanismo não
 se separa do *runtime*, então a comparação é feita **por razões** contra uma base
-imperativa em cada linguagem; quatro implementações, oráculo derivado da
-semântica, gerador replicado; LOC se mostrou sensível ao estilo; sobrecusto medido.
+imperativa em cada linguagem. Quatro implementações, oráculo derivado da
+semântica, gerador replicado. LOC se mostrou sensível ao estilo. Sobrecusto medido.
 
 ### Antes da banca
 
@@ -40,8 +40,8 @@ semântica, gerador replicado; LOC se mostrou sensível ao estilo; sobrecusto me
   palavras.** Na arguição, você precisa conseguir dizer cada frase dele sem ler.
 - Ao reescrever, não repita duas afirmações que o próprio artigo desmente:
   (1) a LOC **não** depende do "sequenciamento explícito exigido pelo OCaml" (as
-  duas linguagens gastam três linhas por operador binário, Seção 6.1); (2) a
-  restrição intralinguagem não é o remédio para o estilo; quem cuida do estilo
+  duas linguagens gastam três linhas por operador binário, Seção 6.1). (2) a
+  restrição intralinguagem não é o remédio para o estilo. Quem cuida do estilo
   é a normalização por formatadores.
 - Os números do resumo têm de ser os da **sua** campanha final (ver Guia 04).
 
@@ -55,7 +55,7 @@ O paradigma funcional se apoia na **transparência referencial**: trocar uma
 expressão por outra de mesmo valor não muda o significado do programa. Isso
 entra em tensão com operações que programas reais fazem (arquivos, exceções,
 estado). Essas operações são os **efeitos computacionais**. Dois mecanismos
-dominam: **mônadas** (encapsulam efeitos em tipos; em Haskell, combinadas por
+dominam: **mônadas** (encapsulam efeitos em tipos, em Haskell, combinadas por
 *monad transformers*) e **efeitos algébricos** (efeitos como conjuntos de
 operações, com semântica fixada por *handlers*).
 
@@ -73,17 +73,17 @@ operações, com semântica fixada por *handlers*).
 > "facilita o raciocínio equacional e a verificação formal", e Hughes argumenta
 > pela **modularidade** (funções de alta ordem e avaliação preguiçosa), abrindo
 > o artigo justamente contra quem defende a programação funcional pelo que ela
-> não tem. A citação foi retirada; se você a reintroduzir ao reescrever o
+> não tem. A citação foi retirada. Se você a reintroduzir ao reescrever o
 > parágrafo, cite-o para a modularidade.
 
 ### Termos
 
 - **Transparência referencial**: substituir uma expressão pelo seu valor não
-  muda o programa; é o que permite raciocinar por equações.
+  muda o programa. É o que permite raciocinar por equações.
 - **Efeito computacional** (definição de trabalho da Seção 2): um conjunto de
   operações cuja interpretação fica em aberto no ponto de uso e é fixada em
   outro lugar.
-- **Por que não "efeito colateral"**: "colateral" sugere acidente; na tradição
+- **Por que não "efeito colateral"**: "colateral" sugere acidente. Na tradição
   algébrica o efeito é uma operação declarada, com semântica própria.
 
 ---
@@ -93,7 +93,7 @@ operações, com semântica fixada por *handlers*).
 ### O que o texto afirma
 
 A relação **teórica** entre os mecanismos está estabelecida
-(`schrijvers:19`, `forster:17`); as consequências **práticas**, não. Os estudos
+(`schrijvers:19`, `forster:17`). As consequências **práticas**, não. Os estudos
 tratam fundamentos, expressividade ou custo **em separado**, e nenhum reúne as
 quatro dimensões sobre um mesmo caso de uso. A escolha deixou de ser hipotética:
 com *handlers* nativos no OCaml 5, a alternativa existe numa linguagem de uso
@@ -103,7 +103,7 @@ custo de execução e custo de escrita.
 ### Como defender
 
 - **"Nenhum reúne"**: diga "nenhum dos trabalhos revisados", como a Seção 3.2.
-  Afirmar que nada existe é indefensável; afirmar que a revisão feita não
+  Afirmar que nada existe é indefensável. Afirmar que a revisão feita não
   encontrou é honesto e suficiente.
 - **Por que agora**: OCaml 5.0 (dez/2022) tornou *handlers* nativos disponíveis
   em produção. Antes, a decisão prática era só "qual arranjo monádico".
@@ -143,18 +143,18 @@ as duas coisas. Diga isso antes que perguntem.
 |---|---|---|
 | QP1 | menos carga estrutural de leitura? | LOC de `eval`, operações de efeito (por construtor), aninhamento |
 | QP2 | menos pontos de modificação para compor/estender? | pontos de modificação ao inserir o quarto efeito |
-| QP3 | menos *boilerplate*, mais reuso? | *boilerplate* por regra mecânica sobre os *tokens*; instâncias de reutilização |
+| QP3 | menos *boilerplate*, mais reuso? | *boilerplate* por regra mecânica sobre os *tokens*. Instâncias de reutilização |
 | QP4 | qual o custo de execução, em tempo e memória? | razões de tempo e de alocação |
 
-**Fora do escopo:** legibilidade **percebida** (exigiria estudo com pessoas); as
+**Fora do escopo:** legibilidade **percebida** (exigiria estudo com pessoas). As
 métricas são *proxies* estruturais.
 
 ### Os cinco objetivos específicos
 
-Sistematizar as diferenças e o argumento de equivalência; especificar a semântica
-e o critério de equivalência; implementar as quatro versões com oráculo e
-gerador; aplicar as métricas de código; medir o sobrecusto. **Os três primeiros
-são instrumentais; os dois últimos, de avaliação** (geram as QPs).
+Sistematizar as diferenças e o argumento de equivalência. Especificar a semântica
+e o critério de equivalência. Implementar as quatro versões com oráculo e
+gerador. Aplicar as métricas de código. Medir o sobrecusto. **Os três primeiros
+são instrumentais. Os dois últimos, de avaliação** (geram as QPs).
 
 ---
 
@@ -163,9 +163,9 @@ são instrumentais; os dois últimos, de avaliação** (geram as QPs).
 O texto põe a contribuição **no desenho que torna a comparação legítima**, e não
 num artefato isolado:
 
-1. o argumento de equivalência expressiva (Seção 2.3);
+1. o argumento de equivalência expressiva (Seção 2.3).
 2. o critério de equivalência funcional verificável e a suíte de oráculo que o
-   realiza;
+   realiza.
 3. a normalização intralinguagem, que separa o que cabe ao mecanismo do que
    cabe ao *runtime*.
 
@@ -181,11 +181,11 @@ num artefato isolado:
 - **QP1:** dentro de cada linguagem, `eval` do mecanismo e da base empatam nas
   três métricas (29/5/2 no OCaml, 27/18/1 no Haskell), também por construtor.
 - **QP2/QP3:** a diferença está fora de `eval`: *boilerplate* 67 × 3 linhas no
-  OCaml (*handlers* × imperativa) e 20 × 22 no Haskell (mônadas × `IORef`); só
+  OCaml (*handlers* × imperativa) e 20 × 22 no Haskell (mônadas × `IORef`). Só
   os mecanismos exigiram pontos de modificação para o quarto efeito (2 e 2,
   contra 0 e 0).
 - **QP4:** *handlers* custam 1,59 a 4,26 vezes a base em tempo e 6,6 a 12,7 em
-  alocação; mônadas, 0,97 a 1,08 e 1,1 a 2,2.
+  alocação. Mônadas, 0,97 a 1,08 e 1,1 a 2,2.
 
 Os números do texto são **macros geradas** pela campanha (`make artigo`): se
 você refizer a campanha no seu computador, eles mudam sozinhos, e o script
@@ -196,13 +196,13 @@ avisa se alguma frase qualitativa deixar de valer (Guia 04, seção 8).
 ## Perguntas mais prováveis
 
 1. **"Por que razões e não tempos?"** → porque o mecanismo não se separa do
-   *runtime*; a razão contra uma base na mesma linguagem cancela o fator da
+   *runtime*. A razão contra uma base na mesma linguagem cancela o fator da
    linguagem.
 2. **"O confronto entre as linguagens vale?"** → é exploratório, e o texto diz
-   isso; as bases têm custos diferentes (`Map` × `Hashtbl`) e o viés
+   isso. As bases têm custos diferentes (`Map` × `Hashtbl`) e o viés
    1 + Δ/T_base tem direção conhecida.
 3. **"Kammar e Xie já não fazem isso?"** → fazem a comparação **intralinguagem**,
-   com versão pura de controle, em *microbenchmarks* de contador; este trabalho
+   com versão pura de controle, em *microbenchmarks* de contador. Este trabalho
    integra quatro dimensões sobre um interpretador e confronta as duas razões.
 4. **"Você mede legibilidade?"** → mede três *proxies* estruturais, não a
    legibilidade percebida, que fica como trabalho futuro.
@@ -220,11 +220,11 @@ avisa se alguma frase qualitativa deixar de valer (Guia 04, seção 8).
    palavras.
 2. **A hipótese do TCC I foi refutada, e o texto diz isso** (Seção 6.3, com
    `marchioni:tcc1`): previa-se sobrecusto abaixo de 1,5× no OCaml e acima de
-   2,0× no Haskell; mediu-se 1,59–4,26 e 0,97–1,08. Apresente isso como
+   2,0× no Haskell. Mediu-se 1,59 a 4,26 e 0,97 a 1,08. Apresente isso como
    resultado, não como problema: uma previsão refutada é informação.
-3. **QP1–QP3 estão medidas por regra mecânica.** A classificação de cada linha
+3. **QP1 a QP3 estão medidas por regra mecânica.** A classificação de cada linha
    de *boilerplate* está em `codigo/resultados/boilerplate-regra/*.csv`. A dupla
-   contagem humana virou validação opcional (`metricas.py concordancia`); se o
+   contagem humana virou validação opcional (`metricas.py concordancia`). Se o
    orientador quiser fazê-la, as planilhas estão prontas.
 4. **Uso de IA.** O código, a execução da campanha (em máquina virtual de
    nuvem) e a redação preliminar dos trechos de resultados foram feitos com a
