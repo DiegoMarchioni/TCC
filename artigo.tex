@@ -376,13 +376,11 @@ ficou entre \FaixaRTOcaml{} em tempo e entre \FaixaRAOcaml{} em alocação no
 OCaml. No Haskell, ficou entre \FaixaRTHaskell{} em tempo e entre \FaixaRAHaskell{}
 em alocação. Mediu-se um único caso de uso, em \UmaMaquina{}.
 
-O restante do texto organiza-se como segue: a Seção~\ref{sec:fundamentacao}
-apresenta os dois mecanismos e a relação formal entre eles. A
-Seção~\ref{sec:relacionados} posiciona o trabalho frente à literatura. A
-Seção~\ref{sec:metodologia} fixa o caso de uso, a semântica, as métricas e o
-protocolo. A Seção~\ref{sec:impl} descreve as implementações. A
-Seção~\ref{sec:resultados} reporta e discute os resultados. A
-Seção~\ref{sec:consideracoes} conclui.
+O restante do texto apresenta os dois mecanismos
+(Seção~\ref{sec:fundamentacao}), a literatura (Seção~\ref{sec:relacionados}),
+o método (Seção~\ref{sec:metodologia}), as implementações
+(Seção~\ref{sec:impl}), os resultados (Seção~\ref{sec:resultados}) e as
+conclusões (Seção~\ref{sec:consideracoes}).
 
 %% ============================================================
 \section{Fundamentação Teórica}\label{sec:fundamentacao}
@@ -533,6 +531,28 @@ quase uma década de distância.
 \section{Metodologia}\label{sec:metodologia}
 %% ============================================================
 
+%% NOVO (16/11): texto de entrada da seção, escrito a pedido. Revise com as suas palavras.
+Esta seção fixa o caso de uso e a sua semântica (Seção~\ref{sec:caso-de-uso}),
+as métricas de cada questão de pesquisa (Seção~\ref{sec:metricas}) e o
+protocolo de medição, com as ameaças à validade (Seção~\ref{sec:protocolo}). A
+Figura~\ref{fig:metodo} resume as etapas na ordem em que foram executadas.
+
+%% REVISAO FINAL (10/11): figura acrescentada porque o Art. 4o, par. 1o, III, do
+%% Regulamento pede metodologia "com diagramas, fluxogramas, figuras". Usa so
+%% LaTeX padrao (sem TikZ), para compilar em qualquer instalacao.
+\begin{figure}[ht]
+  \centering
+  \footnotesize\setlength{\fboxsep}{4pt}
+  \newcommand{\etapa}[1]{\fbox{\parbox[c][2.8em][c]{2.25cm}{\centering #1}}}
+  \etapa{Semântica \textit{small-step}}\,$\rightarrow$\,%
+  \etapa{Quatro versões equivalentes}\,$\rightarrow$\,%
+  \etapa{Suíte de oráculo (pré-condição)}\,$\rightarrow$\,%
+  \etapa{Métricas de código e campanha}\,$\rightarrow$\,%
+  \etapa{Razões sobre a base, por linguagem}
+  \caption{Etapas do método: nada é medido antes de a suíte de oráculo passar.}
+  \label{fig:metodo}
+\end{figure}
+
 \subsection{Caso de Uso e Semântica}\label{sec:caso-de-uso}
 
 O caso de uso é um interpretador para uma linguagem de expressões com oito
@@ -633,27 +653,11 @@ mecanismo sobre ela.
 
 \subsection{Protocolo Experimental e Ameaças à Validade}\label{sec:protocolo}
 
-A Figura~\ref{fig:metodo} resume as etapas do método. A equivalência testada
+A equivalência testada
 pela suíte de oráculo é pré-condição da medição: os
 \textit{benchmarks} só são executados depois de ela passar nas quatro
 implementações, e cada \textit{harness} confere ainda, sobre a própria carga,
 que mecanismo e base produzem a mesma soma, os mesmos erros e o mesmo traço.
-
-%% REVISAO FINAL (10/11): figura acrescentada porque o Art. 4o, par. 1o, III, do
-%% Regulamento pede metodologia "com diagramas, fluxogramas, figuras". Usa so
-%% LaTeX padrao (sem TikZ), para compilar em qualquer instalacao.
-\begin{figure}[ht]
-  \centering
-  \footnotesize\setlength{\fboxsep}{4pt}
-  \newcommand{\etapa}[1]{\fbox{\parbox[c][2.8em][c]{2.25cm}{\centering #1}}}
-  \etapa{Semântica \textit{small-step}}\,$\rightarrow$\,%
-  \etapa{Quatro versões equivalentes}\,$\rightarrow$\,%
-  \etapa{Suíte de oráculo (pré-condição)}\,$\rightarrow$\,%
-  \etapa{Métricas de código e campanha}\,$\rightarrow$\,%
-  \etapa{Razões sobre a base, por linguagem}
-  \caption{Etapas do método: nada é medido antes de a suíte de oráculo passar.}
-  \label{fig:metodo}
-\end{figure}
 
 Os \textit{harnesses} usam Criterion \cite{criterion:08} em Haskell e
 Bechamel \cite{bechamel:21} em OCaml~5.2.1 com \textit{flambda}, com
@@ -834,6 +838,12 @@ cada.
 \section{Resultados}\label{sec:resultados}
 %% ============================================================
 
+%% NOVO (16/11): texto de entrada da seção, escrito a pedido. Revise com as suas palavras.
+Os resultados seguem a ordem das questões de pesquisa: as métricas de código
+respondem às QP1 a QP3 (Seção~\ref{sec:metricas-codigo}), a campanha de
+desempenho responde à QP4 (Seção~\ref{sec:medicao}), e a
+Seção~\ref{sec:discussao} interpreta os números das duas.
+
 \subsection{Métricas de Código}\label{sec:metricas-codigo}
 
 A normalização por formatadores é condição de validade destas contagens, e a
@@ -1006,17 +1016,11 @@ segunda camada de estado.
 \section{Conclusões e Trabalhos Futuros}\label{sec:consideracoes}
 %% ============================================================
 
-As contribuições do trabalho são de quatro ordens. A conceitual é o argumento
-de equivalência expressiva, que torna a comparação legítima para este caso de
-uso e delimita o que resta como diferença genuína: a ergonomia e o custo, já
-que o que pode ser expresso é o mesmo. A formal é o critério de equivalência
-funcional verificável por comparação de valores e de cadeias, do qual a suíte
-de oráculo é a realização executável. A instrumental reúne o gerador replicado
-com teste de conformidade, a suíte que condiciona os \textit{benchmarks} à
-equivalência verificada e quatro divergências semânticas hoje cobertas por
-casos que falham se a decisão for revertida. A metodológica é a normalização
-intralinguagem, que separa o que cabe ao mecanismo do que cabe ao
-\textit{runtime}.
+O trabalho deixa quatro contribuições. O argumento de equivalência expressiva
+deixa como diferença genuína só a ergonomia e o custo, e o critério de
+equivalência funcional se realiza na suíte de oráculo. O gerador replicado vem
+com teste de conformidade e com casos que travam quatro decisões semânticas, e
+a normalização intralinguagem separa o mecanismo do \textit{runtime}.
 
 \medskip
 \noindent\textbf{Os resultados frente à literatura.} As grandezas mais
@@ -1047,8 +1051,8 @@ ao ambiente global sem escopo léxico e às quatro dimensões adotadas. A
 comparação entre as linguagens permanece exploratória. A legibilidade medida
 é a estrutural, não a percebida. Houve ainda dois achados não previstos:
 abandonar a continuação, em vez de encerrá-la, vaza memória invisível às
-métricas de alocação (Seção~\ref{sec:impl-efeitos}). O $R^2$ não basta para
-validar a configuração de amostragem (Seção~\ref{sec:medicao}), ameaça à
+métricas de alocação (Seção~\ref{sec:impl-efeitos}), e o $R^2$ não basta para
+validar a configuração de amostragem (Seção~\ref{sec:medicao}), uma ameaça à
 validade de conclusão.
 
 \medskip

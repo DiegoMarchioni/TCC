@@ -87,10 +87,16 @@ partes que são suas:
 - **“e não X” com função de precisão:** “para que a razão isole o mecanismo e
   não a estrutura de dados”, “assentam sobre microbenchmarks, e não sobre um
   caso de uso integrado”. Esses carregam conteúdo. Pode manter.
-- **Os trechos marcados `NOVO (10/11)`** (linhas 370, 816, 872 e 941)
+- **Os trechos marcados `NOVO (10/11)`** (linhas 370, 823, 885 e 954)
   continuam sendo texto que eu redigi, agora sem os vícios acima. O ideal
   continua sendo você reescrevê-los com as suas palavras. A declaração de IA
   já cobre esses trechos de qualquer forma.
+- **Os textos de entrada das Seções 4 e 6**, marcados `NOVO (16/11)` (linhas
+  534 e 841), também são meus, escritos a seu pedido. Para que o artigo
+  continuasse com 16 páginas, a Figura 1 passou para a abertura da Seção 4,
+  o roteiro de seções da Introdução virou uma frase só e o parágrafo de
+  contribuições das Conclusões ficou mais curto, com as mesmas quatro
+  contribuições.
 
 ## Como reconhecer os padrões quando você escrever
 
