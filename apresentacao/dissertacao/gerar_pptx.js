@@ -558,31 +558,7 @@ secao("04", "Resultados", "Agora os resultados, primeiro do código (QP1 a QP3) 
     ]);
 }
 
-// 14. QP3
-{
-  const s = conteudo("Resultados", "QP3: código em volta da eval");
-  s.addChart(pres.charts.BAR, [{ name: "linhas", labels: ["IORef", "Mônadas", "Imperativa", "Handlers"], values: [22, 20, 3, 67] }], Object.assign({}, eixo, {
-    x: MX, y: 1.75, w: 7.4, h: 4.3, barDir: "bar", valAxisMinVal: 0, valAxisMaxVal: 80, catAxisLabelFontSize: 14,
-    chartColors: [HEX.base, HEX.rosa, HEX.base, HEX.marinho], showValue: true, dataLabelPosition: "outEnd", dataLabelFontSize: 14, showLegend: false,
-    barGapWidthPct: 60, showValAxisTitle: true, valAxisTitle: "linhas de infraestrutura", objectName: "gráfico QP3",
-  }));
-  bullets(s, [
-    "**Handlers: 67 contra 3**",
-    "**Mônadas: 20 contra 22**",
-    "Reúso só nos handlers",
-  ], { x: MX + 7.8, y: 2.2, w: CW - 7.8, h: 2.2, fontSize: 20, paraSpaceAfter: 12 });
-  registrar(s, "QP3: código em volta da eval",
-    "Fora da eval aparece a diferença. A versão com handlers tem 67 linhas de infraestrutura contra 3 da imperativa, e 18 delas existem só para os testes. No Haskell, mônadas e IORef ficam parecidas: 20 contra 22. Em compensação, só os handlers são reaproveitados: dois deles são usados em dois lugares.",
-    [
-      ["Infraestrutura (boilerplate)", "linhas fora da eval que só montam o mecanismo, sem dizer o que o efeito faz. Um programa classifica cada linha sobre os tokens do compilador, e a classificação é auditável em codigo/resultados/boilerplate-regra/."],
-      ["67 linhas", "o código dos handlers (run_state, run_exn, run_output_emit, run_output_acc) e das composições run e run_acc."],
-      ["18 só para os testes", "o handler de saída que acumula os valores (run_output_acc) e a composição run_acc, usados pela suíte de oráculo para ler o traço."],
-      ["3 linhas", "a imperativa só precisa de uma pequena função que executa a eval e captura o erro."],
-      ["Reúso", "o mesmo handler usado em mais de um lugar sem reescrever. run_state e run_exn são instalados tanto em run quanto em run_acc."],
-    ]);
-}
-
-// 15. QP2 handlers
+// 14. QP2 handlers
 {
   const s = conteudo("Resultados", "QP2: um quarto efeito nos handlers");
   texto(s, "Ler uma entrada (Input) exige instalar mais um handler:", { x: MX, y: 1.8, w: CW, h: 0.5, fontSize: 20 });
@@ -610,7 +586,7 @@ secao("04", "Resultados", "Agora os resultados, primeiro do código (QP1 a QP3) 
     ]);
 }
 
-// 16. QP2 mônadas
+// 15. QP2 mônadas
 {
   const s = conteudo("Resultados", "QP2: um quarto efeito nas mônadas");
   texto(s, "O efeito novo entra no tipo da pilha:", { x: MX, y: 1.8, w: CW, h: 0.5, fontSize: 20 });
@@ -631,6 +607,34 @@ secao("04", "Resultados", "Agora os resultados, primeiro do código (QP1 a QP3) 
       ["state", "operação que lê e atualiza o estado de uma vez (aqui, tira o primeiro valor da lista)."],
       ["lift", "leva uma operação de uma camada interna da pilha para a camada de fora. Com duas camadas de estado, o get comum só alcança a primeira, então a leitura da segunda precisa de lift duas vezes."],
       ["mtl", "a biblioteca de transformadores usada. Ela resolve automaticamente uma camada de cada tipo, não duas."],
+    ]);
+}
+
+// 16. QP3
+{
+  const s = conteudo("Resultados", "QP3: código em volta da eval");
+  s.addChart(pres.charts.BAR, [{ name: "linhas", labels: ["IORef", "Mônadas", "Imperativa", "Handlers"], values: [22, 20, 3, 67] }], Object.assign({}, eixo, {
+    x: MX, y: 1.75, w: 7.4, h: 4.3, barDir: "bar", valAxisMinVal: 0, valAxisMaxVal: 80, catAxisLabelFontSize: 14,
+    chartColors: [HEX.base, HEX.rosa, HEX.base, HEX.marinho], showValue: true, dataLabelPosition: "outEnd", dataLabelFontSize: 14, showLegend: false,
+    barGapWidthPct: 60, showValAxisTitle: true, valAxisTitle: "linhas de infraestrutura", objectName: "gráfico QP3",
+  }));
+  bullets(s, [
+    "**Handlers: 67 contra 3**",
+    "**Mônadas: 20 contra 22**",
+    "Handlers se recombinam: estado e erro em **run** e **run_acc**",
+  ], { x: MX + 7.8, y: 2.2, w: CW - 7.8, h: 2.2, fontSize: 20, paraSpaceAfter: 12 });
+  registrar(s, "QP3: código em volta da eval",
+    "Fora da eval aparece a diferença. A versão com handlers tem 67 linhas de infraestrutura contra 3 da imperativa, e 18 delas existem só para os testes. No Haskell, mônadas e IORef ficam parecidas: 20 contra 22. Em compensação, esse código é feito de peças que se recombinam. Para os testes, troquei só o handler de saída e reaproveitei os de estado e de erro sem mudar nada: são 2 instâncias de reúso. As outras versões têm zero porque não têm peça para instalar: elas trocam a saída por uma referência a função, colocada de antemão no código. Com um único programa, essa contagem discrimina pouco, e o artigo registra isso. O reúso é a contrapartida do boilerplate.",
+    [
+      ["Infraestrutura (boilerplate)", "linhas fora da eval que só montam o mecanismo, sem dizer o que o efeito faz. Um programa classifica cada linha sobre os tokens do compilador, e a classificação é auditável em codigo/resultados/boilerplate-regra/."],
+      ["67 linhas", "o código dos handlers (run_state, run_exn, run_output_emit, run_output_acc) e das composições run e run_acc."],
+      ["18 só para os testes", "o handler de saída que acumula os valores (run_output_acc) e a composição run_acc, usados pela suíte de oráculo para ler o traço."],
+      ["3 linhas", "a imperativa só precisa de uma pequena função que executa a eval e captura o erro."],
+      ["Reúso (definição do artigo)", "o emprego de um mesmo handler ou camada em mais de um ponto de instalação sem reescrita."],
+      ["As 2 instâncias", "run_state (estado) e run_exn (erro) são instalados tanto em run (execução e medições) quanto em run_acc (testes), sem alteração. Só o handler de saída muda: run_output_emit em run, run_output_acc em run_acc."],
+      ["Por que 0 nas outras versões", "a saída passa por uma referência a função (emitRef no Haskell, Expr.emit no OCaml) que os testes substituem. Não há handler nem camada sendo reinstalado, então não há o que contar."],
+      ["Limite da métrica", "com um único caso de uso, a contagem discrimina pouco (2 contra 0), e o reúso só aparece por causa da suíte de testes. O artigo diz isso na Seção 4.2."],
+      ["Contrapartida do boilerplate", "os handlers custam mais linhas, mas essas linhas são peças independentes que se recombinam. As bases conseguiram a mesma flexibilidade com uma indireção planejada antes."],
     ]);
 }
 

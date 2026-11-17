@@ -198,19 +198,7 @@ Gerado por `gerar_pptx.js` junto com `defesa.pptx`. O mesmo texto está nas nota
 - **Por que o Haskell tem 18 operações**: porque cada passo monádico (x <- eval a) conta. Não se compara o 18 com o 5: as linguagens são diferentes.
 - **Contagem automática**: um programa conta as métricas sobre o código formatado, sem contagem à mão.
 
-## 18. QP3: código em volta da eval
-
-**O que dizer.** Fora da eval aparece a diferença. A versão com handlers tem 67 linhas de infraestrutura contra 3 da imperativa, e 18 delas existem só para os testes. No Haskell, mônadas e IORef ficam parecidas: 20 contra 22. Em compensação, só os handlers são reaproveitados: dois deles são usados em dois lugares.
-
-**O que cada coisa significa.**
-
-- **Infraestrutura (boilerplate)**: linhas fora da eval que só montam o mecanismo, sem dizer o que o efeito faz. Um programa classifica cada linha sobre os tokens do compilador, e a classificação é auditável em codigo/resultados/boilerplate-regra/.
-- **67 linhas**: o código dos handlers (run_state, run_exn, run_output_emit, run_output_acc) e das composições run e run_acc.
-- **18 só para os testes**: o handler de saída que acumula os valores (run_output_acc) e a composição run_acc, usados pela suíte de oráculo para ler o traço.
-- **3 linhas**: a imperativa só precisa de uma pequena função que executa a eval e captura o erro.
-- **Reúso**: o mesmo handler usado em mais de um lugar sem reescrever. run_state e run_exn são instalados tanto em run quanto em run_acc.
-
-## 19. QP2: um quarto efeito nos handlers
+## 18. QP2: um quarto efeito nos handlers
 
 **O que dizer.** Para testar a composabilidade, acrescentei um quarto efeito: ler valores de uma entrada. Nos handlers, o efeito novo precisa ser instalado onde os outros já são. As linhas em vermelho saem e as em verde entram: o handler novo, run_input, passa a ficar entre o de saída e o de erro. A mesma mudança acontece na composição dos testes, run_acc. Por isso são 2 pontos de modificação. Na imperativa, a leitura é só uma função nova, e nada do que existia muda.
 
@@ -225,7 +213,7 @@ Gerado por `gerar_pptx.js` junto com `defesa.pptx`. O mesmo texto está nas nota
 - **run_input**: o handler novo, que atende Input entregando o próximo valor da entrada.
 - **Ponto de modificação (declaração que muda)**: declaração que já existia e teve o texto alterado. Adições puras, como a declaração de Input e o próprio run_input, contam à parte. A definição foi fixada antes de implementar.
 
-## 20. QP2: um quarto efeito nas mônadas
+## 19. QP2: um quarto efeito nas mônadas
 
 **O que dizer.** No Haskell, o efeito novo vira uma camada a mais na pilha. Então o tipo da pilha muda, e a função run, que executa a pilha, muda junto: também 2 pontos de modificação. A leitura é uma função nova que precisa de dois lift para chegar na camada nova. Na base IORef, como na imperativa, nada do que existia muda. Então handlers e mônadas empatam em 2, e a diferença é onde a mudança cai: nos handlers, nas composições. Nas mônadas, no tipo e no executor.
 
@@ -236,6 +224,22 @@ Gerado por `gerar_pptx.js` junto com `defesa.pptx`. O mesmo texto está nas nota
 - **state**: operação que lê e atualiza o estado de uma vez (aqui, tira o primeiro valor da lista).
 - **lift**: leva uma operação de uma camada interna da pilha para a camada de fora. Com duas camadas de estado, o get comum só alcança a primeira, então a leitura da segunda precisa de lift duas vezes.
 - **mtl**: a biblioteca de transformadores usada. Ela resolve automaticamente uma camada de cada tipo, não duas.
+
+## 20. QP3: código em volta da eval
+
+**O que dizer.** Fora da eval aparece a diferença. A versão com handlers tem 67 linhas de infraestrutura contra 3 da imperativa, e 18 delas existem só para os testes. No Haskell, mônadas e IORef ficam parecidas: 20 contra 22. Em compensação, esse código é feito de peças que se recombinam. Para os testes, troquei só o handler de saída e reaproveitei os de estado e de erro sem mudar nada: são 2 instâncias de reúso. As outras versões têm zero porque não têm peça para instalar: elas trocam a saída por uma referência a função, colocada de antemão no código. Com um único programa, essa contagem discrimina pouco, e o artigo registra isso. O reúso é a contrapartida do boilerplate.
+
+**O que cada coisa significa.**
+
+- **Infraestrutura (boilerplate)**: linhas fora da eval que só montam o mecanismo, sem dizer o que o efeito faz. Um programa classifica cada linha sobre os tokens do compilador, e a classificação é auditável em codigo/resultados/boilerplate-regra/.
+- **67 linhas**: o código dos handlers (run_state, run_exn, run_output_emit, run_output_acc) e das composições run e run_acc.
+- **18 só para os testes**: o handler de saída que acumula os valores (run_output_acc) e a composição run_acc, usados pela suíte de oráculo para ler o traço.
+- **3 linhas**: a imperativa só precisa de uma pequena função que executa a eval e captura o erro.
+- **Reúso (definição do artigo)**: o emprego de um mesmo handler ou camada em mais de um ponto de instalação sem reescrita.
+- **As 2 instâncias**: run_state (estado) e run_exn (erro) são instalados tanto em run (execução e medições) quanto em run_acc (testes), sem alteração. Só o handler de saída muda: run_output_emit em run, run_output_acc em run_acc.
+- **Por que 0 nas outras versões**: a saída passa por uma referência a função (emitRef no Haskell, Expr.emit no OCaml) que os testes substituem. Não há handler nem camada sendo reinstalado, então não há o que contar.
+- **Limite da métrica**: com um único caso de uso, a contagem discrimina pouco (2 contra 0), e o reúso só aparece por causa da suíte de testes. O artigo diz isso na Seção 4.2.
+- **Contrapartida do boilerplate**: os handlers custam mais linhas, mas essas linhas são peças independentes que se recombinam. As bases conseguiram a mesma flexibilidade com uma indireção planejada antes.
 
 ## 21. QP4: o custo de instalar os handlers
 
