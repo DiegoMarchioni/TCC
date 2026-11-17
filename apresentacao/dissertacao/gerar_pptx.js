@@ -8,9 +8,8 @@
 // cada linha. Feito com a skill .claude/skills/pptx (deck estruturado: tema,
 // layouts com placeholders, seções, gráficos e tabelas nativos).
 //
-// Cada slide tem, nas notas do apresentador, o que dizer e o que cada termo do
-// slide significa. Os termos centrais também aparecem no slide, num quadro
-// "O que é".
+// Versão enxuta: pouco texto na tela. Cada slide tem, nas notas do
+// apresentador, o que dizer e o que cada termo do slide significa.
 //
 // Uso, na raiz do repositório (precisa do pptxgenjs: npm install pptxgenjs):
 //   NODE_PATH=<pasta node_modules com pptxgenjs> node apresentacao/dissertacao/gerar_pptx.js
@@ -29,7 +28,6 @@ const HEX = {
   texto: "1A1A1A", corpo: "3A3A3A", fundo: "FFFFFF", cinzaCodigo: "F3F3F3",
   marinho: "2D4B8E", rosa: "A63C5A", verdeazul: "3B8A7A", laranja: "E8603C",
   base: "B5B5B5", rodape: "888888", linha: "D6D6D6", comentario: "6E6E6E",
-  quadro: "F2F4F8",
 };
 const THEME = {
   name: "Defesa TCC dissertacao",
@@ -154,16 +152,6 @@ function bullets(s, itens, o) {
   texto(s, arr, Object.assign({ paraSpaceAfter: 6 }, o));
 }
 
-function numerada(s, itens, o) {
-  const arr = [];
-  itens.forEach((it, i) => {
-    const r = runs(it);
-    r[0].options = Object.assign({}, r[0].options, { bullet: { type: "number", indent: 22 } });
-    if (i < itens.length - 1) r[r.length - 1].options = Object.assign({}, r[r.length - 1].options, { breakLine: true });
-    arr.push(...r);
-  });
-  texto(s, arr, Object.assign({ paraSpaceAfter: 6 }, o));
-}
 
 // Bloco de código: linhas [código, comentário, tipo] com tipo "-", "+" ou " ".
 function codigo(s, linhas, o) {
@@ -183,31 +171,12 @@ function codigo(s, linhas, o) {
   return h;
 }
 
-function legenda(s, t, o) {
-  texto(s, runs(t), Object.assign({ fontSize: 12, italic: true, color: C.text2, align: "center", h: 0.3 }, o));
-}
 
 function fonte(s, t, y) {
   texto(s, t, { x: MX, y: y || 6.4, w: CW, h: 0.35, fontSize: 11, color: C.accent6 });
 }
 
-// Quadro "O que é" com os termos centrais do slide
-function quadro(s, termos, o) {
-  const arr = [{ text: "O que é", options: { bold: true, color: HEX.marinho, breakLine: true } }];
-  termos.forEach(([t, e], i) => {
-    arr.push({ text: t + ": ", options: { bold: true, color: HEX.texto } });
-    arr.push({ text: e, options: { color: HEX.corpo, breakLine: i < termos.length - 1 } });
-  });
-  s.addShape(pres.shapes.RECTANGLE, { x: o.x, y: o.y, w: o.w, h: o.h, fill: { color: HEX.quadro }, line: { type: "none" }, objectName: "quadro O que é" });
-  s.addText(arr, { isTextBox: true, x: o.x, y: o.y, w: o.w, h: o.h, fontSize: o.fontSize || 12, margin: [8, 12, 8, 12], valign: "top", paraSpaceAfter: 3, objectName: "texto O que é" });
-}
 
-// Caixa com borda fina e título em negrito (como no modelo)
-function caixa(s, titulo, itens, o) {
-  s.addShape(pres.shapes.RECTANGLE, { x: o.x, y: o.y, w: o.w, h: o.h, fill: { color: HEX.fundo }, line: { color: HEX.texto, width: 0.75 }, objectName: "caixa " + titulo });
-  texto(s, [{ text: titulo, options: { bold: true, color: C.text1 } }], { x: o.x + 0.2, y: o.y + 0.15, w: o.w - 0.4, h: 0.4, fontSize: 17 });
-  bullets(s, itens, { x: o.x + 0.2, y: o.y + 0.6, w: o.w - 0.4, h: o.h - 0.7, fontSize: o.fontSize || 15 });
-}
 
 // Tabela: cabeçalho em negrito, separadores cinza-claros, linhas fortes em cima e embaixo
 function tabela(s, cab, linhas, o) {
@@ -245,7 +214,7 @@ function secao(numero, titulo, fala) {
 }
 
 // =============================================================================
-// SLIDES
+// SLIDES (versão enxuta: pouco texto na tela, explicações nas notas)
 // =============================================================================
 
 // 1. Capa
@@ -272,133 +241,92 @@ pres.addSection({ title: "Abertura" });
 // 2. Sumário
 {
   const s = conteudo("Sumário", "Sumário", "Abertura");
-  const itens = [
-    ["01", "Introdução: o problema e as quatro questões de pesquisa"],
-    ["02", "Fundamentação: os dois mecanismos e os trabalhos relacionados"],
-    ["03", "Metodologia: caso de uso, versões, verificação e métricas"],
-    ["04", "Resultados: código (QP1 a QP3) e desempenho (QP4)"],
-    ["05", "Conclusões: literatura, limites e trabalhos futuros"],
-  ];
-  itens.forEach(([num, t], i) => {
-    texto(s, num, { x: MX, y: 2.0 + i * 0.75, w: 0.8, h: 0.5, fontSize: 20, color: C.accent4 });
-    texto(s, t, { x: MX + 0.9, y: 2.0 + i * 0.75, w: CW - 0.9, h: 0.5, fontSize: 20, color: C.text2 });
+  ["Introdução", "Fundamentação", "Metodologia", "Resultados", "Conclusões"].forEach((t, i) => {
+    texto(s, "0" + (i + 1), { x: MX, y: 2.0 + i * 0.8, w: 0.8, h: 0.5, fontSize: 22, color: C.accent4 });
+    texto(s, t, { x: MX + 0.9, y: 2.0 + i * 0.8, w: 6, h: 0.5, fontSize: 22, color: C.text1 });
   });
   registrar(s, "Sumário",
     "A apresentação segue a ordem do artigo: o problema e as perguntas, os dois mecanismos, o método, os resultados e as conclusões. São cerca de 20 minutos.",
     [["QP", "questão de pesquisa. São quatro, uma para cada dimensão comparada."]]);
 }
 
-// 3. Seção 01
+// Seção 01
 secao("01", "Introdução", "Começo pelo contexto: o que são efeitos e por que existem dois mecanismos para eles.");
 
-// 4. Efeitos em linguagens funcionais
+// 3. Dois mecanismos
 {
-  const s = conteudo("Introdução", "Efeitos em linguagens funcionais");
-  texto(s, runs("Efeitos como **estado**, **exceção** e **saída** não cabem numa função pura. Linguagens funcionais tratam esses efeitos com um mecanismo próprio."), { x: MX, y: 1.75, w: CW, h: 0.75 });
-  caixa(s, "Mônadas (Haskell)", ["cada efeito é uma camada de uma pilha", "o efeito aparece no **tipo** da função", "técnica consolidada (Wadler, 1992)"], { x: MX, y: 2.65, w: 5.6, h: 2.0 });
-  caixa(s, "Efeitos algébricos (OCaml 5)", ["o código **pede** a operação com perform", "um **handler** decide o que ela faz", "nativos no OCaml desde 2022"], { x: MX + 5.93, y: 2.65, w: 5.6, h: 2.0 });
-  quadro(s, [
-    ["Efeito", "tudo o que uma função faz além de devolver um valor: ler ou mudar uma variável, lançar um erro, imprimir."],
-    ["Função pura", "função que só calcula o resultado a partir da entrada, sempre o mesmo para a mesma entrada."],
-  ], { x: MX, y: 4.85, w: CW, h: 1.1 });
-  fonte(s, "Os dois têm a mesma expressividade em teoria: Forster et al. (2017) e Schrijvers et al. (2019).", 6.2);
-  registrar(s, "Efeitos em linguagens funcionais",
-    "Em programação funcional, uma função ideal só calcula. Mas programas reais precisam guardar estado, lançar erros e imprimir. Há dois mecanismos para isso. As mônadas, no Haskell, empilham os efeitos em camadas que aparecem no tipo. Os efeitos algébricos, no OCaml 5, deixam o código pedir uma operação e um handler decide o que fazer. Na teoria, os dois expressam as mesmas coisas.",
+  const s = conteudo("Introdução", "Dois mecanismos para os mesmos efeitos");
+  texto(s, runs("**Estado**, **exceção** e **saída**: o que uma função pura não faz."), { x: MX, y: 1.85, w: CW, h: 0.5, fontSize: 20 });
+  const caixaSimples = (x, titulo, linha1, linha2) => {
+    s.addShape(pres.shapes.RECTANGLE, { x, y: 2.75, w: 5.55, h: 2.2, fill: { color: HEX.fundo }, line: { color: HEX.texto, width: 0.75 }, objectName: "caixa " + titulo });
+    texto(s, [{ text: titulo, options: { bold: true, color: C.text1 } }], { x: x + 0.3, y: 2.95, w: 5.0, h: 0.5, fontSize: 20 });
+    bullets(s, [linha1, linha2], { x: x + 0.3, y: 3.6, w: 5.0, h: 1.2, fontSize: 18, paraSpaceAfter: 10 });
+  };
+  caixaSimples(MX, "Mônadas (Haskell)", "o efeito fica no **tipo**", "camadas empilhadas");
+  caixaSimples(MX + 5.98, "Efeitos algébricos (OCaml 5)", "o código **pede** a operação", "um **handler** responde");
+  fonte(s, "Mesma expressividade em teoria (Forster et al., 2017).", 5.35);
+  registrar(s, "Dois mecanismos para os mesmos efeitos",
+    "Programas reais precisam guardar estado, lançar erros e imprimir, coisas que uma função pura não faz. As linguagens funcionais têm mecanismos para isso. No Haskell, as mônadas: cada efeito é uma camada, e o efeito aparece no tipo da função. No OCaml 5, os efeitos algébricos: o código pede uma operação com perform e um handler decide o que ela faz. Na teoria, os dois expressam as mesmas coisas, como mostraram Forster e colegas em 2017 e Schrijvers e colegas em 2019. As mônadas são a técnica consolidada (Wadler, 1992). Os efeitos algébricos são nativos no OCaml desde 2022.",
     [
       ["Efeito", "tudo o que uma função faz além de devolver um valor. Aqui são três: estado, exceção e saída."],
       ["Estado", "valores guardados que o programa lê e muda, como as variáveis do interpretador."],
       ["Exceção", "interrupção do cálculo por um erro, como divisão por zero."],
       ["Saída", "mostrar um valor para fora do programa (o Print do interpretador)."],
       ["Função pura", "função cujo resultado depende só da entrada e que não tem efeitos."],
-      ["Camada de uma pilha", "nas mônadas, cada efeito é um transformador (por exemplo, StateT para estado) colocado em volta de outro. O conjunto forma uma pilha."],
+      ["Camadas empilhadas", "nas mônadas, cada efeito é um transformador (por exemplo, StateT para estado) colocado em volta de outro. O conjunto forma uma pilha."],
       ["perform", "comando do OCaml 5 que pede uma operação de efeito e pausa o código até alguém responder."],
       ["Handler", "a função que responde aos pedidos feitos com perform. Ela decide o que a operação faz."],
-      ["Wadler (1992)", "artigo que popularizou as mônadas como forma de programar efeitos."],
       ["Mesma expressividade", "Forster et al. (2017) e Schrijvers et al. (2019) mostraram que um mecanismo consegue simular o outro. Logo a diferença prática está em escrever e em executar."],
     ]);
 }
 
-// 5. O problema
+// 4. O problema
 {
   const s = conteudo("Introdução", "O problema");
-  texto(s, runs("A equivalência teórica não diz quanto custa **escrever** nem quanto custa **executar** com cada mecanismo. Nenhum estudo mediu as duas coisas no mesmo programa, com as versões verificadas como equivalentes."), { x: MX, y: 1.75, w: CW, h: 1.0 });
-  texto(s, runs("**Objetivo:** comparar mônadas e efeitos algébricos no mesmo programa, em legibilidade, composabilidade, poder de abstração e desempenho."), { x: MX, y: 2.85, w: CW, h: 0.75 });
-  texto(s, [{ text: "Questões de pesquisa:", options: { bold: true, color: C.text1 } }], { x: MX, y: 3.75, w: CW, h: 0.4 });
-  numerada(s, [
-    "**Legibilidade:** qual abordagem acrescenta menos carga estrutural de leitura?",
-    "**Composabilidade:** qual exige menos pontos de modificação para estender os efeitos?",
-    "**Abstração:** qual exige menos boilerplate, com maior reúso?",
-    "**Desempenho:** qual o custo de execução de cada uma, em tempo e memória?",
-  ], { x: MX, y: 4.2, w: CW, h: 2.3 });
+  texto(s, runs("Na teoria são equivalentes. Na prática, quanto custa **escrever** e quanto custa **executar**?"), { x: MX, y: 1.85, w: CW, h: 0.9, fontSize: 20 });
+  [["QP1", "Legibilidade", "carga de leitura do código"], ["QP2", "Composabilidade", "mudanças para um efeito novo"],
+   ["QP3", "Abstração", "boilerplate e reúso"], ["QP4", "Desempenho", "tempo e memória"]].forEach(([q, d, o], i) => {
+    const y = 3.0 + i * 0.75;
+    texto(s, q, { x: MX, y, w: 1.0, h: 0.5, fontSize: 20, color: C.accent4 });
+    texto(s, [{ text: d, options: { bold: true, color: C.text1 } }], { x: MX + 1.1, y, w: 3.2, h: 0.5, fontSize: 20 });
+    texto(s, o, { x: MX + 4.4, y, w: CW - 4.4, h: 0.5, fontSize: 20 });
+  });
   registrar(s, "O problema",
-    "Saber que os dois mecanismos são equivalentes na teoria não diz o que importa para quem programa: quanto custa escrever e quanto custa executar. Então o objetivo foi comparar os dois no mesmo programa, em quatro dimensões, cada uma com uma pergunta.",
+    "Saber que os dois mecanismos são equivalentes na teoria não diz o que importa para quem programa: quanto custa escrever e quanto custa executar. Nenhum estudo tinha medido as duas coisas no mesmo programa. Então o objetivo foi comparar os dois no mesmo programa, em quatro dimensões, cada uma com uma questão de pesquisa.",
     [
-      ["Carga estrutural de leitura", "quanto o código tem de linhas, de operações de efeito e de blocos um dentro do outro. É uma medida indireta: legibilidade percebida exigiria testar com pessoas."],
-      ["Ponto de modificação", "declaração que já existia e precisou mudar para acrescentar um efeito novo. Quanto menos, mais fácil compor efeitos."],
-      ["Boilerplate", "código de preparação, que não diz o que o efeito faz, só monta o mecanismo."],
-      ["Reúso", "usar a mesma peça (um handler, uma camada) em mais de um lugar sem reescrever."],
-      ["Custo de execução", "tempo e memória a mais que o mecanismo gasta em relação a uma versão sem ele."],
+      ["Carga de leitura (QP1)", "quanto o código tem de linhas, de operações de efeito e de blocos um dentro do outro. É uma medida indireta: legibilidade percebida exigiria testar com pessoas."],
+      ["Mudanças para um efeito novo (QP2)", "quantas declarações já existentes precisam mudar para acrescentar um quarto efeito. Quanto menos, mais fácil compor efeitos."],
+      ["Boilerplate (QP3)", "código de preparação, que não diz o que o efeito faz, só monta o mecanismo."],
+      ["Reúso (QP3)", "usar a mesma peça (um handler, uma camada) em mais de um lugar sem reescrever."],
+      ["Tempo e memória (QP4)", "o que o mecanismo gasta a mais em relação a uma versão sem ele."],
     ]);
 }
 
-// 6. Contribuições
-{
-  const s = conteudo("Introdução", "Contribuições");
-  bullets(s, [
-    "**Argumento de equivalência expressiva:** deixa como diferença genuína só a ergonomia e o custo",
-    "**Critério de equivalência funcional verificável**, realizado numa suíte de oráculo",
-    "**Gerador de cargas replicado** nas duas linguagens, com teste de conformidade",
-    "**Normalização intralinguagem:** cada mecanismo medido contra uma base da própria linguagem, separando o mecanismo do runtime",
-  ], { x: MX, y: 1.8, w: CW, h: 2.4 });
-  quadro(s, [
-    ["Suíte de oráculo", "conjunto de testes em que a resposta certa vem de uma semântica de referência, e cada versão é comparada com ela."],
-    ["Runtime", "o sistema que executa o programa compilado: gerenciador de memória, pilhas, coletor de lixo."],
-  ], { x: MX, y: 4.35, w: CW, h: 1.15 });
-  texto(s, runs("Quatro implementações, suíte de oráculo, quarto efeito e dois harnesses de medição, reproduzíveis com um comando: **make tudo**."), { x: MX, y: 5.65, w: CW, h: 0.7 });
-  registrar(s, "Contribuições",
-    "A contribuição principal é o desenho que torna a comparação justa: mostrar que só ergonomia e custo podem diferir, verificar que as versões fazem exatamente a mesma coisa e medir cada mecanismo dentro da própria linguagem. Tudo se refaz com um comando.",
-    [
-      ["Argumento de equivalência expressiva", "a parte do texto que reúne a teoria e conclui que os dois mecanismos expressam os mesmos efeitos."],
-      ["Ergonomia", "o quanto o mecanismo é confortável de usar ao escrever código."],
-      ["Critério de equivalência funcional", "regra precisa do que significa duas versões fazerem a mesma coisa: mesmo valor, mesmo estado final, mesma saída e mesma mensagem de erro."],
-      ["Suíte de oráculo", "61 casos de teste comparados com uma semântica de referência (o oráculo, a resposta certa)."],
-      ["Gerador de cargas", "programa que cria as expressões usadas nas medições. Foi escrito nas duas linguagens e produz exatamente as mesmas expressões."],
-      ["Teste de conformidade", "teste que confere que os dois geradores produzem as mesmas cargas."],
-      ["Normalização intralinguagem", "dividir o tempo do mecanismo pelo de uma base da mesma linguagem, para não comparar compiladores diferentes."],
-      ["Runtime", "o sistema que executa o programa compilado (memória, pilhas, coletor de lixo)."],
-      ["Harness de medição", "programa que roda as cargas muitas vezes e mede tempo e memória. Bechamel no OCaml, Criterion no Haskell."],
-      ["make tudo", "comando que compila, testa, mede e regera os números do artigo."],
-    ]);
-}
-
-// 7. Seção 02
+// Seção 02
 secao("02", "Fundamentação", "Agora mostro como cada mecanismo aparece no código do trabalho.");
 
-// 8. Mônadas no código
+// 5. Mônadas no código
 {
   const s = conteudo("Fundamentação", "Mônadas no código");
-  texto(s, runs("No Haskell, o efeito aparece no **tipo** da função. Trecho de Monadic.hs:"), { x: MX, y: 1.7, w: CW, h: 0.45 });
-  const h = codigo(s, [
-    ["type Env = Map String Int", "-- o estado: cada variável com o seu valor"],
-    ["type Interp a =", "-- o tipo de toda computação do interpretador"],
-    ["  ExceptT String (StateT Env IO) a", "-- é uma pilha: exceção, estado e IO"],
+  texto(s, runs("No Haskell, o efeito está no **tipo**."), { x: MX, y: 1.8, w: CW, h: 0.5, fontSize: 20 });
+  codigo(s, [
+    ["type Env = Map String Int", "-- as variáveis"],
+    ["type Interp a =", "-- a pilha:"],
+    ["  ExceptT String (StateT Env IO) a", "-- erro, estado, IO"],
     ["", ""],
-    ["eval (Var x) = do", "-- caso Var: ler o valor da variável x"],
-    ["  env <- get", "-- get lê o estado (camada StateT)"],
-    ["  maybe (throwError (msgUnbound x))", "-- se x não está no Map, lança o erro (ExceptT)"],
-    ["        return (Map.lookup x env)", "-- busca x no Map e, se achar, devolve o valor"],
-  ], { x: MX, y: 2.2, w: CW });
-  quadro(s, [
-    ["Mônada", "tipo que encadeia passos de cálculo levando um efeito junto."],
-    ["ExceptT, StateT", "transformadores: cada um acrescenta um efeito (erro, estado) em volta de outra mônada, formando a pilha."],
-    ["IO", "a mônada da base, que fala com o mundo externo. Aqui, ela faz a saída."],
-  ], { x: MX, y: 2.35 + h, w: CW, h: 1.35 });
+    ["eval (Var x) = do", "-- ler a variável x"],
+    ["  env <- get", "-- lê o estado"],
+    ["  maybe (throwError (msgUnbound x))", "-- não achou: erro"],
+    ["        return (Map.lookup x env)", "-- achou: o valor"],
+  ], { x: MX, y: 2.5, w: CW, fontSize: 14 });
+  fonte(s, "Monadic.hs", 5.2);
   registrar(s, "Mônadas no código",
     "No Haskell, o efeito está no tipo. Interp é o tipo de toda computação do interpretador: uma pilha com exceção por fora, estado no meio e IO na base. No caso Var, get lê o estado, e se a variável não existir, throwError lança o erro.",
     [
       ["type Env = Map String Int", "define o estado do interpretador: um dicionário (Map) de nomes (String) para valores inteiros (Int)."],
       ["type Interp a", "nome curto para o tipo da pilha. Uma função que devolve Interp Int calcula um inteiro e pode usar os três efeitos."],
-      ["ExceptT String", "camada de exceção. Permite interromper o cálculo com uma mensagem de erro (String)."],
+      ["Mônada", "tipo que encadeia passos de cálculo levando um efeito junto."],
+      ["ExceptT String", "camada de exceção (um transformador). Permite interromper o cálculo com uma mensagem de erro (String)."],
       ["StateT Env", "camada de estado. Guarda o Env e permite lê-lo (get) e mudá-lo."],
       ["IO", "camada da base, que executa ações no mundo externo, como imprimir."],
       ["Pilha", "as camadas uma dentro da outra. Lê-se de fora para dentro: ExceptT envolve StateT, que envolve IO. Com a exceção por fora, o estado sobrevive a um erro, como o critério de equivalência exige."],
@@ -411,33 +339,30 @@ secao("02", "Fundamentação", "Agora mostro como cada mecanismo aparece no cód
     ]);
 }
 
-// 9. Efeitos algébricos no código
+// 6. Efeitos algébricos no código
 {
   const s = conteudo("Fundamentação", "Efeitos algébricos no código");
-  texto(s, runs("No OCaml, o código **pede** a operação e um **handler** decide o que ela faz. Trechos de interp_effects.ml:"), { x: MX, y: 1.7, w: CW, h: 0.45 });
-  const h = codigo(s, [
-    ["type _ Effect.t +=", "(* declara as operações de efeito *)"],
-    ["  | Get : string -> int option Effect.t", "(* lê uma variável, que pode não existir *)"],
-    ["  | Set : string * int -> unit Effect.t", "(* guarda um valor numa variável *)"],
-    ["  | Fail : string -> 'a Effect.t", "(* interrompe com uma mensagem de erro *)"],
-    ["  | Output : int -> unit Effect.t", "(* mostra um valor na saída *)"],
+  texto(s, runs("No OCaml, o código **pede** e o **handler** responde."), { x: MX, y: 1.8, w: CW, h: 0.5, fontSize: 20 });
+  codigo(s, [
+    ["type _ Effect.t +=", "(* as operações *)"],
+    ["  | Get : string -> int option Effect.t", "(* ler variável *)"],
+    ["  | Set : string * int -> unit Effect.t", "(* guardar valor *)"],
+    ["  | Fail : string -> 'a Effect.t", "(* erro *)"],
+    ["  | Output : int -> unit Effect.t", "(* saída *)"],
     ["", ""],
-    ["(* dentro do handler de estado, run_state *)", ""],
-    ["| Get x -> Some (fun k ->", "(* atende Get x. k é o programa parado *)"],
-    ["    continue k (Hashtbl.find_opt tbl x))", "(* busca x e retoma o programa com o valor *)"],
-  ], { x: MX, y: 2.2, w: CW });
-  quadro(s, [
-    ["perform", "pede uma operação (Get, Set...) e pausa o código até o handler responder."],
-    ["Continuação (k)", "o resto do programa, parado no ponto do perform. continue k v retoma o programa, e o perform devolve v."],
-  ], { x: MX, y: 2.35 + h, w: CW, h: 1.1 });
+    ["| Get x -> Some (fun k ->", "(* handler atende Get *)"],
+    ["    continue k (Hashtbl.find_opt tbl x))", "(* retoma com o valor *)"],
+  ], { x: MX, y: 2.5, w: CW, fontSize: 14 });
+  fonte(s, "interp_effects.ml (as duas últimas linhas são do handler de estado, run_state)", 5.2);
   registrar(s, "Efeitos algébricos no código",
-    "No OCaml, primeiro se declaram as operações: Get, Set, Fail e Output. O código chama perform para pedir uma delas. O handler de estado atende o Get: busca a variável na tabela e retoma o programa, que estava parado, com o valor encontrado.",
+    "No OCaml, primeiro se declaram as operações: Get, Set, Fail e Output. O código chama perform para pedir uma delas. O handler de estado atende o Get: busca a variável na tabela e retoma o programa, que estava parado, com o valor encontrado. O k é a continuação, o resto do programa parado no ponto do perform.",
     [
       ["type _ Effect.t +=", "acrescenta operações novas ao tipo de efeitos do OCaml. Cada linha é uma operação e diz o que recebe e o que devolve."],
       ["Get : string -> int option", "recebe o nome da variável e devolve talvez um inteiro (option): Some v se existe, None se não existe."],
       ["Set : string * int -> unit", "recebe nome e valor e não devolve nada útil (unit)."],
       ["Fail : string -> 'a", "recebe a mensagem de erro. O 'a quer dizer que ela nunca volta com um valor, então serve em qualquer lugar."],
       ["Output : int -> unit", "recebe o valor a mostrar."],
+      ["perform", "pede uma operação (Get, Set...) e pausa o código até o handler responder."],
       ["Handler", "função que atende os pedidos de perform. Este trecho é do handler de estado, run_state."],
       ["run_state", "função que instala o handler de estado em volta de um trecho de código. Usa match_with, do OCaml."],
       ["Some (fun k -> ...)", "o jeito de o handler dizer: este pedido é meu, e eis o que fazer com ele."],
@@ -447,50 +372,21 @@ secao("02", "Fundamentação", "Agora mostro como cada mecanismo aparece no cód
     ]);
 }
 
-// 10. Trabalhos relacionados
-{
-  const s = conteudo("Fundamentação", "Trabalhos relacionados");
-  texto(s, runs("**Expressividade:** mônadas e handlers expressam os mesmos efeitos (Forster et al., 2017) e podem ser traduzidos um no outro (Schrijvers et al., 2019)."), { x: MX, y: 1.8, w: CW, h: 0.8 });
-  texto(s, [{ text: "Desempenho medido na literatura:", options: { bold: true, color: C.text1 } }], { x: MX, y: 2.8, w: CW, h: 0.4 });
-  bullets(s, [
-    "Sivaramakrishnan et al. (2021): cerca de 23 ns para alocar uma fiber e trocar de pilha no OCaml 5",
-    "Kammar et al. (2013) e Xie e Leijen (2020): mônadas a 1,0 a 1,3 vezes uma versão sem efeitos",
-  ], { x: MX, y: 3.25, w: CW, h: 1.1 });
-  texto(s, runs("**Lacuna:** esses números vêm de programas e situações diferentes. Nenhum trabalho compara os dois mecanismos no mesmo programa, em escrita e em execução."), { x: MX, y: 4.6, w: CW, h: 0.8 });
-  registrar(s, "Trabalhos relacionados",
-    "A teoria já mostrou que os mecanismos são equivalentes. Na prática, há medições de cada um separado: no OCaml, o custo das fibers que os handlers usam, e no Haskell, o custo das mônadas contra código sem efeitos. Faltava comparar os dois no mesmo programa.",
-    [
-      ["Forster et al. (2017)", "mostraram que um mecanismo consegue simular o outro, ou seja, têm a mesma expressividade."],
-      ["Schrijvers et al. (2019)", "mostraram como traduzir transformadores de mônadas em efeitos algébricos e vice-versa."],
-      ["Fiber", "o segmento de pilha que o OCaml 5 cria para o trecho de código sob um handler. É por causa dela que instalar um handler custa tempo."],
-      ["Trocar de pilha", "passar a execução de uma fiber para outra, o que acontece em cada perform e em cada continue."],
-      ["Sivaramakrishnan et al. (2021)", "artigo que implementou os handlers no OCaml 5 e mediu seus custos."],
-      ["1,0 a 1,3 vezes", "a versão com mônadas levou de 1,0 a 1,3 vezes o tempo da versão sem efeitos nos microbenchmarks desses autores."],
-    ]);
-}
-
-// 11. Seção 03
+// Seção 03
 secao("03", "Metodologia", "Agora o método: o que foi implementado, como foi verificado e o que foi medido.");
 
-// 12. Visão geral
+// 7. Visão geral
 {
-  const s = conteudo("Metodologia", "Visão geral");
-  texto(s, "O mesmo interpretador foi escrito quatro vezes, duas por linguagem:", { x: MX, y: 1.75, w: CW, h: 0.45 });
+  const s = conteudo("Metodologia", "Quatro versões do mesmo interpretador");
   tabela(s, ["Versão", "Linguagem", "Papel"], [
-    [{ t: "Handlers", cor: HEX.marinho }, "OCaml 5.2.1", "mecanismo: efeitos algébricos"],
-    ["Imperativa", "OCaml 5.2.1", "base: estado em Hashtbl, exceção nativa"],
-    [{ t: "Mônadas", cor: HEX.rosa }, "GHC 9.4.7", "mecanismo: ExceptT String (StateT Env IO)"],
-    ["IORef", "GHC 9.4.7", "base: o mesmo Map dentro de um IORef, exceção nativa"],
-  ], { x: MX, y: 2.3, w: CW, colW: [2.4, 2.4, CW - 4.8], fontSize: 15 });
-  bullets(s, [
-    "Código (QP1 a QP3): só entre versões da **mesma** linguagem",
-    "Desempenho (QP4): cada mecanismo dividido pela sua base",
-  ], { x: MX, y: 4.45, w: 6.4, h: 1.0 });
-  quadro(s, [
-    ["Base", "versão da mesma linguagem sem o mecanismo, que faz o mesmo trabalho com estado e erro diretos."],
-  ], { x: MX + 6.7, y: 4.4, w: CW - 6.7, h: 1.3 });
-  registrar(s, "Visão geral",
-    "Escrevi o mesmo interpretador quatro vezes. Em cada linguagem há a versão com o mecanismo e uma base sem ele. Só comparo código dentro da mesma linguagem, e o desempenho de cada mecanismo é medido contra a sua base.",
+    [{ t: "Handlers", cor: HEX.marinho }, "OCaml 5.2.1", "mecanismo"],
+    ["Imperativa", "OCaml 5.2.1", "base"],
+    [{ t: "Mônadas", cor: HEX.rosa }, "GHC 9.4.7", "mecanismo"],
+    ["IORef", "GHC 9.4.7", "base"],
+  ], { x: MX, y: 1.95, w: 8.0, colW: [2.8, 2.8, 2.4], fontSize: 18 });
+  texto(s, runs("Toda comparação é **dentro da mesma linguagem**."), { x: MX, y: 4.6, w: CW, h: 0.5, fontSize: 20 });
+  registrar(s, "Quatro versões do mesmo interpretador",
+    "Escrevi o mesmo interpretador quatro vezes. Em cada linguagem há a versão com o mecanismo e uma base sem ele. Só comparo código dentro da mesma linguagem, e o desempenho de cada mecanismo é medido contra a sua base. A base do OCaml guarda as variáveis numa Hashtbl e usa exceção nativa. A base do Haskell guarda o mesmo Map dentro de um IORef e também usa exceção nativa.",
     [
       ["Interpretador", "programa que lê uma expressão e calcula o resultado dela."],
       ["Mecanismo", "a forma de tratar efeitos que está sendo estudada: handlers no OCaml, mônadas no Haskell."],
@@ -499,71 +395,55 @@ secao("03", "Metodologia", "Agora o método: o que foi implementado, como foi ve
       ["Hashtbl", "tabela de dispersão do OCaml, que guarda as variáveis. As duas versões OCaml usam a mesma."],
       ["IORef", "uma variável mutável do Haskell, usada dentro de IO. A base guarda nela o mesmo Map da versão monádica."],
       ["Exceção nativa", "o erro da própria linguagem: raise no OCaml, throwIO no Haskell."],
+      ["Por que dentro da mesma linguagem", "comparar OCaml com Haskell mediria também os compiladores e os runtimes, e não só os mecanismos."],
     ]);
 }
 
-// 13. Caso de uso
+// 8. Caso de uso
 {
-  const s = conteudo("Metodologia", "Caso de uso: o interpretador");
-  texto(s, [
-    { text: "Expressões com oito construtores:", options: { breakLine: true } },
-    { text: "Num, Var, Add, Mul, Div, Let, Seq, Print", options: { fontFace: CODIGO, fontSize: 15 } },
-  ], { x: MX, y: 1.8, w: 5.4, h: 0.9 });
+  const s = conteudo("Metodologia", "Caso de uso: um interpretador pequeno");
+  texto(s, [{ text: "Num  Var  Add  Mul  Div  Let  Seq  Print", options: { fontFace: CODIGO } }], { x: MX, y: 1.9, w: CW, h: 0.5, fontSize: 20 });
   bullets(s, [
     "**Estado:** Var lê, Let guarda",
     "**Exceção:** divisão por zero, variável inexistente",
-    "**Saída:** Print mostra um valor",
-  ], { x: MX, y: 2.85, w: 5.4, h: 1.6 });
-  s.addShape(pres.shapes.RECTANGLE, { x: MX + 5.9, y: 1.8, w: CW - 5.9, h: 2.65, fill: { color: HEX.fundo }, line: { color: HEX.laranja, width: 1.25 }, objectName: "definição" });
-  texto(s, [
-    { text: "Equivalência funcional", options: { bold: true, color: C.text1, breakLine: true } },
-    { text: "Uma implementação I é equivalente à semântica D se, para todo (e, σ", options: {} },
-    { text: "0", options: { subscript: true } }, { text: ") em E", options: {} }, { text: "64", options: { subscript: true } },
-    { text: ", vale ⟦I⟧(e, σ", options: {} }, { text: "0", options: { subscript: true } }, { text: ") = D(e, σ", options: {} },
-    { text: "0", options: { subscript: true } }, { text: "), isto é, mesmo valor, mesmo estado final, mesmo traço e mesma mensagem de erro.", options: {} },
-  ], { x: MX + 6.1, y: 1.95, w: CW - 6.3, h: 2.4, fontSize: 15 });
-  quadro(s, [
-    ["E64", "os pares (expressão, estado inicial) cujos valores cabem no inteiro das duas linguagens (63 bits do OCaml)."],
-    ["Traço", "a sequência de valores impressos por Print, na ordem."],
-  ], { x: MX, y: 4.65, w: CW, h: 1.15 });
-  fonte(s, "Semântica small-step no estilo de Felleisen e Hieb (1992). Simplificações: variáveis globais, erro sempre aborta, um único programa.", 6.05);
-  registrar(s, "Caso de uso: o interpretador",
-    "O caso de uso é um interpretador pequeno, com oito tipos de expressão, que usa os três efeitos. Antes de programar, fixei o que significa duas versões serem equivalentes: dar o mesmo valor, o mesmo estado final, a mesma saída e a mesma mensagem de erro.",
+    "**Saída:** Print",
+  ], { x: MX, y: 2.7, w: CW, h: 1.6, fontSize: 20, paraSpaceAfter: 10 });
+  s.addShape(pres.shapes.RECTANGLE, { x: MX, y: 4.55, w: CW, h: 1.0, fill: { color: HEX.fundo }, line: { color: HEX.laranja, width: 1.25 }, objectName: "definição" });
+  texto(s, runs("**Equivalência:** mesmo valor, mesmo estado final, mesma saída e mesmo erro que a semântica de referência."), { x: MX + 0.3, y: 4.55, w: CW - 0.6, h: 1.0, fontSize: 18, valign: "middle" });
+  registrar(s, "Caso de uso: um interpretador pequeno",
+    "O caso de uso é um interpretador pequeno, com oito tipos de expressão, que usa os três efeitos. Antes de programar, fixei o que significa duas versões serem equivalentes: dar o mesmo valor, o mesmo estado final, a mesma saída e a mesma mensagem de erro que a semântica de referência. Formalmente, para todo par de expressão e estado inicial no conjunto E64, o resultado da implementação é igual ao da semântica. Simplificações de propósito: variáveis globais, erro sempre aborta e um único programa.",
     [
       ["Construtor", "cada tipo de expressão: Num (número), Var (variável), Add, Mul, Div (soma, multiplicação, divisão), Let (dar valor a uma variável e continuar), Seq (fazer uma coisa e depois outra), Print (mostrar um valor)."],
-      ["Semântica D", "a definição matemática do resultado de cada expressão. É a resposta certa contra a qual as versões são testadas."],
-      ["Small-step", "estilo de semântica que descreve a execução passo a passo. Felleisen e Hieb (1992) é a referência desse estilo."],
-      ["(e, σ0)", "uma expressão e e o estado inicial σ0 (os valores das variáveis no começo)."],
-      ["E64", "conjunto dos pares em que nenhum valor passa do maior inteiro comum às duas linguagens, que é o de 63 bits do OCaml."],
-      ["⟦I⟧(e, σ0)", "o que a implementação I produz ao avaliar e a partir de σ0."],
-      ["Traço", "a lista de valores impressos por Print, na ordem em que saíram."],
+      ["Semântica de referência", "a definição matemática do resultado de cada expressão, no estilo small-step de Felleisen e Hieb (1992). É a resposta certa contra a qual as versões são testadas."],
+      ["Small-step", "estilo de semântica que descreve a execução passo a passo."],
+      ["E64", "conjunto dos pares (expressão, estado inicial) em que nenhum valor passa do maior inteiro comum às duas linguagens, que é o de 63 bits do OCaml."],
+      ["Fórmula, se perguntarem", "⟦I⟧(e, σ0) = D(e, σ0) para todo (e, σ0) em E64: o que a implementação I produz é igual ao que a semântica D define."],
+      ["Mesma saída (traço)", "a lista de valores impressos por Print, na mesma ordem."],
       ["Simplificações", "variáveis são globais (sem escopo), qualquer erro encerra a avaliação e há um único programa de teste. Foram escolhas para manter o caso controlado."],
     ]);
 }
 
-// 14. A função eval
+// 9. A função eval
 {
   const s = conteudo("Metodologia", "A função eval");
-  texto(s, "A eval recebe uma expressão e calcula o seu valor. Os efeitos acontecem dentro dela.", { x: MX, y: 1.7, w: CW, h: 0.45 });
-  const h = codigo(s, [
-    ["let rec eval = function", "(* recebe uma expressão, devolve um int *)"],
-    ["  | Num n -> n", "(* número: o valor é o próprio número *)"],
-    ["  | Var x -> (", "(* variável: ler o valor de x *)"],
-    ["      match perform (Get x) with", "(* pede o valor de x ao handler de estado *)"],
-    ["      | Some v -> v", "(* x existe: o resultado é v *)"],
-    ["      | None -> perform (Fail ...))", "(* x não existe: pede o erro ao handler *)"],
-    ["  | Add (a, b) ->", "(* soma: avaliar os dois lados *)"],
-    ["      let x = eval a in", "(* primeiro o lado esquerdo *)"],
-    ["      let y = eval b in", "(* depois o direito, em ordem fixa *)"],
-    ["      x + y", "(* devolve a soma dos dois *)"],
-  ], { x: MX, y: 2.2, w: CW });
-  legenda(s, "Trecho de interp_effects.ml. Mul, Div, Let, Seq e Print seguem a mesma ideia.", { x: MX, y: 2.3 + h, w: CW });
-  quadro(s, [
-    ["eval", "a função principal do interpretador. A legibilidade (QP1) é medida só dentro dela."],
-  ], { x: MX, y: 2.75 + h, w: CW, h: 0.7 });
+  texto(s, "Calcula o valor de cada expressão. Os efeitos acontecem dentro dela.", { x: MX, y: 1.8, w: CW, h: 0.5, fontSize: 20 });
+  codigo(s, [
+    ["let rec eval = function", ""],
+    ["  | Num n -> n", "(* o próprio número *)"],
+    ["  | Var x -> (", ""],
+    ["      match perform (Get x) with", "(* pede x ao handler *)"],
+    ["      | Some v -> v", "(* achou *)"],
+    ["      | None -> perform (Fail ...))", "(* não achou: erro *)"],
+    ["  | Add (a, b) ->", ""],
+    ["      let x = eval a in", "(* esquerda *)"],
+    ["      let y = eval b in", "(* direita *)"],
+    ["      x + y", "(* soma *)"],
+  ], { x: MX, y: 2.5, w: CW, fontSize: 14 });
+  fonte(s, "interp_effects.ml", 5.85);
   registrar(s, "A função eval",
-    "Esta é a eval da versão com handlers. Ela olha o tipo da expressão e decide o que fazer. Num devolve o número. Var pede o valor ao handler de estado. Add avalia os dois lados, em ordem fixa, e soma.",
+    "Esta é a eval da versão com handlers. Ela olha o tipo da expressão e decide o que fazer. Num devolve o número. Var pede o valor ao handler de estado. Add avalia os dois lados, em ordem fixa, e soma. Um exemplo: 2 + n, com n valendo 3. A eval cai no caso Add. O lado esquerdo é o número 2. O lado direito é a variável n: a eval faz perform Get, o handler lê 3 na tabela e retoma a eval com esse valor. No fim, 2 + 3 = 5. Os outros casos, Mul, Div, Let, Seq e Print, seguem a mesma ideia. A legibilidade (QP1) é medida dentro desta função.",
     [
+      ["eval", "a função principal do interpretador. A legibilidade (QP1) é medida só dentro dela."],
       ["let rec", "define uma função que pode chamar a si mesma (recursiva)."],
       ["function | ...", "a função escolhe um caso conforme o tipo da expressão recebida."],
       ["match ... with", "examina um valor e escolhe o caso que combina com ele."],
@@ -571,323 +451,242 @@ secao("03", "Metodologia", "Agora o método: o que foi implementado, como foi ve
       ["Some v / None", "as duas respostas possíveis de Get: o valor existe (Some v) ou não existe (None)."],
       ["perform (Fail ...)", "pede ao handler de erro que interrompa a avaliação com a mensagem."],
       ["Ordem fixa", "o OCaml não garante em que ordem avalia os argumentos de uma função, por isso cada lado é avaliado num let separado. Isso importa quando os dois lados imprimem."],
+      ["Exemplo 2 + n (passo a passo)", "1) eval (Add (Num 2, Var \"n\")) cai no caso Add. 2) eval (Num 2) devolve 2. 3) eval (Var \"n\") faz perform (Get \"n\"), o handler lê 3 e retoma. 4) x + y devolve 5. Está no apêndice A7."],
     ]);
 }
 
-// 15. Exemplo
-{
-  const s = conteudo("Metodologia", "Exemplo: avaliando 2 + n, com n = 3");
-  tabela(s, ["Passo", "Chamada", "O que acontece", "Resultado"], [
-    ["1", { t: 'eval (Add (Num 2, Var "n"))', mono: true }, "caso Add: avalia os dois lados", "–"],
-    ["2", { t: "eval (Num 2)", mono: true }, "caso Num: o valor é o próprio número", "2"],
-    ["3", { t: 'eval (Var "n")', mono: true }, 'perform (Get "n"): o handler lê n e retoma com o valor', "3"],
-    ["4", { t: "x + y", mono: true }, "soma os dois lados", { t: "5", b: true, cor: HEX.verdeazul }],
-  ], { x: MX, y: 1.8, w: CW, colW: [1.0, 4.1, 5.1, CW - 10.2], fontSize: 15, align: ["center", "left", "left", "center"] });
-  texto(s, runs("O efeito acontece no passo 3: a eval **pede**, o handler **responde** e a eval **continua** de onde parou."), { x: MX, y: 4.6, w: CW, h: 0.8 });
-  registrar(s, "Exemplo: avaliando 2 + n",
-    "Para ver a eval funcionando: 2 + n, com n valendo 3. A eval cai no caso Add e avalia os dois lados. O lado esquerdo é o número 2. O lado direito é a variável n: a eval faz perform Get, o handler de estado lê 3 na tabela e retoma a eval com esse valor. No fim, 2 + 3 = 5.",
-    [
-      ["Add (Num 2, Var \"n\")", "a expressão 2 + n escrita como o interpretador a representa."],
-      ["Retoma", "o handler chama continue k 3, e a eval continua exatamente de onde parou, com 3 como resultado do perform."],
-    ]);
-}
-
-// 16. Mesma estrutura
+// 10. Mesma estrutura
 {
   const s = conteudo("Metodologia", "Mesma estrutura, outro mecanismo");
-  texto(s, [{ text: "Handlers", options: { bold: true, color: HEX.marinho } }, { text: ", interp_effects.ml" }], { x: MX, y: 1.65, w: CW, h: 0.35, fontSize: 14 });
+  texto(s, [{ text: "Handlers", options: { bold: true, color: HEX.marinho } }], { x: MX, y: 1.75, w: CW, h: 0.35, fontSize: 16 });
   const h1 = codigo(s, [
-    ["| Var x -> (", "(* caso Var: ler a variável x *)"],
-    ["    match perform (Get x) with", "(* pede x ao handler: operação de efeito *)"],
-    ["    | Some v -> v", "(* achou: devolve v *)"],
-    ["    | None -> perform (Fail", "(* não achou: pede o erro ao handler *)"],
-    ["        (msg_unbound x)))", "(* mensagem de erro com o nome de x *)"],
-  ], { x: MX, y: 2.0, w: CW });
-  texto(s, [{ text: "Imperativa", options: { bold: true, color: C.text1 } }, { text: ", interp_imp.ml" }], { x: MX, y: 2.15 + h1, w: CW, h: 0.35, fontSize: 14 });
+    ["| Var x -> (", ""],
+    ["    match perform (Get x) with", "(* efeito *)"],
+    ["    | Some v -> v", ""],
+    ["    | None -> perform (Fail (msg_unbound x)))", "(* efeito *)"],
+  ], { x: MX, y: 2.15, w: CW, fontSize: 14 });
+  texto(s, [{ text: "Imperativa", options: { bold: true, color: C.text1 } }], { x: MX, y: 2.35 + h1, w: CW, h: 0.35, fontSize: 16 });
   const h2 = codigo(s, [
-    ["| Var x -> (", "(* caso Var: ler a variável x *)"],
-    ["    match Hashtbl.find_opt env x with", "(* lê x direto da tabela, sem efeito *)"],
-    ["    | Some v -> v", "(* achou: devolve v *)"],
-    ["    | None -> raise (Runtime_error", "(* não achou: lança a exceção nativa *)"],
-    ["        (msg_unbound x)))", "(* a mesma mensagem de erro *)"],
-  ], { x: MX, y: 2.5 + h1, w: CW });
-  legenda(s, "Só a 2ª e a 4ª linha mudam: a diferença medida é o mecanismo, com a mesma Hashtbl.", { x: MX, y: 2.6 + h1 + h2, w: CW });
+    ["| Var x -> (", ""],
+    ["    match Hashtbl.find_opt env x with", "(* direto *)"],
+    ["    | Some v -> v", ""],
+    ["    | None -> raise (Runtime_error (msg_unbound x)))", "(* direto *)"],
+  ], { x: MX, y: 2.75 + h1, w: CW, fontSize: 14 });
+  texto(s, runs("Só **2 linhas** mudam: a diferença medida é o mecanismo."), { x: MX, y: 3.0 + h1 + h2, w: CW, h: 0.5, fontSize: 20 });
   registrar(s, "Mesma estrutura, outro mecanismo",
-    "As duas versões OCaml têm a mesma estrutura, linha por linha. Onde a imperativa lê a tabela direto, a de handlers faz perform Get. Onde a imperativa lança raise, a de handlers faz perform Fail. Por isso a diferença medida é o mecanismo, e não a estrutura.",
+    "As duas versões OCaml têm a mesma estrutura, linha por linha. Onde a imperativa lê a tabela direto, a de handlers faz perform Get. Onde a imperativa lança raise, a de handlers faz perform Fail. As duas usam a mesma Hashtbl. Por isso a diferença medida é o mecanismo, e não a estrutura.",
     [
       ["Hashtbl.find_opt env x", "lê x direto da tabela de variáveis, sem passar por handler nenhum."],
       ["raise (Runtime_error ...)", "lança a exceção nativa do OCaml, que interrompe a avaliação."],
       ["msg_unbound x", "monta a mensagem de erro de variável não vinculada, com o nome de x. As versões usam a mesma função."],
+      ["Arquivos", "interp_effects.ml (handlers) e interp_imp.ml (imperativa)."],
     ]);
 }
 
-// 17. Verificação
+// 11. Verificação
 {
   const s = conteudo("Metodologia", "Verificação antes de medir");
-  texto(s, "Nada foi medido antes de as quatro versões passarem nos testes.", { x: MX, y: 1.75, w: CW, h: 0.45 });
-  tabela(s, ["Resultado", "Verificação", "O que garante"], [
-    [{ t: "61/61", b: true, cor: HEX.verdeazul }, "suíte de oráculo, em cada linguagem", "as versões são equivalentes"],
-    [{ t: "8/8", b: true, cor: HEX.verdeazul }, "erros colocados de propósito (mutantes)", "os testes pegam erros reais"],
-    [{ t: "12", b: true, cor: HEX.verdeazul }, "cargas com o mesmo hash nas duas linguagens", "as cargas medidas são idênticas"],
-  ], { x: MX, y: 2.3, w: CW, colW: [1.7, 5.3, CW - 7.0], fontSize: 15, align: ["center", "left", "left"] });
-  quadro(s, [
-    ["Mutante", "cópia do código com uma decisão sutil invertida de propósito. Se os testes falham, eles pegaram o erro."],
-    ["Hash", "impressão digital calculada sobre a carga (FNV-1a). Hash igual nas duas linguagens quer dizer carga igual."],
-  ], { x: MX, y: 4.25, w: CW, h: 1.15 });
-  fonte(s, "Código gerado com apoio de IA, declarado no artigo e revisado pelo autor.", 5.65);
+  [["61/61", "testes de oráculo", "as versões são equivalentes"],
+   ["8/8", "erros plantados detectados", "os testes pegam erros reais"],
+   ["12", "cargas idênticas (hash)", "todas medem a mesma coisa"]].forEach(([num, oque, garante], i) => {
+    const x = MX + i * 3.9;
+    texto(s, [{ text: num, options: { bold: true, color: HEX.verdeazul } }], { x, y: 2.0, w: 3.6, h: 1.0, fontSize: 48 });
+    texto(s, [{ text: oque, options: { bold: true, color: C.text1 } }], { x, y: 3.1, w: 3.6, h: 0.5, fontSize: 18 });
+    texto(s, garante, { x, y: 3.6, w: 3.6, h: 0.8, fontSize: 16 });
+  });
   registrar(s, "Verificação antes de medir",
-    "Antes de qualquer medição, as quatro versões tiveram de passar nos testes. Foram 61 casos de oráculo em cada linguagem. Para saber se os testes pegam erros de verdade, coloquei 8 erros de propósito, e os testes acusaram os 8. E as 12 cargas de medição têm o mesmo hash nas duas linguagens. Como o código teve apoio de IA, essa verificação é o que garante que ele faz o que deve.",
+    "Antes de qualquer medição, as quatro versões tiveram de passar nos testes. Foram 61 casos de oráculo em cada linguagem. Para saber se os testes pegam erros de verdade, coloquei 8 erros de propósito, e os testes acusaram os 8. E as 12 cargas de medição têm o mesmo hash nas duas linguagens. O código foi gerado com apoio de IA, como declarado no artigo, e revisado por mim. Essa verificação é o que garante que ele faz o que deve.",
     [
-      ["Suíte de oráculo (61/61)", "61 casos de teste. Cada um compara valor, estado final, saída e erro de cada versão com a semântica de referência. Todos passaram nas quatro versões."],
-      ["Mutantes (8/8)", "oito cópias do código, cada uma com uma decisão sutil revertida, por exemplo arredondar a divisão para baixo (div) em vez de truncar (quot) ou inverter a ordem da pilha monádica. A suíte acusou as oito."],
-      ["Hash FNV-1a", "algoritmo que transforma um texto num número de 64 bits. Se as cargas geradas nas duas linguagens dão o mesmo número, elas são iguais."],
-      ["12 cargas", "4 cenários (Arith, State, Exn, Output) vezes 3 sementes do gerador (42, 43 e 44)."],
-      ["Carga", "lista de 10.000 expressões avaliadas numa medição."],
+      ["Testes de oráculo (61/61)", "61 casos de teste. Cada um compara valor, estado final, saída e erro de cada versão com a semântica de referência (o oráculo, a resposta certa). Todos passaram nas quatro versões."],
+      ["Erros plantados, ou mutantes (8/8)", "oito cópias do código, cada uma com uma decisão sutil revertida, por exemplo arredondar a divisão para baixo (div) em vez de truncar (quot) ou inverter a ordem da pilha monádica. A suíte acusou as oito."],
+      ["Hash FNV-1a", "algoritmo que transforma um texto num número de 64 bits, uma impressão digital. Se as cargas geradas nas duas linguagens dão o mesmo número, elas são iguais."],
+      ["12 cargas", "4 cenários (Arith, State, Exn, Output) vezes 3 sementes do gerador (42, 43 e 44). Cada carga tem 10.000 expressões."],
+      ["IA", "o código foi gerado com apoio de IA, declarado no artigo e revisado pelo autor. Detalhes no apêndice A5."],
     ]);
 }
 
-// 18. Métricas
-{
-  const s = conteudo("Metodologia", "Métricas");
-  tabela(s, ["QP", "Métrica", "Como se mede"], [
-    ["QP1", "linhas, operações de efeito, aninhamento", "contagem automática na eval, aninhamento pela Cognitive Complexity"],
-    ["QP2", "pontos de modificação", "declarações existentes que mudam ao inserir um quarto efeito"],
-    ["QP3", "infraestrutura e reúso", "linhas fora da eval, classificadas por regra mecânica"],
-    ["QP4", "razão de tempo e de memória", "mecanismo dividido pela base da mesma linguagem"],
-  ], { x: MX, y: 1.85, w: CW, colW: [1.0, 4.2, CW - 5.2], fontSize: 15 });
-  quadro(s, [
-    ["Operação de efeito", "cada perform, leitura da tabela, raise ou emissão (OCaml), e cada passo monádico ou operação de estado, erro ou IORef (Haskell)."],
-    ["Aninhamento", "quantos blocos ficam um dentro do outro. Mais níveis, mais difícil de ler (Cognitive Complexity, Campbell, 2018)."],
-  ], { x: MX, y: 4.55, w: CW, h: 1.3 });
-  registrar(s, "Métricas",
-    "Para o código, três medidas. Na QP1, linhas, operações de efeito e aninhamento dentro da eval. Na QP2, quantas declarações já existentes mudam para acrescentar um efeito. Na QP3, quantas linhas de infraestrutura existem fora da eval e quanto delas é reaproveitado. Para o desempenho, a razão entre mecanismo e base.",
-    [
-      ["Linhas (LOC efetiva)", "linhas de código da eval, sem linhas em branco, depois de formatar o código com o formatador oficial de cada linguagem."],
-      ["Operação de efeito", "cada ponto em que a eval usa um efeito. No OCaml: perform, leitura direta da tabela, raise ou emissão. No Haskell: cada passo monádico (<-) e cada operação sobre estado, erro ou IORef."],
-      ["Aninhamento", "profundidade máxima de blocos dentro de blocos (um match dentro de um caso, por exemplo)."],
-      ["Cognitive Complexity", "métrica de Campbell (2018) que pune o aninhamento, porque código aninhado é mais difícil de entender."],
-      ["Ponto de modificação", "declaração que já existia e teve o texto alterado. Adições puras (código novo) são contadas à parte."],
-      ["Infraestrutura (boilerplate)", "linhas fora da eval que só montam o mecanismo, sem dizer o que o efeito faz. Uma regra mecânica classifica cada linha."],
-      ["Reúso", "o mesmo handler ou camada usado em mais de um lugar sem reescrever."],
-      ["Razão", "tempo (ou memória) do mecanismo dividido pelo da base. Explicada no próximo slide."],
-    ]);
-}
-
-// 19. Razão
+// 12. Razão
 {
   const s = conteudo("Metodologia", "Desempenho medido por razões");
-  texto(s, "Comparar tempos entre linguagens mediria também os compiladores. Cada mecanismo é dividido pela base da própria linguagem:", { x: MX, y: 1.7, w: CW, h: 0.75 });
-  const cx = MX + 0.8, bw = 3.2, bh = 0.6;
-  [["Handlers (OCaml)", "Imperativa (OCaml)", "razão do OCaml", HEX.marinho, 2.6], ["Mônadas (Haskell)", "IORef (Haskell)", "razão do Haskell", HEX.rosa, 3.4]].forEach(([a, b, r, cor, y]) => {
+  const cx = MX + 0.5, bw = 3.3, bh = 0.7;
+  [["Handlers", "Imperativa", HEX.marinho, 2.0], ["Mônadas", "IORef", HEX.rosa, 3.0]].forEach(([a, b, cor, y]) => {
     s.addShape(pres.shapes.RECTANGLE, { x: cx, y, w: bw, h: bh, fill: { color: HEX.fundo }, line: { color: HEX.corpo, width: 0.75 } });
-    texto(s, [{ text: a, options: { bold: true, color: cor } }], { x: cx, y, w: bw, h: bh, align: "center", valign: "middle", fontSize: 15 });
-    texto(s, "÷", { x: cx + bw, y, w: 0.6, h: bh, align: "center", valign: "middle", fontSize: 18 });
-    s.addShape(pres.shapes.RECTANGLE, { x: cx + bw + 0.6, y, w: bw, h: bh, fill: { color: HEX.fundo }, line: { color: HEX.corpo, width: 0.75 } });
-    texto(s, b, { x: cx + bw + 0.6, y, w: bw, h: bh, align: "center", valign: "middle", fontSize: 15 });
-    s.addShape(pres.shapes.LINE, { x: cx + 2 * bw + 0.7, y: y + bh / 2, w: 0.8, h: 0, line: { color: HEX.rodape, width: 1.25, endArrowType: "triangle" } });
-    texto(s, r, { x: cx + 2 * bw + 1.6, y, w: 2.6, h: bh, valign: "middle", fontSize: 15 });
+    texto(s, [{ text: a, options: { bold: true, color: cor } }], { x: cx, y, w: bw, h: bh, align: "center", valign: "middle", fontSize: 20 });
+    texto(s, "÷", { x: cx + bw, y, w: 0.8, h: bh, align: "center", valign: "middle", fontSize: 24 });
+    s.addShape(pres.shapes.RECTANGLE, { x: cx + bw + 0.8, y, w: bw, h: bh, fill: { color: HEX.fundo }, line: { color: HEX.corpo, width: 0.75 } });
+    texto(s, b, { x: cx + bw + 0.8, y, w: bw, h: bh, align: "center", valign: "middle", fontSize: 20 });
   });
   texto(s, [
-    { text: "razão = T", options: {} }, { text: "mec", options: { subscript: true } }, { text: " ÷ T", options: {} }, { text: "base", options: { subscript: true } },
-    { text: " = (T", options: {} }, { text: "base", options: { subscript: true } }, { text: " + Δ) ÷ T", options: {} }, { text: "base", options: { subscript: true } },
-    { text: " = 1 + Δ ÷ T", options: {} }, { text: "base", options: { subscript: true } },
-  ], { x: MX, y: 4.25, w: CW, h: 0.5, align: "center", fontSize: 20, color: C.text1 });
-  quadro(s, [
-    ["Δ (delta)", "o custo a mais do mecanismo sobre a base, em nanossegundos ou bytes por expressão."],
-    ["Por que cuidado", "base barata faz a razão crescer. Por isso a comparação de razões entre linguagens é só indicativa."],
-  ], { x: MX, y: 5.0, w: CW, h: 1.15 });
+    { text: "razão = 1 + Δ ÷ T", options: {} }, { text: "base", options: { subscript: true } },
+  ], { x: MX, y: 4.2, w: CW, h: 0.7, align: "center", fontSize: 28, color: C.text1 });
+  texto(s, runs("Base barata, razão grande: entre linguagens, só **indicativo**."), { x: MX, y: 5.1, w: CW, h: 0.5, fontSize: 18, align: "center" });
   registrar(s, "Desempenho medido por razões",
-    "Não dá para comparar o tempo do OCaml com o do Haskell, porque isso mediria também os compiladores. Então cada mecanismo é dividido pela sua base. A razão é 1 mais o custo a mais dividido pelo custo da base. Essa fórmula não vem da literatura, é só a definição de razão reescrita, e ela mostra que uma base barata faz qualquer custo a mais parecer grande. Isso volta no slide da memória.",
+    "Não dá para comparar o tempo do OCaml com o do Haskell, porque isso mediria também os compiladores. Então cada mecanismo é dividido pela sua base: handlers pela imperativa, mônadas pela IORef. A razão é o tempo do mecanismo dividido pelo da base, que é o mesmo que 1 mais o custo a mais dividido pelo custo da base. Essa fórmula não vem da literatura, é só a definição de razão reescrita, e ela mostra que uma base barata faz qualquer custo a mais parecer grande. Isso volta no slide da memória.",
     [
+      ["Razão", "tempo (ou memória) do mecanismo dividido pelo da base. Razão 1 quer dizer custo igual ao da base. Razão 2 quer dizer o dobro."],
+      ["Fórmula completa", "razão = T_mec ÷ T_base = (T_base + Δ) ÷ T_base = 1 + Δ ÷ T_base."],
       ["T_mec", "tempo (ou memória) da versão com o mecanismo."],
       ["T_base", "tempo (ou memória) da base da mesma linguagem."],
-      ["Δ", "a diferença T_mec menos T_base: o que o mecanismo gasta a mais."],
-      ["Razão 1", "quer dizer custo igual ao da base. Razão 2 quer dizer o dobro."],
-      ["Indicativa", "serve para ter ideia, mas não para afirmar que um mecanismo é mais rápido que o outro."],
+      ["Δ (delta)", "a diferença T_mec menos T_base: o que o mecanismo gasta a mais, em nanossegundos ou bytes por expressão."],
+      ["Indicativo", "serve para ter ideia, mas não para afirmar que um mecanismo é mais rápido que o outro."],
     ]);
 }
 
-// 20. Seção 04
+// Seção 04
 secao("04", "Resultados", "Agora os resultados, primeiro do código (QP1 a QP3) e depois do desempenho (QP4).");
 
-// 21. QP1
+// 13. QP1
 {
   const s = conteudo("Resultados", "QP1: legibilidade da eval");
   tabela(s, ["Versão", "Linhas", "Operações de efeito", "Aninhamento"], [
-    [{ t: "Handlers (OCaml)", cor: HEX.marinho }, "29", "5", "2"],
-    ["Imperativa (OCaml)", "29", "5", "2"],
-    [{ t: "Mônadas (Haskell)", cor: HEX.rosa }, "27", "18", "1"],
-    ["IORef (Haskell)", "27", "18", "1"],
-  ], { x: MX + 1.0, y: 1.85, w: CW - 2.0, colW: [3.7, 1.6, 2.6, CW - 2.0 - 7.9], fontSize: 15, align: ["left", "right", "right", "right"] });
-  bullets(s, [
-    "Mecanismo e base **empatam** em cada linguagem, também construtor a construtor",
-    "Se há diferença ao escrever, ela está **fora** da eval",
-  ], { x: MX, y: 4.25, w: CW, h: 1.0 });
-  fonte(s, "Contagem automática sobre o código formatado. Aninhamento segundo Campbell (2018). O número de operações do Haskell é maior porque cada passo monádico (<-) conta.", 5.6);
+    [{ t: "Handlers", cor: HEX.marinho }, "29", "5", "2"],
+    ["Imperativa", "29", "5", "2"],
+    [{ t: "Mônadas", cor: HEX.rosa }, "27", "18", "1"],
+    ["IORef", "27", "18", "1"],
+  ], { x: MX, y: 1.95, w: 9.0, colW: [2.6, 1.7, 2.9, 1.8], fontSize: 18, align: ["left", "right", "right", "right"] });
+  texto(s, runs("Mecanismo e base **empatam**: a diferença não está na eval."), { x: MX, y: 4.6, w: CW, h: 0.5, fontSize: 20 });
   registrar(s, "QP1: legibilidade da eval",
     "A eval empata. No OCaml, as duas versões têm 29 linhas, 5 operações de efeito e aninhamento 2. No Haskell, 27 linhas, 18 operações e aninhamento 1. O empate vale também construtor por construtor. Então, se existe diferença para escrever, ela está fora da eval.",
     [
+      ["Linhas", "linhas de código da eval, sem linhas em branco, depois de formatar com o formatador oficial de cada linguagem."],
+      ["Operação de efeito", "cada ponto em que a eval usa um efeito. No OCaml: perform, leitura direta da tabela, raise ou emissão. No Haskell: cada passo monádico (<-) e cada operação sobre estado, erro ou IORef."],
+      ["Aninhamento", "profundidade máxima de blocos dentro de blocos, seguindo a Cognitive Complexity (Campbell, 2018), que pune o aninhamento porque código aninhado é mais difícil de entender."],
       ["Empate", "o mecanismo não muda a forma da eval: onde a base faz uma operação direta, o mecanismo faz uma operação de efeito, uma por uma."],
       ["Construtor a construtor", "a contagem também foi feita para cada caso (Num, Var, Add...), e cada caso empata."],
-      ["Por que o Haskell tem 18 operações", "porque cada passo monádico (x <- eval a) conta como operação. Não se compara o 18 com o 5: as linguagens são diferentes."],
+      ["Por que o Haskell tem 18 operações", "porque cada passo monádico (x <- eval a) conta. Não se compara o 18 com o 5: as linguagens são diferentes."],
+      ["Contagem automática", "um programa conta as métricas sobre o código formatado, sem contagem à mão."],
     ]);
 }
 
-// 22. QP3
+// 14. QP3
 {
-  const s = conteudo("Resultados", "QP3: infraestrutura fora da eval");
-  s.addChart(pres.charts.BAR, [{ name: "linhas", labels: ["IORef (Haskell)", "Mônadas (Haskell)", "Imperativa (OCaml)", "Handlers (OCaml)"], values: [22, 20, 3, 67] }], Object.assign({}, eixo, {
-    x: MX, y: 1.75, w: 7.2, h: 3.7, barDir: "bar", valAxisMinVal: 0, valAxisMaxVal: 80,
-    chartColors: [HEX.base, HEX.rosa, HEX.base, HEX.marinho], showValue: true, dataLabelPosition: "outEnd", showLegend: false,
+  const s = conteudo("Resultados", "QP3: código em volta da eval");
+  s.addChart(pres.charts.BAR, [{ name: "linhas", labels: ["IORef", "Mônadas", "Imperativa", "Handlers"], values: [22, 20, 3, 67] }], Object.assign({}, eixo, {
+    x: MX, y: 1.75, w: 7.4, h: 4.3, barDir: "bar", valAxisMinVal: 0, valAxisMaxVal: 80, catAxisLabelFontSize: 14,
+    chartColors: [HEX.base, HEX.rosa, HEX.base, HEX.marinho], showValue: true, dataLabelPosition: "outEnd", dataLabelFontSize: 14, showLegend: false,
     barGapWidthPct: 60, showValAxisTitle: true, valAxisTitle: "linhas de infraestrutura", objectName: "gráfico QP3",
   }));
   bullets(s, [
-    "**Handlers: 67 contra 3**, sendo 18 só para os testes",
+    "**Handlers: 67 contra 3**",
     "**Mônadas: 20 contra 22**",
-    "Reúso só nos handlers: 2 handlers usados em dois lugares",
-  ], { x: MX + 7.5, y: 1.9, w: CW - 7.5, h: 2.2, fontSize: 15 });
-  quadro(s, [
-    ["Infraestrutura", "código que só monta o mecanismo (os handlers, as composições), sem dizer o que o efeito faz."],
-  ], { x: MX + 7.5, y: 4.2, w: CW - 7.5, h: 1.25 });
-  fonte(s, "Classificação de cada linha auditável em codigo/resultados/boilerplate-regra/.", 5.75);
-  registrar(s, "QP3: infraestrutura fora da eval",
+    "Reúso só nos handlers",
+  ], { x: MX + 7.8, y: 2.2, w: CW - 7.8, h: 2.2, fontSize: 20, paraSpaceAfter: 12 });
+  registrar(s, "QP3: código em volta da eval",
     "Fora da eval aparece a diferença. A versão com handlers tem 67 linhas de infraestrutura contra 3 da imperativa, e 18 delas existem só para os testes. No Haskell, mônadas e IORef ficam parecidas: 20 contra 22. Em compensação, só os handlers são reaproveitados: dois deles são usados em dois lugares.",
     [
+      ["Infraestrutura (boilerplate)", "linhas fora da eval que só montam o mecanismo, sem dizer o que o efeito faz. Um programa classifica cada linha sobre os tokens do compilador, e a classificação é auditável em codigo/resultados/boilerplate-regra/."],
       ["67 linhas", "o código dos handlers (run_state, run_exn, run_output_emit, run_output_acc) e das composições run e run_acc."],
       ["18 só para os testes", "o handler de saída que acumula os valores (run_output_acc) e a composição run_acc, usados pela suíte de oráculo para ler o traço."],
       ["3 linhas", "a imperativa só precisa de uma pequena função que executa a eval e captura o erro."],
-      ["Reúso", "run_state e run_exn são instalados tanto em run quanto em run_acc, sem reescrever."],
-      ["Regra mecânica", "cada linha é classificada por um programa, sobre os tokens do compilador, e não à mão."],
+      ["Reúso", "o mesmo handler usado em mais de um lugar sem reescrever. run_state e run_exn são instalados tanto em run quanto em run_acc."],
     ]);
 }
 
-// 23. QP2 handlers
+// 15. QP2 handlers
 {
-  const s = conteudo("Resultados", "QP2: o quarto efeito nos handlers");
-  texto(s, "Para ler a entrada (efeito Input), a composição run passa a instalar mais um handler:", { x: MX, y: 1.7, w: CW, h: 0.45 });
+  const s = conteudo("Resultados", "QP2: um quarto efeito nos handlers");
+  texto(s, "Ler uma entrada (Input) exige instalar mais um handler:", { x: MX, y: 1.8, w: CW, h: 0.5, fontSize: 20 });
   const h = codigo(s, [
-    ["  run_state tbl (fun () ->", "(* instala o handler de estado (não muda) *)", " "],
-    ["- run_output_emit (fun () ->", "(* antes: o handler de saída envolvia *)", "-"],
-    ["-   run_exn (fun () -> eval e)))", "(* o de erro, que envolvia a eval *)", "-"],
-    ["+ run_output_emit (fun () ->", "(* agora: o handler de saída envolve *)", "+"],
-    ["+   run_input (fun () ->", "(* o novo handler de entrada, que envolve *)", "+"],
-    ["+     run_exn (fun () -> eval e))))", "(* o de erro, que envolve a eval *)", "+"],
-  ], { x: MX, y: 2.2, w: CW });
-  texto(s, [
-    { text: "−", options: { bold: true, color: HEX.rosa } }, { text: " linha removida      ", options: { italic: true } },
-    { text: "+", options: { bold: true, color: HEX.verdeazul } }, { text: " linha adicionada", options: { italic: true } },
-  ], { x: MX, y: 2.3 + h, w: CW, h: 0.3, fontSize: 12, align: "center" });
-  texto(s, runs("A mesma mudança acontece em run_acc: **2 pontos de modificação**. Na versão imperativa, a leitura é uma função nova e nada do que existia muda: **0 pontos**."), { x: MX, y: 2.75 + h, w: CW, h: 0.75 });
-  quadro(s, [
-    ["Instalar um handler", "colocá-lo em volta de um trecho de código: dali em diante, cada perform do trecho é atendido por ele."],
-  ], { x: MX, y: 3.6 + h, w: CW, h: 0.75 });
-  registrar(s, "QP2: o quarto efeito nos handlers",
-    "Para testar a composabilidade, acrescentei um quarto efeito: ler valores de uma entrada. Nos handlers, o efeito novo precisa ser instalado onde os outros já são. Por isso as duas composições, run e run_acc, mudaram: 2 pontos de modificação. Na imperativa, a leitura é só uma função nova, e nada do que existia muda.",
+    ["  run_state tbl (fun () ->", ""],
+    ["- run_output_emit (fun () ->", ""],
+    ["-   run_exn (fun () -> eval e)))", ""],
+    ["+ run_output_emit (fun () ->", ""],
+    ["+   run_input (fun () ->", "(* novo *)", "+"],
+    ["+     run_exn (fun () -> eval e))))", ""],
+  ].map(([c, m, t]) => [c, m, t || c[0]]), { x: MX, y: 2.5, w: CW, fontSize: 14 });
+  tabela(s, ["", "Handlers", "Imperativa"], [["Declarações que mudam", "2", "0"]],
+    { x: MX, y: 2.8 + h, w: 7.0, colW: [3.4, 1.8, 1.8], fontSize: 18, align: ["left", "center", "center"] });
+  registrar(s, "QP2: um quarto efeito nos handlers",
+    "Para testar a composabilidade, acrescentei um quarto efeito: ler valores de uma entrada. Nos handlers, o efeito novo precisa ser instalado onde os outros já são. As linhas em vermelho saem e as em verde entram: o handler novo, run_input, passa a ficar entre o de saída e o de erro. A mesma mudança acontece na composição dos testes, run_acc. Por isso são 2 pontos de modificação. Na imperativa, a leitura é só uma função nova, e nada do que existia muda.",
     [
       ["Quarto efeito (Input)", "ler o próximo valor de um fluxo de entrada. Se a entrada acabar, é erro. Foi escolhido antes de implementar, de propósito, porque interage com o efeito de exceção."],
+      ["Linhas com - e +", "- é linha removida (em vermelho), + é linha adicionada (em verde)."],
       ["run", "a composição que instala os handlers em volta da eval, usada na execução normal e nas medições."],
-      ["run_acc", "a mesma composição, mas com o handler de saída que acumula os valores, usada nos testes."],
+      ["run_acc", "a mesma composição, mas com o handler de saída que acumula os valores, usada nos testes. Também muda."],
       ["Instalar um handler", "colocar o handler em volta de um trecho de código (com match_with). Enquanto o trecho roda, cada perform que ele faz é atendido por esse handler."],
       ["Ordem dos handlers", "um envolve o outro. O de erro fica mais perto da eval, para que um erro interrompa só a avaliação, sem perder o estado e a saída."],
       ["run_input", "o handler novo, que atende Input entregando o próximo valor da entrada."],
-      ["Ponto de modificação", "declaração que já existia e mudou. run e run_acc mudaram, então são 2."],
+      ["Ponto de modificação (declaração que muda)", "declaração que já existia e teve o texto alterado. Adições puras, como a declaração de Input e o próprio run_input, contam à parte. A definição foi fixada antes de implementar."],
     ]);
 }
 
-// 24. QP2 mônadas
+// 16. QP2 mônadas
 {
-  const s = conteudo("Resultados", "QP2: o quarto efeito nas mônadas");
-  texto(s, "No Haskell, o efeito novo entra no tipo da pilha, e quem executa a pilha muda junto:", { x: MX, y: 1.7, w: CW, h: 0.45 });
+  const s = conteudo("Resultados", "QP2: um quarto efeito nas mônadas");
+  texto(s, "O efeito novo entra no tipo da pilha:", { x: MX, y: 1.8, w: CW, h: 0.5, fontSize: 20 });
   const h = codigo(s, [
-    ["- ExceptT String (StateT Env IO)", "-- antes: a pilha tinha exceção, estado e IO", "-"],
-    ["+ ExceptT String (StateT Env", "-- agora: entra uma segunda camada de estado", "+"],
-    ["+   (StateT [Int] IO))", "-- com a lista de entradas ainda não lidas", "+"],
-    ["- run = runStateT (runExceptT ...)", "-- antes: run executava a pilha antiga", "-"],
-    ["+ run = runStateT (runStateT ...)", "-- agora: run executa também a camada nova", "+"],
-    ["+ ler = lift (lift (state ...))", "-- função nova: desce duas camadas com lift", "+"],
-  ], { x: MX, y: 2.2, w: CW });
-  tabela(s, ["", "Handlers", "Imperativa", "Mônadas", "IORef"], [
-    ["Pontos de modificação", "2", "0", "2", "0"],
-  ], { x: MX, y: 2.4 + h, w: 7.4, colW: [2.8, 1.15, 1.25, 1.15, 1.05], fontSize: 15, align: ["left", "center", "center", "center", "center"] });
-  quadro(s, [
-    ["lift", "leva uma operação de uma camada de dentro da pilha para a camada de fora."],
-  ], { x: MX + 7.7, y: 2.4 + h, w: CW - 7.7, h: 1.0 });
-  registrar(s, "QP2: o quarto efeito nas mônadas",
-    "No Haskell, o efeito novo vira uma camada a mais na pilha. Então o tipo da pilha muda, e a função run, que executa a pilha, muda junto: também 2 pontos. A leitura é uma função nova que precisa de dois lift para chegar na camada nova.",
+    ["- ExceptT String (StateT Env IO)", "", "-"],
+    ["+ ExceptT String (StateT Env (StateT [Int] IO))", "-- nova camada", "+"],
+    ["- run = runStateT (runExceptT ...)", "", "-"],
+    ["+ run = runStateT (runStateT ...)", "", "+"],
+    ["+ ler = lift (lift (state ...))", "-- função nova", "+"],
+  ], { x: MX, y: 2.5, w: CW, fontSize: 14 });
+  tabela(s, ["", "Mônadas", "IORef"], [["Declarações que mudam", "2", "0"]],
+    { x: MX, y: 2.8 + h, w: 7.0, colW: [3.4, 1.8, 1.8], fontSize: 18, align: ["left", "center", "center"] });
+  registrar(s, "QP2: um quarto efeito nas mônadas",
+    "No Haskell, o efeito novo vira uma camada a mais na pilha. Então o tipo da pilha muda, e a função run, que executa a pilha, muda junto: também 2 pontos de modificação. A leitura é uma função nova que precisa de dois lift para chegar na camada nova. Na base IORef, como na imperativa, nada do que existia muda. Então handlers e mônadas empatam em 2, e a diferença é onde a mudança cai: nos handlers, nas composições. Nas mônadas, no tipo e no executor.",
     [
       ["StateT [Int]", "camada de estado nova, que guarda a lista de entradas ainda não lidas."],
       ["runStateT, runExceptT", "funções que executam uma camada da pilha e devolvem o resultado. run chama uma para cada camada, de fora para dentro."],
       ["state", "operação que lê e atualiza o estado de uma vez (aqui, tira o primeiro valor da lista)."],
-      ["lift", "leva uma operação de uma camada interna para a camada de fora. Com duas camadas de estado, o get comum só alcança a primeira, então a leitura da segunda precisa de lift duas vezes."],
+      ["lift", "leva uma operação de uma camada interna da pilha para a camada de fora. Com duas camadas de estado, o get comum só alcança a primeira, então a leitura da segunda precisa de lift duas vezes."],
       ["mtl", "a biblioteca de transformadores usada. Ela resolve automaticamente uma camada de cada tipo, não duas."],
-      ["Empate em pontos", "handlers e mônadas mudaram 2 declarações cada. A diferença é onde: nos handlers, as composições. Nas mônadas, o tipo e o executor."],
     ]);
 }
 
-// 25. 45 ns
+// 17. 45 ns
 {
   const s = conteudo("Resultados", "QP4: o custo de instalar os handlers");
-  texto(s, [{ text: "45 ns", options: { bold: true, color: HEX.marinho } }], { x: MX, y: 1.6, w: 5.3, h: 1.4, fontSize: 72, align: "center", valign: "middle" });
-  texto(s, runs("a mais por expressão no cenário **Arith**, que só faz contas: é o custo de **instalar** os três handlers"), { x: MX, y: 3.0, w: 5.3, h: 1.0, fontSize: 16, align: "center" });
-  texto(s, [{ text: "10 ns", options: { bold: true, color: HEX.rosa } }, { text: " é a maior diferença das mônadas em todo o experimento" }], { x: MX, y: 4.15, w: 5.3, h: 0.8, fontSize: 16, align: "center" });
-  quadro(s, [
-    ["Instalar um handler", "rodar um trecho de código sob ele, com match_with. O OCaml cria então um segmento de pilha só para o trecho (uma fiber), e cada perform do trecho passa a ser atendido pelo handler."],
-    ["Por que custa", "criar e preparar essa pilha leva tempo. Aqui os três handlers são instalados de novo a cada expressão avaliada, 10.000 vezes por carga."],
-    ["Arith", "cenário só com Num, Add, Mul e Div: nenhuma operação de efeito. Logo, todo o custo a mais é a instalação."],
-  ], { x: MX + 5.7, y: 1.75, w: CW - 5.7, h: 3.9, fontSize: 13 });
-  fonte(s, "Mediana de 3 cargas de 10.000 expressões, em máquina virtual de nuvem (Tabela 2 do artigo).", 6.1);
+  texto(s, [{ text: "45 ns", options: { bold: true, color: HEX.marinho } }], { x: MX, y: 1.8, w: CW, h: 1.6, fontSize: 88, align: "center", valign: "middle" });
+  texto(s, runs("a mais por expressão, **sem usar nenhum efeito**"), { x: MX, y: 3.45, w: CW, h: 0.6, fontSize: 22, align: "center" });
+  texto(s, [{ text: "Haskell: no máximo ", options: {} }, { text: "10 ns", options: { bold: true, color: HEX.rosa } }], { x: MX, y: 4.2, w: CW, h: 0.6, fontSize: 22, align: "center" });
+  texto(s, runs("**Instalar** = rodar o código sob o handler, numa pilha própria"), { x: MX, y: 5.3, w: CW, h: 0.5, fontSize: 16, align: "center", color: C.accent6 });
   registrar(s, "QP4: o custo de instalar os handlers",
-    "Este é o número que resume o desempenho do OCaml. No cenário Arith, que só faz contas e não usa efeito nenhum, os handlers já custam 45 nanossegundos a mais por expressão. Esse é o custo de instalar os três handlers. No Haskell, a maior diferença em todo o experimento foi de 10 nanossegundos.",
+    "Este é o número que resume o desempenho do OCaml. No cenário Arith, que só faz contas e não usa efeito nenhum, os handlers já custam 45 nanossegundos a mais por expressão. Esse é o custo de instalar os três handlers. Instalar quer dizer rodar o código sob o handler, e o OCaml cria uma pilha própria para isso. No Haskell, a maior diferença em todo o experimento foi de 10 nanossegundos. Os números são a mediana de 3 cargas de 10.000 expressões, numa máquina virtual de nuvem.",
     [
       ["Instalar um handler", "executar o trecho de código sob o handler, com a função match_with do OCaml. Enquanto o trecho roda, cada perform dele é atendido por esse handler. Na composição run, os três handlers (estado, saída e erro) são instalados um dentro do outro em volta da eval."],
-      ["O que custa na instalação", "a cada instalação, o OCaml 5 cria um segmento de pilha novo (uma fiber) para o trecho e registra o handler. É trabalho feito antes de qualquer efeito acontecer."],
+      ["Pilha própria (fiber)", "a cada instalação, o OCaml 5 cria um segmento de pilha novo (uma fiber) para o trecho e registra o handler. É trabalho feito antes de qualquer efeito acontecer, e é isso que custa tempo."],
       ["Por expressão", "os handlers são instalados de novo para cada uma das 10.000 expressões da carga. O de erro precisa ser, senão a primeira divisão por zero encerraria a carga inteira. Os outros dois poderiam ser instalados uma vez só, mas foram instalados juntos, o que triplica o custo."],
+      ["Sem usar nenhum efeito (Arith)", "cenário só com contas (Num, Add, Mul, Div), sem Var, Let nem Print. Não faz operação de efeito, então mede o custo de estar sob o mecanismo, e não o de usá-lo."],
       ["ns", "nanossegundo, um bilionésimo de segundo."],
-      ["Arith", "cenário só com contas (Num, Add, Mul, Div), sem Var, Let nem Print. Não faz operação de efeito, então mede o custo de estar sob o mecanismo, e não o de usá-lo."],
       ["10 ns no Haskell", "aparece justamente em Arith, a carga com mais passos monádicos por expressão. É o custo de cada passo (bind) da pilha."],
       ["Mediana de 3 cargas", "cada número é o do meio entre as medições das 3 sementes, o que reduz a influência de uma medição fora da curva."],
-      ["Máquina virtual de nuvem", "as medições rodaram numa máquina virtual, como declarado no artigo. Isso é uma ameaça à validade, tratada no protocolo (slide A2)."],
+      ["Máquina virtual de nuvem", "as medições rodaram numa máquina virtual, como declarado no artigo. Isso é uma ameaça à validade, tratada no protocolo (apêndice A2)."],
     ]);
 }
 
-// 26. Tempo
+// 18. Tempo
 {
   const s = conteudo("Resultados", "QP4: tempo de execução");
   s.addChart(pres.charts.BAR, [
-    { name: "mônadas sobre IORef (Haskell)", labels: ["Output", "Exn", "State", "Arith"], values: [-2, 5, -4, 10] },
-    { name: "handlers sobre imperativa (OCaml)", labels: ["Output", "Exn", "State", "Arith"], values: [111, 49, 84, 45] },
+    { name: "mônadas sobre IORef", labels: ["Output", "Exn", "State", "Arith"], values: [-2, 5, -4, 10] },
+    { name: "handlers sobre imperativa", labels: ["Output", "Exn", "State", "Arith"], values: [111, 49, 84, 45] },
   ], Object.assign({}, eixo, {
-    x: MX, y: 1.7, w: 7.4, h: 4.1, barDir: "bar", catAxisLabelPos: "low", valAxisMinVal: -20, valAxisMaxVal: 130,
-    chartColors: [HEX.rosa, HEX.marinho], showValue: true, dataLabelPosition: "outEnd", showLegend: true, legendPos: "t",
-    legendFontSize: 11, legendColor: HEX.corpo, barGapWidthPct: 50, showValAxisTitle: true, valAxisTitle: "ns a mais por expressão, sobre a base",
+    x: MX, y: 1.7, w: 7.6, h: 4.5, barDir: "bar", catAxisLabelPos: "low", valAxisMinVal: -20, valAxisMaxVal: 130, catAxisLabelFontSize: 14,
+    chartColors: [HEX.rosa, HEX.marinho], showValue: true, dataLabelPosition: "outEnd", dataLabelFontSize: 13, showLegend: true, legendPos: "t",
+    legendFontSize: 13, legendColor: HEX.corpo, barGapWidthPct: 50, showValAxisTitle: true, valAxisTitle: "ns a mais por expressão",
     objectName: "gráfico de tempo",
   }));
   bullets(s, [
-    "**OCaml:** custo de instalar mais o de cada operação",
-    "**Haskell:** o compilador elimina quase tudo",
-    "Razões: 1,59 a 4,26 (OCaml) e 0,97 a 1,08 (Haskell)",
-  ], { x: MX + 7.7, y: 1.9, w: CW - 7.7, h: 2.0, fontSize: 15 });
-  quadro(s, [
-    ["Cenários", "Arith só contas, State lê variáveis, Exn tem 20% de divisões por zero, Output imprime."],
-    ["Valor negativo", "a diferença ficou dentro do ruído de medição."],
-  ], { x: MX + 7.7, y: 4.0, w: CW - 7.7, h: 1.8 });
-  fonte(s, "Mediana de 3 cargas, máquina virtual de nuvem.", 6.1);
+    "**OCaml:** cresce com o uso",
+    "**Haskell:** perto de zero",
+  ], { x: MX + 8.0, y: 2.4, w: CW - 8.0, h: 1.6, fontSize: 20, paraSpaceAfter: 12 });
   registrar(s, "QP4: tempo de execução",
-    "No OCaml, o custo cresce com o uso: começa em 45 nanossegundos só para instalar e sobe para 84 em State e 111 em Output, porque cada operação de efeito também custa. No Haskell, fica perto de zero em todos os cenários. Não é uma comparação de qual linguagem é mais rápida: cada barra é o custo a mais sobre a base da própria linguagem.",
+    "No OCaml, o custo cresce com o uso: começa em 45 nanossegundos só para instalar e sobe para 84 em State e 111 em Output, porque cada operação de efeito também custa. No Haskell, fica perto de zero em todos os cenários. Em razões, os handlers levaram de 1,59 a 4,26 vezes o tempo da imperativa, e as mônadas de 0,97 a 1,08 vezes o da IORef. Não é uma comparação de qual linguagem é mais rápida: cada barra é o custo a mais sobre a base da própria linguagem.",
     [
       ["Barra azul", "quantos nanossegundos a versão com handlers gasta a mais que a imperativa, por expressão."],
       ["Barra rosa", "quantos nanossegundos a versão com mônadas gasta a mais que a com IORef."],
+      ["Arith", "só contas, nenhuma operação de efeito."],
       ["State", "500 variáveis e duas leituras por expressão: muitas operações Get."],
       ["Exn", "20% das expressões têm divisão por zero: muitas operações Fail."],
       ["Output", "cada expressão imprime: muitas operações Output. Os valores são acumulados em vez de escritos, para não medir o sistema de entrada e saída."],
-      ["Custo de cada operação", "cada perform procura o handler, troca de pilha e volta com continue. Por isso State e Output custam mais que Arith."],
-      ["O compilador elimina quase tudo", "o GHC otimiza a pilha de mônadas a ponto de quase não sobrar custo. Três dos quatro intervalos de confiança do Haskell incluem a razão 1."],
-      ["Ruído", "variação natural entre medições. Os valores -4 e -2 não querem dizer que as mônadas são mais rápidas que a base."],
-      ["Razão 1,59 a 4,26", "os handlers levaram de 1,59 a 4,26 vezes o tempo da imperativa, dependendo do cenário."],
+      ["Por que cresce com o uso", "cada perform procura o handler, troca de pilha e volta com continue. Por isso State e Output custam mais que Arith."],
+      ["Perto de zero", "o GHC otimiza a pilha de mônadas a ponto de quase não sobrar custo. Três dos quatro intervalos de confiança do Haskell incluem a razão 1."],
+      ["Valores negativos", "os valores -4 e -2 são ruído de medição. Não querem dizer que as mônadas são mais rápidas que a base."],
     ]);
 }
 
-// 27. Memória
+// 19. Memória
 {
   const s = conteudo("Resultados", "QP4: memória alocada");
   s.addChart(pres.charts.BAR, [
@@ -895,103 +694,98 @@ secao("04", "Resultados", "Agora os resultados, primeiro do código (QP1 a QP3) 
     { name: "a mais nos handlers", labels: ["Haskell", "OCaml"], values: [0, 168] },
     { name: "a mais nas mônadas", labels: ["Haskell", "OCaml"], values: [150, 0] },
   ], Object.assign({}, eixo, {
-    x: MX, y: 1.7, w: 7.4, h: 3.6, barDir: "bar", barGrouping: "stacked", valAxisMinVal: 0, valAxisMaxVal: 300,
-    chartColors: [HEX.base, HEX.marinho, HEX.rosa], showValue: true, dataLabelPosition: "ctr", dataLabelFormatCode: "#;-#;", dataLabelColor: "FFFFFF",
-    showLegend: true, legendPos: "t", legendFontSize: 11, legendColor: HEX.corpo, barGapWidthPct: 60,
-    showValAxisTitle: true, valAxisTitle: "bytes por expressão, cenário Arith", objectName: "gráfico de memória",
+    x: MX, y: 1.7, w: 7.6, h: 4.0, barDir: "bar", barGrouping: "stacked", valAxisMinVal: 0, valAxisMaxVal: 300, catAxisLabelFontSize: 14,
+    chartColors: [HEX.base, HEX.marinho, HEX.rosa], showValue: true, dataLabelPosition: "ctr", dataLabelFormatCode: "#;-#;", dataLabelColor: "FFFFFF", dataLabelFontSize: 13,
+    showLegend: true, legendPos: "t", legendFontSize: 13, legendColor: HEX.corpo, barGapWidthPct: 60,
+    showValAxisTitle: true, valAxisTitle: "bytes por expressão (Arith)", objectName: "gráfico de memória",
   }));
   bullets(s, [
-    "A mais: 168 B e 150 B, parecidos",
-    "Base: 16 B contra 127 B",
-    "Razões: 11,5 e 2,2",
-  ], { x: MX + 7.7, y: 1.9, w: CW - 7.7, h: 1.6, fontSize: 15 });
-  quadro(s, [
-    ["Por que 11,5", "é o 1 + Δ ÷ base no caso extremo: a base do OCaml quase não aloca (16 B), então qualquer Δ vira uma razão enorme."],
-  ], { x: MX + 7.7, y: 3.6, w: CW - 7.7, h: 1.7 });
-  fonte(s, "No OCaml, alocação contada diretamente entre duas coletas forçadas.", 5.75);
+    "A mais: **parecido**",
+    "A base do OCaml quase não aloca",
+  ], { x: MX + 8.0, y: 2.4, w: CW - 8.0, h: 1.8, fontSize: 20, paraSpaceAfter: 12 });
   registrar(s, "QP4: memória alocada",
-    "Na memória, a razão do OCaml parece dez vezes pior que a do Haskell: 11,5 contra 2,2. Mas a memória a mais é parecida, 168 e 150 bytes por expressão. O que muda é a base: a imperativa do OCaml aloca só 16 bytes. É a fórmula da razão no caso extremo.",
+    "Na memória, a razão do OCaml parece dez vezes pior que a do Haskell: 11,5 contra 2,2. Mas a memória a mais é parecida, 168 e 150 bytes por expressão. O que muda é a base: a imperativa do OCaml aloca só 16 bytes. É a fórmula da razão no caso extremo: base barata, razão enorme.",
     [
       ["Bytes por expressão", "quanta memória o programa reserva, em média, para avaliar uma expressão."],
       ["Barra cinza", "a memória da base. Em cima dela, a memória a mais do mecanismo."],
       ["16 B", "a imperativa do OCaml só aloca o próprio resultado."],
       ["127 B", "a base do Haskell aloca mais porque também passa pelo IORef e pelo Map."],
       ["168 B a mais nos handlers", "os fechamentos (funções criadas na hora) e registros de cada instalação. Os segmentos de pilha (fibers) não entram aqui, porque o OCaml 5 os aloca fora da memória contada pelo coletor."],
-      ["Coleta forçada", "a memória foi contada entre duas coletas de lixo chamadas de propósito, para não depender do momento em que o coletor roda."],
+      ["Razões 11,5 e 2,2", "(16 + 168) ÷ 16 ≈ 11,5 no OCaml e (127 + 150) ÷ 127 ≈ 2,2 no Haskell."],
+      ["Como foi contada", "no OCaml, entre duas coletas de lixo chamadas de propósito, para não depender do momento em que o coletor roda."],
     ]);
 }
 
-// 28. Achados
+// 20. Achados
 {
   const s = conteudo("Resultados", "Dois achados não previstos");
   const box = (x, titulo, numero, cor, txt) => {
-    s.addShape(pres.shapes.RECTANGLE, { x, y: 1.8, w: 5.55, h: 2.45, fill: { color: HEX.fundo }, line: { color: HEX.texto, width: 0.75 } });
-    texto(s, [{ text: titulo, options: { bold: true, color: C.text1 } }], { x: x + 0.25, y: 1.95, w: 5.05, h: 0.4, fontSize: 16 });
-    texto(s, [{ text: numero, options: { bold: true, color: cor } }], { x: x + 0.25, y: 2.4, w: 5.05, h: 0.6, fontSize: 28 });
-    texto(s, txt, { x: x + 0.25, y: 3.05, w: 5.05, h: 1.15, fontSize: 14 });
+    s.addShape(pres.shapes.RECTANGLE, { x, y: 1.9, w: 5.55, h: 3.2, fill: { color: HEX.fundo }, line: { color: HEX.texto, width: 0.75 } });
+    texto(s, [{ text: titulo, options: { bold: true, color: C.text1 } }], { x: x + 0.3, y: 2.1, w: 4.95, h: 0.5, fontSize: 20 });
+    texto(s, [{ text: numero, options: { bold: true, color: cor } }], { x: x + 0.3, y: 2.7, w: 4.95, h: 0.9, fontSize: 36 });
+    texto(s, txt, { x: x + 0.3, y: 3.7, w: 4.95, h: 1.2, fontSize: 18 });
   };
-  box(MX, "Vazamento de memória no OCaml 5.2", "1,2 GB → 6 MB", HEX.marinho, "Abandonar a computação interrompida não libera a memória. Encerrá-la com discontinue resolve (2 milhões de erros).");
-  box(MX + 5.98, "Medição sensível à configuração", "até 28%", HEX.laranja, "Com coleta 4 vezes menor, todos os R² passam de 0,95 e mesmo assim as razões mudam.");
-  quadro(s, [
-    ["discontinue k", "encerra a continuação k lançando um erro dentro dela, o que desmonta a pilha e libera a memória."],
-    ["R²", "quanto a reta usada na medição explica os tempos medidos. 1 é perfeito. Acima de 0,95 é o critério usual de medição confiável."],
-  ], { x: MX, y: 4.45, w: CW, h: 1.3 });
-  fonte(s, "Experimento em codigo/ocaml/experimento/continuacao.ml. Sensibilidade no apêndice A4.", 6.0);
+  box(MX, "Vazamento no OCaml 5.2", "1,2 GB → 6 MB", HEX.marinho, "com discontinue");
+  box(MX + 5.98, "Medição sensível", "até 28%", HEX.laranja, "de mudança, com R² bom");
   registrar(s, "Dois achados não previstos",
-    "Dois achados que eu não esperava. Primeiro, um vazamento de memória no OCaml 5.2: se o handler de erro só abandona a computação interrompida, a memória não é liberada. Com 2 milhões de erros, chegou a 1,2 GB. Encerrando com discontinue, ficou em 6 MB, e o código final usa discontinue. Segundo, a medição é sensível à configuração: com uma coleta quatro vezes menor, todas as medições pareciam boas pelo R², e mesmo assim as razões mudaram até 28%.",
+    "Dois achados que eu não esperava. Primeiro, um vazamento de memória no OCaml 5.2: se o handler de erro só abandona a computação interrompida, a memória não é liberada. Com 2 milhões de erros, chegou a 1,2 GB. Encerrando com discontinue, ficou em 6 MB, e o código final usa discontinue. O experimento está em codigo/ocaml/experimento/continuacao.ml. Segundo, a medição é sensível à configuração: com uma coleta quatro vezes menor, todas as medições pareciam boas pelo R², acima de 0,95, e mesmo assim as razões mudaram até 28%. Detalhes no apêndice A4.",
     [
       ["Computação interrompida", "a continuação k que o handler de erro recebe quando acontece um Fail: o resto da eval, que não vai mais rodar."],
       ["Abandonar", "simplesmente não usar k. No OCaml 5.2, o segmento de pilha de k fica preso na memória."],
       ["discontinue k e", "retoma k lançando a exceção e dentro dela. A pilha é desmontada normalmente e a memória volta."],
       ["1,2 GB → 6 MB", "memória residente do processo depois de 2 milhões de erros, sem e com discontinue."],
       ["Coleta 4 vezes menor", "corrida curta: cota de 5 segundos e 2.000 amostras, contra 20 segundos na campanha."],
-      ["R²", "coeficiente de determinação da regressão do tempo sobre o número de execuções. O critério do protocolo é 0,95 ou mais."],
+      ["R²", "quanto a reta usada na medição explica os tempos medidos. 1 é perfeito. O critério do protocolo é 0,95 ou mais."],
       ["Lição", "um R² alto sozinho não garante que a configuração de medição foi suficiente."],
     ]);
 }
 
-// 29. Seção 05
+// Seção 05
 secao("05", "Conclusões", "Para fechar: como os resultados se comparam com a literatura e o que concluo.");
 
-// 30. Literatura
+// 21. Literatura
 {
   const s = conteudo("Conclusões", "Comparação com a literatura");
-  tabela(s, ["Fonte", "O que mede", "Neste trabalho"], [
-    ["Sivaramakrishnan et al. (2021)", "cerca de 23 ns para alocar uma fiber e trocar de pilha", "45 ns para instalar três handlers"],
-    ["Kammar et al. (2013), Xie e Leijen (2020)", "mônadas a 1,0 a 1,3 vezes uma versão sem efeitos", "0,97 a 1,08 vezes"],
-    ["TCC I (previsão)", "handlers abaixo de 1,5 vezes, mônadas acima de 2 vezes", { t: "o contrário nos dois casos", b: true, cor: HEX.laranja }],
-  ], { x: MX, y: 1.85, w: CW, colW: [3.8, 4.6, CW - 8.4], fontSize: 15 });
-  texto(s, "Cada trabalho mede uma situação diferente: a comparação é de ordem de grandeza.", { x: MX, y: 4.6, w: CW, h: 0.5 });
+  tabela(s, ["", "Literatura", "Este trabalho"], [
+    ["OCaml", "23 ns por fiber", "45 ns para três handlers"],
+    ["Haskell", "1,0 a 1,3 vezes", "0,97 a 1,08 vezes"],
+    ["TCC I (previsão)", "handlers < 1,5 e mônadas > 2", { t: "o contrário", b: true, cor: HEX.laranja }],
+  ], { x: MX, y: 1.95, w: CW, colW: [3.0, 4.4, CW - 7.4], fontSize: 18 });
+  texto(s, "Mesma ordem de grandeza.", { x: MX, y: 4.5, w: CW, h: 0.5, fontSize: 20 });
   registrar(s, "Comparação com a literatura",
-    "Os números ficam na mesma ordem de grandeza da literatura. O custo de instalar os três handlers é da ordem do custo de criar uma fiber. As mônadas ficam no limite de baixo da faixa medida por outros autores. E a previsão do TCC I não se confirmou: os handlers custaram mais, e as mônadas, menos do que eu esperava.",
+    "A literatura já tinha medido cada mecanismo separado, mas ninguém tinha comparado os dois no mesmo programa. Os números daqui ficam na mesma ordem de grandeza. Sivaramakrishnan e colegas, em 2021, mediram cerca de 23 nanossegundos para alocar uma fiber e trocar de pilha, da ordem dos 45 que a instalação de três handlers custou aqui. Kammar e colegas, em 2013, e Xie e Leijen, em 2020, mediram mônadas entre 1,0 e 1,3 vezes uma versão sem efeitos, e as daqui ficam no limite de baixo. E a previsão do TCC I não se confirmou: os handlers custaram mais, e as mônadas, menos do que eu esperava. Cada trabalho mede uma situação diferente, então a comparação é de ordem de grandeza.",
     [
-      ["Ordem de grandeza", "comparação aproximada, de dezenas de nanossegundos com dezenas de nanossegundos, e não valor exato."],
-      ["Fiber", "segmento de pilha criado para o trecho de código sob um handler."],
+      ["Fiber", "o segmento de pilha que o OCaml 5 cria para o trecho de código sob um handler."],
+      ["23 ns por fiber", "Sivaramakrishnan et al. (2021) mediram cerca de 23 ns para alocar uma fiber e trocar de pilha. Não é o custo de instalar um handler inteiro."],
+      ["1,0 a 1,3 vezes", "Kammar et al. (2013) e Xie e Leijen (2020): a versão com mônadas levou de 1,0 a 1,3 vezes o tempo da versão sem efeitos nos microbenchmarks deles."],
       ["TCC I", "a primeira etapa do trabalho, em que fiz a revisão e a previsão: sobrecusto abaixo de 1,5 vez nos handlers e acima de 2 nas mônadas."],
       ["O contrário", "os handlers passaram de 1,5 vez (1,59 a 4,26) e as mônadas ficaram abaixo de 2 (0,97 a 1,08)."],
+      ["Ordem de grandeza", "comparação aproximada, de dezenas de nanossegundos com dezenas de nanossegundos, e não valor exato."],
     ]);
 }
 
-// 31. Conclusões
+// 22. Conclusões
 {
   const s = conteudo("Conclusões", "Conclusões");
-  numerada(s, [
-    "**Escrita:** a eval não muda. O custo está no código em volta, nas composições dos handlers e no tipo da pilha de mônadas",
-    "**Execução:** handlers cobram ao ser instalados e a cada operação. As mônadas, otimizadas pelo GHC, quase não custam",
-    "**Na prática:** no OCaml, cuidado com quantas vezes se instala um handler. No Haskell, o custo aparece quando a pilha muda",
-  ], { x: MX, y: 1.8, w: CW, h: 2.5 });
-  texto(s, runs("**Limites:** um programa, uma máquina virtual, versões específicas dos compiladores."), { x: MX, y: 4.5, w: CW, h: 0.45 });
-  texto(s, runs("**Trabalhos futuros:** os dois mecanismos numa mesma linguagem, outros programas e efeitos, legibilidade medida com pessoas."), { x: MX, y: 5.0, w: CW, h: 0.75 });
+  [["Escrita", "a eval não muda. O custo está em volta dela."],
+   ["Execução", "handlers cobram. Mônadas quase não."],
+   ["Na prática", "no OCaml, instale handlers com cuidado."]].forEach(([t, d], i) => {
+    const y = 1.95 + i * 0.95;
+    texto(s, String(i + 1), { x: MX, y, w: 0.6, h: 0.6, fontSize: 28, color: C.accent4 });
+    texto(s, [{ text: t + ": ", options: { bold: true, color: C.text1 } }, { text: d }], { x: MX + 0.7, y, w: CW - 0.7, h: 0.6, fontSize: 22, valign: "middle" });
+  });
+  texto(s, runs("**Futuro:** os dois mecanismos na mesma linguagem e legibilidade medida com pessoas."), { x: MX, y: 5.0, w: CW, h: 0.7, fontSize: 18 });
   registrar(s, "Conclusões",
-    "Três conclusões. Na escrita, a eval não muda, e o custo está no código em volta. Na execução, os handlers cobram para ser instalados e a cada operação, e as mônadas quase não custam. Na prática, no OCaml vale cuidar de quantas vezes se instala um handler, e no Haskell o custo aparece quando a pilha muda. Os limites são um único programa e uma única máquina, e os próximos passos são comparar os dois mecanismos na mesma linguagem e medir legibilidade com pessoas.",
+    "Três conclusões. Na escrita, a eval não muda, e o custo está no código em volta: nas composições dos handlers e no tipo da pilha de mônadas. Na execução, os handlers cobram para ser instalados e a cada operação, e as mônadas, otimizadas pelo GHC, quase não custam. Na prática, no OCaml vale cuidar de quantas vezes se instala um handler, e no Haskell o custo aparece quando a pilha muda. O trabalho deixa também o desenho da comparação: o argumento de equivalência, a suíte de oráculo, o gerador de cargas igual nas duas linguagens e a medição por razões dentro de cada linguagem. Os limites são um único programa, uma máquina virtual e versões específicas dos compiladores. Os próximos passos são comparar os dois mecanismos na mesma linguagem, testar outros programas e efeitos e medir legibilidade com pessoas.",
     [
-      ["Composições dos handlers", "as funções run e run_acc, que instalam os handlers em volta da eval."],
-      ["Tipo da pilha", "a linha type Interp, que lista as camadas da pilha de mônadas."],
-      ["Os dois mecanismos numa mesma linguagem", "há bibliotecas de efeitos algébricos para Haskell. Medir nelas eliminaria a diferença de compiladores."],
+      ["Em volta dela", "as composições dos handlers (run e run_acc) e o tipo da pilha de mônadas (type Interp)."],
+      ["Contribuições", "argumento de equivalência expressiva, critério de equivalência funcional verificável com a suíte de oráculo, gerador de cargas replicado com teste de conformidade e normalização intralinguagem (medir contra a base da mesma linguagem). Tudo se refaz com make tudo."],
+      ["Limites", "um único programa, uma máquina virtual de nuvem e versões específicas do OCaml e do GHC."],
+      ["Os dois mecanismos na mesma linguagem", "há bibliotecas de efeitos algébricos para Haskell. Medir nelas eliminaria a diferença de compiladores."],
     ]);
 }
 
-// 32. Referências
+// 23. Referências
 {
   const s = conteudo("Conclusões", "Referências");
   bullets(s, [
@@ -1004,11 +798,11 @@ secao("05", "Conclusões", "Para fechar: como os resultados se comparam com a li
     "Sivaramakrishnan, K. C. et al. (2021). Retrofitting effect handlers onto OCaml. PLDI 2021, 206–221.",
     "Wadler, P. (1992). The essence of functional programming. POPL '92, 1–14.",
     "Xie, N. e Leijen, D. (2020). Effect handlers in Haskell, evidently. Haskell 2020, 95–108.",
-  ], { x: MX, y: 1.7, w: CW, h: 4.9, fontSize: 12, paraSpaceAfter: 4 });
+  ], { x: MX, y: 1.7, w: CW, h: 4.9, fontSize: 13, paraSpaceAfter: 5 });
   registrar(s, "Referências", "Slide de consulta, não entra na fala.", []);
 }
 
-// 33. Obrigado
+// 24. Obrigado
 {
   const s = pres.addSlide({ masterName: "FINAL", sectionTitle: "Conclusões" });
   s.addText("Obrigado! Dúvidas?", { placeholder: "title" });
@@ -1016,7 +810,7 @@ secao("05", "Conclusões", "Para fechar: como os resultados se comparam com a li
   registrar(s, "Obrigado! Dúvidas?", "Obrigado. O código, os dados e o artigo estão no repositório, e tudo se refaz com um comando. Fico à disposição para as perguntas.", []);
 }
 
-// 34 a 38. Apêndice
+// Apêndice
 pres.addSection({ title: "Apêndice" });
 function apendice(titulo) {
   const s = pres.addSlide({ masterName: "CONTEUDO", sectionTitle: "Apêndice" });
@@ -1122,6 +916,34 @@ function apendice(titulo) {
   registrar(s, "A5. Uso de inteligência artificial",
     "Se perguntarem sobre IA: o uso está declarado no artigo, como o Regulamento exige. Investi em verificação (oráculo, mutação e conformidade) justamente por isso, e posso explicar qualquer parte do código.",
     [["Regulamento", "o regulamento do TCC do curso, que exige declarar o uso de IA (Arts. 6º a 9º)."]]);
+}
+
+{
+  const s = apendice("A6. Métricas de código");
+  tabela(s, ["QP", "Métrica", "Como se mede"], [
+    ["QP1", "linhas, operações de efeito, aninhamento", "contagem automática na eval, aninhamento pela Cognitive Complexity"],
+    ["QP2", "pontos de modificação", "declarações existentes que mudam ao inserir um quarto efeito"],
+    ["QP3", "infraestrutura e reúso", "linhas fora da eval, classificadas por regra mecânica"],
+    ["QP4", "razão de tempo e de memória", "mecanismo dividido pela base da mesma linguagem"],
+  ], { x: MX, y: 1.85, w: CW, colW: [1.0, 4.2, CW - 5.2], fontSize: 15 });
+  registrar(s, "A6. Métricas de código",
+    "Se perguntarem como cada QP foi medida: esta tabela resume as métricas.",
+    [
+      ["Cognitive Complexity", "métrica de Campbell (2018) que pune o aninhamento, porque código aninhado é mais difícil de entender."],
+      ["Regra mecânica", "um programa classifica cada linha sobre os tokens do compilador, e não à mão."],
+    ]);
+}
+{
+  const s = apendice("A7. Exemplo: avaliando 2 + n, com n = 3");
+  tabela(s, ["Passo", "Chamada", "O que acontece", "Resultado"], [
+    ["1", { t: 'eval (Add (Num 2, Var "n"))', mono: true }, "caso Add: avalia os dois lados", "–"],
+    ["2", { t: "eval (Num 2)", mono: true }, "caso Num: o valor é o próprio número", "2"],
+    ["3", { t: 'eval (Var "n")', mono: true }, 'perform (Get "n"): o handler lê n e retoma com o valor', "3"],
+    ["4", { t: "x + y", mono: true }, "soma os dois lados", { t: "5", b: true, cor: HEX.verdeazul }],
+  ], { x: MX, y: 1.85, w: CW, colW: [1.0, 4.1, 5.1, CW - 10.2], fontSize: 15, align: ["center", "left", "left", "center"] });
+  registrar(s, "A7. Exemplo: avaliando 2 + n",
+    "Se pedirem para mostrar a eval funcionando: 2 + n, com n valendo 3, passo a passo.",
+    [["Retoma", "o handler chama continue k 3, e a eval continua exatamente de onde parou, com 3 como resultado do perform."]]);
 }
 
 // ---- gravar ------------------------------------------------------------------
