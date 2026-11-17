@@ -103,8 +103,10 @@ let n = 0;
 const md = ["# Explicação slide a slide", "",
   "Gerado por `gerar_pptx.js` junto com `defesa.pptx`. O mesmo texto está nas notas do apresentador de cada slide.", ""];
 
+const roteiro = [];
 function registrar(slide, titulo, fala, termos) {
   n += 1;
+  if (titulo !== "Referências" && !/^A\d/.test(titulo) && !roteiro.some(([, t]) => t === "Obrigado!")) roteiro.push([n, titulo, fala]);
   let notas = "O QUE DIZER\n" + fala;
   if (termos && termos.length) {
     notas += "\n\nO QUE CADA COISA DO SLIDE SIGNIFICA\n" + termos.map(([t, e]) => "- " + t + ": " + e).join("\n");
@@ -259,7 +261,7 @@ pres.addSection({ title: "Abertura" });
     { text: "Trabalho de Conclusão de Curso II, ", options: { bold: true } }, { text: "Ciência da Computação, dezembro de 2026" },
   ], { placeholder: "autor" });
   registrar(s, "Capa",
-    "Bom dia. Sou o Diego Marchioni e vou apresentar o meu TCC, orientado pelo professor Marco Rodrigo. O trabalho compara duas formas de tratar efeitos em linguagens funcionais: as mônadas, no Haskell, e os efeitos algébricos, no OCaml.",
+    "Olá. Sou o Diego Marchioni e vou apresentar o meu Trabalho de Conclusão de Curso, orientado pelo professor Marco Rodrigo. O trabalho compara duas formas de tratar efeitos em linguagens funcionais: as mônadas, no Haskell, e os efeitos algébricos, no OCaml.",
     [
       ["Mônada", "forma clássica de programar efeitos no Haskell. O efeito fica registrado no tipo da função."],
       ["Efeito algébrico", "forma mais nova, nativa no OCaml 5. O código pede uma operação (perform) e um handler decide o que ela faz."],
@@ -275,7 +277,7 @@ pres.addSection({ title: "Abertura" });
     texto(s, t, { x: MX + 0.9, y: 2.0 + i * 0.8, w: 6, h: 0.5, fontSize: 22, color: C.text1 });
   });
   registrar(s, "Sumário",
-    "A apresentação segue a ordem do artigo: o problema e as perguntas, os dois mecanismos, o método, os resultados e as conclusões. São cerca de 20 minutos.",
+    "A apresentação segue a ordem do artigo: o problema e as perguntas de pesquisa, os dois mecanismos, o método, os resultados e as conclusões.",
     [["QP", "questão de pesquisa. São quatro, uma para cada dimensão comparada."]]);
 }
 
@@ -297,7 +299,7 @@ secao("01", "Introdução", "Começo pelo contexto: o que são efeitos e por que
   codigo(s, [["perform (Get x)", ""]], { x: MX + 6.28, y: 4.95, w: 4.95, h: 0.7, fontSize: 16 });
   fonte(s, "Mesma expressividade em teoria (Forster et al., 2017).", 6.25);
   registrar(s, "Dois mecanismos para os mesmos efeitos",
-    "Programas reais precisam guardar estado, lançar erros e imprimir, coisas que uma função pura não faz. As linguagens funcionais têm mecanismos para isso. No Haskell, as mônadas: cada efeito é uma camada, e o efeito aparece no tipo da função. No OCaml 5, os efeitos algébricos: o código pede uma operação com perform e um handler decide o que ela faz. Na teoria, os dois expressam as mesmas coisas, como mostraram Forster e colegas em 2017 e Schrijvers e colegas em 2019. As mônadas são a técnica consolidada (Wadler, 1992). Os efeitos algébricos são nativos no OCaml desde 2022.",
+    "Programas reais precisam guardar estado, lançar erros e imprimir, coisas que uma função pura não faz. As linguagens funcionais têm mecanismos para isso. No Haskell, as mônadas: cada efeito é uma camada, e o efeito aparece no tipo da função. No OCaml 5, os efeitos algébricos: o código pede uma operação com perform e um handler decide o que ela faz. Na teoria, os dois expressam as mesmas coisas, como mostraram Forster e colegas, em 2017, e Schrijvers e colegas, em 2019. As mônadas são a técnica consolidada, popularizada por Wadler em 1992. Os efeitos algébricos chegaram ao OCaml na versão 5, em 2022.",
     [
       ["Efeito", "tudo o que uma função faz além de devolver um valor. Aqui são três: estado, exceção e saída."],
       ["Estado", "valores guardados que o programa lê e muda, como as variáveis do interpretador."],
@@ -424,7 +426,7 @@ secao("03", "Metodologia", "Agora o método: o que foi implementado, como foi ve
   });
   texto(s, runs("Toda comparação é **dentro da mesma linguagem**."), { x: MX, y: 5.45, w: CW, h: 0.5, fontSize: 20 });
   registrar(s, "Quatro versões do mesmo interpretador",
-    "Escrevi o mesmo interpretador quatro vezes. Em cada linguagem há a versão com o mecanismo e uma base sem ele. Só comparo código dentro da mesma linguagem, e o desempenho de cada mecanismo é medido contra a sua base. A base do OCaml guarda as variáveis numa Hashtbl e usa exceção nativa. A base do Haskell guarda o mesmo Map dentro de um IORef e também usa exceção nativa.",
+    "Escrevi o mesmo interpretador quatro vezes. Em cada linguagem há a versão com o mecanismo e uma base sem ele. Só comparo código dentro da mesma linguagem, e o desempenho de cada mecanismo é medido contra a sua base. A base do OCaml guarda as variáveis numa tabela hash e usa exceção nativa. A base do Haskell guarda o mesmo Map dentro de um IORef e também usa exceção nativa.",
     [
       ["Interpretador", "programa que lê uma expressão e calcula o resultado dela."],
       ["Mecanismo", "a forma de tratar efeitos que está sendo estudada: handlers no OCaml, mônadas no Haskell."],
@@ -449,7 +451,7 @@ secao("03", "Metodologia", "Agora o método: o que foi implementado, como foi ve
   s.addShape(pres.shapes.RECTANGLE, { x: MX, y: 4.55, w: CW, h: 1.0, fill: { color: HEX.fundo }, line: { color: HEX.laranja, width: 1.25 }, objectName: "definição" });
   texto(s, runs("**Equivalência:** mesmo valor, mesmo estado final, mesma saída e mesmo erro que a semântica de referência."), { x: MX + 0.3, y: 4.55, w: CW - 0.6, h: 1.0, fontSize: 18, valign: "middle" });
   registrar(s, "Caso de uso: um interpretador pequeno",
-    "O caso de uso é um interpretador pequeno, com oito tipos de expressão, que usa os três efeitos. Antes de programar, fixei o que significa duas versões serem equivalentes: dar o mesmo valor, o mesmo estado final, a mesma saída e a mesma mensagem de erro que a semântica de referência. Formalmente, para todo par de expressão e estado inicial no conjunto E64, o resultado da implementação é igual ao da semântica. Simplificações de propósito: variáveis globais, erro sempre aborta e um único programa.",
+    "O caso de uso é um interpretador pequeno, com oito tipos de expressão, que usa os três efeitos. Antes de programar, fixei o que significa duas versões serem equivalentes: dar o mesmo valor, o mesmo estado final, a mesma saída e a mesma mensagem de erro que a semântica de referência. Isso vale para todos os pares de expressão e estado inicial cujos valores cabem no inteiro das duas linguagens. Fiz três simplificações de propósito: as variáveis são globais, um erro sempre encerra a avaliação e há um único programa.",
     [
       ["Construtor", "cada tipo de expressão: Num (número), Var (variável), Add, Mul, Div (soma, multiplicação, divisão), Let (dar valor a uma variável e continuar), Seq (fazer uma coisa e depois outra), Print (mostrar um valor)."],
       ["Semântica de referência", "a definição matemática do resultado de cada expressão, no estilo small-step de Felleisen e Hieb (1992). É a resposta certa contra a qual as versões são testadas."],
@@ -479,7 +481,7 @@ secao("03", "Metodologia", "Agora o método: o que foi implementado, como foi ve
   ], { x: MX, y: 2.5, w: CW, fontSize: 14 });
   fonte(s, "interp_effects.ml", 5.85);
   registrar(s, "A função eval",
-    "Esta é a eval da versão com handlers. Ela olha o tipo da expressão e decide o que fazer. Num devolve o número. Var pede o valor ao handler de estado. Add avalia os dois lados, em ordem fixa, e soma. Um exemplo: 2 + n, com n valendo 3. A eval cai no caso Add. O lado esquerdo é o número 2. O lado direito é a variável n: a eval faz perform Get, o handler lê 3 na tabela e retoma a eval com esse valor. No fim, 2 + 3 = 5. Os outros casos, Mul, Div, Let, Seq e Print, seguem a mesma ideia. A legibilidade (QP1) é medida dentro desta função.",
+    "Esta é a eval da versão com handlers. Ela olha o tipo da expressão e decide o que fazer. Num devolve o número. Var pede o valor ao handler de estado. Add avalia os dois lados, em ordem fixa, e soma. Um exemplo: dois mais n, com n valendo três. A eval cai no caso Add. O lado esquerdo é o número dois. O lado direito é a variável n: a eval faz perform Get, o handler lê o valor três na tabela e retoma a eval com esse valor. No fim, dois mais três, cinco. Os outros casos seguem a mesma ideia. A legibilidade, que é a primeira questão de pesquisa, é medida dentro desta função.",
     [
       ["eval", "a função principal do interpretador. A legibilidade (QP1) é medida só dentro dela."],
       ["let rec", "define uma função que pode chamar a si mesma (recursiva)."],
@@ -512,7 +514,7 @@ secao("03", "Metodologia", "Agora o método: o que foi implementado, como foi ve
   ], { x: MX, y: 2.75 + h1, w: CW, fontSize: 14 });
   texto(s, runs("Só **2 linhas** mudam: a diferença medida é o mecanismo."), { x: MX, y: 3.0 + h1 + h2, w: CW, h: 0.5, fontSize: 20 });
   registrar(s, "Mesma estrutura, outro mecanismo",
-    "As duas versões OCaml têm a mesma estrutura, linha por linha. Onde a imperativa lê a tabela direto, a de handlers faz perform Get. Onde a imperativa lança raise, a de handlers faz perform Fail. As duas usam a mesma Hashtbl. Por isso a diferença medida é o mecanismo, e não a estrutura.",
+    "As duas versões OCaml têm a mesma estrutura, linha por linha. Onde a imperativa lê a tabela direto, a de handlers faz perform Get. Onde a imperativa lança raise, a de handlers faz perform Fail. As duas usam a mesma tabela hash. Por isso a diferença medida é o mecanismo, e não a estrutura.",
     [
       ["Hashtbl.find_opt env x", "lê x direto da tabela de variáveis, sem passar por handler nenhum."],
       ["raise (Runtime_error ...)", "lança a exceção nativa do OCaml, que interrompe a avaliação."],
@@ -573,7 +575,7 @@ secao("03", "Metodologia", "Agora o método: o que foi implementado, como foi ve
 }
 
 // Seção 04
-secao("04", "Resultados", "Agora os resultados, primeiro do código (QP1 a QP3) e depois do desempenho (QP4).");
+secao("04", "Resultados", "Agora os resultados. Primeiro os do código, que respondem às três primeiras questões, e depois os de desempenho.");
 
 // 13. QP1
 {
@@ -613,7 +615,7 @@ secao("04", "Resultados", "Agora os resultados, primeiro do código (QP1 a QP3) 
   tabela(s, ["", "Handlers", "Imperativa"], [["Declarações que mudam", "2", "0"]],
     { x: MX, y: 2.85 + h, w: 9.0, colW: [4.4, 2.3, 2.3], fontSize: 22, rowH: 0.6, align: ["left", "center", "center"] });
   registrar(s, "QP2: um quarto efeito nos handlers",
-    "Para testar a composabilidade, acrescentei um quarto efeito: ler valores de uma entrada. Nos handlers, o efeito novo precisa ser instalado onde os outros já são. As linhas em vermelho saem e as em verde entram: o handler novo, run_input, passa a ficar entre o de saída e o de erro. A mesma mudança acontece na composição dos testes, run_acc. Por isso são 2 pontos de modificação. Na imperativa, a leitura é só uma função nova, e nada do que existia muda.",
+    "Para testar a composabilidade, acrescentei um quarto efeito: ler valores de uma entrada. Nos handlers, o efeito novo precisa ser instalado onde os outros já são. As linhas em vermelho saem e as em verde entram: o handler novo, de entrada, passa a ficar entre o de saída e o de erro. A mesma mudança acontece na composição usada pelos testes. Por isso são dois pontos de modificação. Na imperativa, a leitura é só uma função nova, e nada do que existia muda.",
     [
       ["Quarto efeito (Input)", "ler o próximo valor de um fluxo de entrada. Se a entrada acabar, é erro. Foi escolhido antes de implementar, de propósito, porque interage com o efeito de exceção."],
       ["Linhas com - e +", "- é linha removida (em vermelho), + é linha adicionada (em verde)."],
@@ -640,7 +642,7 @@ secao("04", "Resultados", "Agora os resultados, primeiro do código (QP1 a QP3) 
   tabela(s, ["", "Mônadas", "IORef"], [["Declarações que mudam", "2", "0"]],
     { x: MX, y: 2.85 + h, w: 9.0, colW: [4.4, 2.3, 2.3], fontSize: 22, rowH: 0.6, align: ["left", "center", "center"] });
   registrar(s, "QP2: um quarto efeito nas mônadas",
-    "No Haskell, o efeito novo vira uma camada a mais na pilha. Então o tipo da pilha muda, e a função run, que executa a pilha, muda junto: também 2 pontos de modificação. A leitura é uma função nova que precisa de dois lift para chegar na camada nova. Na base IORef, como na imperativa, nada do que existia muda. Então handlers e mônadas empatam em 2, e a diferença é onde a mudança cai: nos handlers, nas composições. Nas mônadas, no tipo e no executor.",
+    "No Haskell, o efeito novo vira uma camada a mais na pilha. Então o tipo da pilha muda, e a função run, que executa a pilha, muda junto: também dois pontos de modificação. A leitura é uma função nova, que precisa de dois lift para chegar na camada nova. Na base com IORef, como na imperativa, nada do que existia muda. Então handlers e mônadas empatam em dois, e a diferença é onde a mudança cai: nos handlers, nas composições. Nas mônadas, no tipo e no executor.",
     [
       ["StateT [Int]", "camada de estado nova, que guarda a lista de entradas ainda não lidas."],
       ["runStateT, runExceptT", "funções que executam uma camada da pilha e devolvem o resultado. run chama uma para cada camada, de fora para dentro."],
@@ -686,7 +688,7 @@ secao("04", "Resultados", "Agora os resultados, primeiro do código (QP1 a QP3) 
   texto(s, [{ text: "Haskell: no máximo ", options: {} }, { text: "10 ns", options: { bold: true, color: HEX.rosa } }], { x: MX, y: 4.2, w: CW, h: 0.6, fontSize: 22, align: "center" });
   texto(s, runs("**Instalar** = rodar o código sob o handler, numa pilha própria"), { x: MX, y: 5.3, w: CW, h: 0.5, fontSize: 16, align: "center", color: C.accent6 });
   registrar(s, "QP4: o custo de instalar os handlers",
-    "Este é o número que resume o desempenho do OCaml. No cenário Arith, que só faz contas e não usa efeito nenhum, os handlers já custam 45 nanossegundos a mais por expressão. Esse é o custo de instalar os três handlers. Instalar quer dizer rodar o código sob o handler, e o OCaml cria uma pilha própria para isso. No Haskell, a maior diferença em todo o experimento foi de 10 nanossegundos. Os números são a mediana de 3 cargas de 10.000 expressões, numa máquina virtual de nuvem.",
+    "Este é o número que resume o desempenho do OCaml. No cenário Arith, que só faz contas e não usa efeito nenhum, os handlers já custam 45 nanossegundos a mais por expressão. Esse é o custo de instalar os três handlers. Instalar quer dizer rodar o código sob o handler, e o OCaml cria uma pilha própria para isso. No Haskell, a maior diferença em todo o experimento foi de 10 nanossegundos. Os números são a mediana de três cargas de dez mil expressões, medidas numa máquina virtual de nuvem.",
     [
       ["Instalar um handler", "executar o trecho de código sob o handler, com a função match_with do OCaml. Enquanto o trecho roda, cada perform dele é atendido por esse handler. Na composição run, os três handlers (estado, saída e erro) são instalados um dentro do outro em volta da eval."],
       ["Pilha própria (fiber)", "a cada instalação, o OCaml 5 cria um segmento de pilha novo (uma fiber) para o trecho e registra o handler. É trabalho feito antes de qualquer efeito acontecer, e é isso que custa tempo."],
@@ -772,7 +774,7 @@ secao("04", "Resultados", "Agora os resultados, primeiro do código (QP1 a QP3) 
   box(MX, "Vazamento no OCaml 5.2", "1,2 GB → 6 MB", HEX.marinho, "Abandonar a computação interrompida prende a memória. Encerrá-la com **discontinue** libera.");
   box(MX + 5.98, "Medição sensível", "até 28%", HEX.laranja, "Com coleta 4 vezes menor, todos os **R²** ficaram bons e mesmo assim as razões mudaram.");
   registrar(s, "Dois achados não previstos",
-    "Dois achados que eu não esperava. Primeiro, um vazamento de memória no OCaml 5.2: se o handler de erro só abandona a computação interrompida, a memória não é liberada. Com 2 milhões de erros, chegou a 1,2 GB. Encerrando com discontinue, ficou em 6 MB, e o código final usa discontinue. O experimento está em codigo/ocaml/experimento/continuacao.ml. Segundo, a medição é sensível à configuração: com uma coleta quatro vezes menor, todas as medições pareciam boas pelo R², acima de 0,95, e mesmo assim as razões mudaram até 28%. Detalhes no apêndice A4.",
+    "Dois achados que eu não esperava. Primeiro, um vazamento de memória no OCaml 5.2: se o handler de erro só abandona a computação interrompida, a memória não é liberada. Com 2 milhões de erros, chegou a 1,2 GB. Encerrando com discontinue, ficou em 6 MB, e o código final usa discontinue. O experimento está no repositório. Segundo, a medição é sensível à configuração: com uma coleta quatro vezes menor, todas as medições pareciam boas pelo indicador de qualidade, o R quadrado, e mesmo assim as razões mudaram até 28 por cento.",
     [
       ["Computação interrompida", "a continuação k que o handler de erro recebe quando acontece um Fail: o resto da eval, que não vai mais rodar."],
       ["Abandonar", "simplesmente não usar k. No OCaml 5.2, o segmento de pilha de k fica preso na memória."],
@@ -849,9 +851,9 @@ secao("05", "Conclusões", "Para fechar: como os resultados se comparam com a li
 // 24. Obrigado
 {
   const s = pres.addSlide({ masterName: "FINAL", sectionTitle: "Conclusões" });
-  s.addText("Obrigado! Dúvidas?", { placeholder: "title" });
+  s.addText("Obrigado!", { placeholder: "title" });
   s.addText("github.com/DiegoMarchioni/TCC", { placeholder: "contato" });
-  registrar(s, "Obrigado! Dúvidas?", "Obrigado. O código, os dados e o artigo estão no repositório, e tudo se refaz com um comando. Fico à disposição para as perguntas.", []);
+  registrar(s, "Obrigado!", "Obrigado pela atenção. O código, os dados e o artigo estão no repositório do trabalho, e todos os números se refazem com um único comando.", []);
 }
 
 // Apêndice
@@ -1012,5 +1014,11 @@ async function corrigirParagrafos(arquivo) {
   await applyTheme(SAIDA, THEME);
   await corrigirParagrafos(SAIDA);
   fs.writeFileSync(SAIDA_MD, md.join("\n") + "\n");
+  const total = roteiro.reduce((a, [, , t]) => a + t.split(/\s+/).length, 0);
+  const linhas = ["# Roteiro de gravação", "",
+    "Gerado por `gerar_pptx.js` junto com `defesa.pptx`. Só o texto falado, do slide 1 ao slide do Obrigado, na ordem. Referências e apêndices não entram na gravação.",
+    "", "Leitura estimada: " + Math.round(total / 140) + " a " + Math.round(total / 120) + " minutos (" + total + " palavras).", ""];
+  roteiro.forEach(([num, tit, t]) => linhas.push("## Slide " + num + ": " + tit, "", t, ""));
+  fs.writeFileSync(path.join(__dirname, "roteiro-gravacao.md"), linhas.join("\n"));
   console.log("ok", n, "slides");
 })();

@@ -4,7 +4,7 @@ Gerado por `gerar_pptx.js` junto com `defesa.pptx`. O mesmo texto está nas nota
 
 ## 1. Capa
 
-**O que dizer.** Bom dia. Sou o Diego Marchioni e vou apresentar o meu TCC, orientado pelo professor Marco Rodrigo. O trabalho compara duas formas de tratar efeitos em linguagens funcionais: as mônadas, no Haskell, e os efeitos algébricos, no OCaml.
+**O que dizer.** Olá. Sou o Diego Marchioni e vou apresentar o meu Trabalho de Conclusão de Curso, orientado pelo professor Marco Rodrigo. O trabalho compara duas formas de tratar efeitos em linguagens funcionais: as mônadas, no Haskell, e os efeitos algébricos, no OCaml.
 
 **O que cada coisa significa.**
 
@@ -14,7 +14,7 @@ Gerado por `gerar_pptx.js` junto com `defesa.pptx`. O mesmo texto está nas nota
 
 ## 2. Sumário
 
-**O que dizer.** A apresentação segue a ordem do artigo: o problema e as perguntas, os dois mecanismos, o método, os resultados e as conclusões. São cerca de 20 minutos.
+**O que dizer.** A apresentação segue a ordem do artigo: o problema e as perguntas de pesquisa, os dois mecanismos, o método, os resultados e as conclusões.
 
 **O que cada coisa significa.**
 
@@ -26,7 +26,7 @@ Gerado por `gerar_pptx.js` junto com `defesa.pptx`. O mesmo texto está nas nota
 
 ## 4. Dois mecanismos para os mesmos efeitos
 
-**O que dizer.** Programas reais precisam guardar estado, lançar erros e imprimir, coisas que uma função pura não faz. As linguagens funcionais têm mecanismos para isso. No Haskell, as mônadas: cada efeito é uma camada, e o efeito aparece no tipo da função. No OCaml 5, os efeitos algébricos: o código pede uma operação com perform e um handler decide o que ela faz. Na teoria, os dois expressam as mesmas coisas, como mostraram Forster e colegas em 2017 e Schrijvers e colegas em 2019. As mônadas são a técnica consolidada (Wadler, 1992). Os efeitos algébricos são nativos no OCaml desde 2022.
+**O que dizer.** Programas reais precisam guardar estado, lançar erros e imprimir, coisas que uma função pura não faz. As linguagens funcionais têm mecanismos para isso. No Haskell, as mônadas: cada efeito é uma camada, e o efeito aparece no tipo da função. No OCaml 5, os efeitos algébricos: o código pede uma operação com perform e um handler decide o que ela faz. Na teoria, os dois expressam as mesmas coisas, como mostraram Forster e colegas, em 2017, e Schrijvers e colegas, em 2019. As mônadas são a técnica consolidada, popularizada por Wadler em 1992. Os efeitos algébricos chegaram ao OCaml na versão 5, em 2022.
 
 **O que cada coisa significa.**
 
@@ -101,7 +101,7 @@ Gerado por `gerar_pptx.js` junto com `defesa.pptx`. O mesmo texto está nas nota
 
 ## 10. Quatro versões do mesmo interpretador
 
-**O que dizer.** Escrevi o mesmo interpretador quatro vezes. Em cada linguagem há a versão com o mecanismo e uma base sem ele. Só comparo código dentro da mesma linguagem, e o desempenho de cada mecanismo é medido contra a sua base. A base do OCaml guarda as variáveis numa Hashtbl e usa exceção nativa. A base do Haskell guarda o mesmo Map dentro de um IORef e também usa exceção nativa.
+**O que dizer.** Escrevi o mesmo interpretador quatro vezes. Em cada linguagem há a versão com o mecanismo e uma base sem ele. Só comparo código dentro da mesma linguagem, e o desempenho de cada mecanismo é medido contra a sua base. A base do OCaml guarda as variáveis numa tabela hash e usa exceção nativa. A base do Haskell guarda o mesmo Map dentro de um IORef e também usa exceção nativa.
 
 **O que cada coisa significa.**
 
@@ -116,7 +116,7 @@ Gerado por `gerar_pptx.js` junto com `defesa.pptx`. O mesmo texto está nas nota
 
 ## 11. Caso de uso: um interpretador pequeno
 
-**O que dizer.** O caso de uso é um interpretador pequeno, com oito tipos de expressão, que usa os três efeitos. Antes de programar, fixei o que significa duas versões serem equivalentes: dar o mesmo valor, o mesmo estado final, a mesma saída e a mesma mensagem de erro que a semântica de referência. Formalmente, para todo par de expressão e estado inicial no conjunto E64, o resultado da implementação é igual ao da semântica. Simplificações de propósito: variáveis globais, erro sempre aborta e um único programa.
+**O que dizer.** O caso de uso é um interpretador pequeno, com oito tipos de expressão, que usa os três efeitos. Antes de programar, fixei o que significa duas versões serem equivalentes: dar o mesmo valor, o mesmo estado final, a mesma saída e a mesma mensagem de erro que a semântica de referência. Isso vale para todos os pares de expressão e estado inicial cujos valores cabem no inteiro das duas linguagens. Fiz três simplificações de propósito: as variáveis são globais, um erro sempre encerra a avaliação e há um único programa.
 
 **O que cada coisa significa.**
 
@@ -130,7 +130,7 @@ Gerado por `gerar_pptx.js` junto com `defesa.pptx`. O mesmo texto está nas nota
 
 ## 12. A função eval
 
-**O que dizer.** Esta é a eval da versão com handlers. Ela olha o tipo da expressão e decide o que fazer. Num devolve o número. Var pede o valor ao handler de estado. Add avalia os dois lados, em ordem fixa, e soma. Um exemplo: 2 + n, com n valendo 3. A eval cai no caso Add. O lado esquerdo é o número 2. O lado direito é a variável n: a eval faz perform Get, o handler lê 3 na tabela e retoma a eval com esse valor. No fim, 2 + 3 = 5. Os outros casos, Mul, Div, Let, Seq e Print, seguem a mesma ideia. A legibilidade (QP1) é medida dentro desta função.
+**O que dizer.** Esta é a eval da versão com handlers. Ela olha o tipo da expressão e decide o que fazer. Num devolve o número. Var pede o valor ao handler de estado. Add avalia os dois lados, em ordem fixa, e soma. Um exemplo: dois mais n, com n valendo três. A eval cai no caso Add. O lado esquerdo é o número dois. O lado direito é a variável n: a eval faz perform Get, o handler lê o valor três na tabela e retoma a eval com esse valor. No fim, dois mais três, cinco. Os outros casos seguem a mesma ideia. A legibilidade, que é a primeira questão de pesquisa, é medida dentro desta função.
 
 **O que cada coisa significa.**
 
@@ -146,7 +146,7 @@ Gerado por `gerar_pptx.js` junto com `defesa.pptx`. O mesmo texto está nas nota
 
 ## 13. Mesma estrutura, outro mecanismo
 
-**O que dizer.** As duas versões OCaml têm a mesma estrutura, linha por linha. Onde a imperativa lê a tabela direto, a de handlers faz perform Get. Onde a imperativa lança raise, a de handlers faz perform Fail. As duas usam a mesma Hashtbl. Por isso a diferença medida é o mecanismo, e não a estrutura.
+**O que dizer.** As duas versões OCaml têm a mesma estrutura, linha por linha. Onde a imperativa lê a tabela direto, a de handlers faz perform Get. Onde a imperativa lança raise, a de handlers faz perform Fail. As duas usam a mesma tabela hash. Por isso a diferença medida é o mecanismo, e não a estrutura.
 
 **O que cada coisa significa.**
 
@@ -182,7 +182,7 @@ Gerado por `gerar_pptx.js` junto com `defesa.pptx`. O mesmo texto está nas nota
 
 ## 16. Seção 04: Resultados
 
-**O que dizer.** Agora os resultados, primeiro do código (QP1 a QP3) e depois do desempenho (QP4).
+**O que dizer.** Agora os resultados. Primeiro os do código, que respondem às três primeiras questões, e depois os de desempenho.
 
 ## 17. QP1: legibilidade da eval
 
@@ -200,7 +200,7 @@ Gerado por `gerar_pptx.js` junto com `defesa.pptx`. O mesmo texto está nas nota
 
 ## 18. QP2: um quarto efeito nos handlers
 
-**O que dizer.** Para testar a composabilidade, acrescentei um quarto efeito: ler valores de uma entrada. Nos handlers, o efeito novo precisa ser instalado onde os outros já são. As linhas em vermelho saem e as em verde entram: o handler novo, run_input, passa a ficar entre o de saída e o de erro. A mesma mudança acontece na composição dos testes, run_acc. Por isso são 2 pontos de modificação. Na imperativa, a leitura é só uma função nova, e nada do que existia muda.
+**O que dizer.** Para testar a composabilidade, acrescentei um quarto efeito: ler valores de uma entrada. Nos handlers, o efeito novo precisa ser instalado onde os outros já são. As linhas em vermelho saem e as em verde entram: o handler novo, de entrada, passa a ficar entre o de saída e o de erro. A mesma mudança acontece na composição usada pelos testes. Por isso são dois pontos de modificação. Na imperativa, a leitura é só uma função nova, e nada do que existia muda.
 
 **O que cada coisa significa.**
 
@@ -215,7 +215,7 @@ Gerado por `gerar_pptx.js` junto com `defesa.pptx`. O mesmo texto está nas nota
 
 ## 19. QP2: um quarto efeito nas mônadas
 
-**O que dizer.** No Haskell, o efeito novo vira uma camada a mais na pilha. Então o tipo da pilha muda, e a função run, que executa a pilha, muda junto: também 2 pontos de modificação. A leitura é uma função nova que precisa de dois lift para chegar na camada nova. Na base IORef, como na imperativa, nada do que existia muda. Então handlers e mônadas empatam em 2, e a diferença é onde a mudança cai: nos handlers, nas composições. Nas mônadas, no tipo e no executor.
+**O que dizer.** No Haskell, o efeito novo vira uma camada a mais na pilha. Então o tipo da pilha muda, e a função run, que executa a pilha, muda junto: também dois pontos de modificação. A leitura é uma função nova, que precisa de dois lift para chegar na camada nova. Na base com IORef, como na imperativa, nada do que existia muda. Então handlers e mônadas empatam em dois, e a diferença é onde a mudança cai: nos handlers, nas composições. Nas mônadas, no tipo e no executor.
 
 **O que cada coisa significa.**
 
@@ -243,7 +243,7 @@ Gerado por `gerar_pptx.js` junto com `defesa.pptx`. O mesmo texto está nas nota
 
 ## 21. QP4: o custo de instalar os handlers
 
-**O que dizer.** Este é o número que resume o desempenho do OCaml. No cenário Arith, que só faz contas e não usa efeito nenhum, os handlers já custam 45 nanossegundos a mais por expressão. Esse é o custo de instalar os três handlers. Instalar quer dizer rodar o código sob o handler, e o OCaml cria uma pilha própria para isso. No Haskell, a maior diferença em todo o experimento foi de 10 nanossegundos. Os números são a mediana de 3 cargas de 10.000 expressões, numa máquina virtual de nuvem.
+**O que dizer.** Este é o número que resume o desempenho do OCaml. No cenário Arith, que só faz contas e não usa efeito nenhum, os handlers já custam 45 nanossegundos a mais por expressão. Esse é o custo de instalar os três handlers. Instalar quer dizer rodar o código sob o handler, e o OCaml cria uma pilha própria para isso. No Haskell, a maior diferença em todo o experimento foi de 10 nanossegundos. Os números são a mediana de três cargas de dez mil expressões, medidas numa máquina virtual de nuvem.
 
 **O que cada coisa significa.**
 
@@ -288,7 +288,7 @@ Gerado por `gerar_pptx.js` junto com `defesa.pptx`. O mesmo texto está nas nota
 
 ## 24. Dois achados não previstos
 
-**O que dizer.** Dois achados que eu não esperava. Primeiro, um vazamento de memória no OCaml 5.2: se o handler de erro só abandona a computação interrompida, a memória não é liberada. Com 2 milhões de erros, chegou a 1,2 GB. Encerrando com discontinue, ficou em 6 MB, e o código final usa discontinue. O experimento está em codigo/ocaml/experimento/continuacao.ml. Segundo, a medição é sensível à configuração: com uma coleta quatro vezes menor, todas as medições pareciam boas pelo R², acima de 0,95, e mesmo assim as razões mudaram até 28%. Detalhes no apêndice A4.
+**O que dizer.** Dois achados que eu não esperava. Primeiro, um vazamento de memória no OCaml 5.2: se o handler de erro só abandona a computação interrompida, a memória não é liberada. Com 2 milhões de erros, chegou a 1,2 GB. Encerrando com discontinue, ficou em 6 MB, e o código final usa discontinue. O experimento está no repositório. Segundo, a medição é sensível à configuração: com uma coleta quatro vezes menor, todas as medições pareciam boas pelo indicador de qualidade, o R quadrado, e mesmo assim as razões mudaram até 28 por cento.
 
 **O que cada coisa significa.**
 
@@ -332,9 +332,9 @@ Gerado por `gerar_pptx.js` junto com `defesa.pptx`. O mesmo texto está nas nota
 
 **O que dizer.** Slide de consulta, não entra na fala.
 
-## 29. Obrigado! Dúvidas?
+## 29. Obrigado!
 
-**O que dizer.** Obrigado. O código, os dados e o artigo estão no repositório, e tudo se refaz com um comando. Fico à disposição para as perguntas.
+**O que dizer.** Obrigado pela atenção. O código, os dados e o artigo estão no repositório do trabalho, e todos os números se refazem com um único comando.
 
 ## 30. A1. Tempo e memória, todos os cenários
 
