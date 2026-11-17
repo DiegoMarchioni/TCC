@@ -2,7 +2,7 @@
  "handlers": {
   "linguagem": "ocaml",
   "papel": "mecanismo",
-  "arquivo": "/home/user/TCC/codigo/ocaml/effects/interp_effects.ml",
+  "arquivo": "ocaml/effects/interp_effects.ml",
   "loc_arquivo": 107,
   "eval": {
    "loc": 29,
@@ -1814,7 +1814,7 @@
  "imperativa": {
   "linguagem": "ocaml",
   "papel": "base",
-  "arquivo": "/home/user/TCC/codigo/ocaml/imperative/interp_imp.ml",
+  "arquivo": "ocaml/imperative/interp_imp.ml",
   "loc_arquivo": 33,
   "eval": {
    "loc": 29,
@@ -2013,7 +2013,7 @@
  "monadas": {
   "linguagem": "haskell",
   "papel": "mecanismo",
-  "arquivo": "/home/user/TCC/codigo/haskell/src/Interp/Monadic.hs",
+  "arquivo": "haskell/src/Interp/Monadic.hs",
   "declaracoes": [
    {
     "nome": "import Control.Monad",
@@ -2588,7 +2588,7 @@
  "ioref": {
   "linguagem": "haskell",
   "papel": "base",
-  "arquivo": "/home/user/TCC/codigo/haskell/src/Interp/IORefBase.hs",
+  "arquivo": "haskell/src/Interp/IORefBase.hs",
   "declaracoes": [
    {
     "nome": "import Control.Exception",

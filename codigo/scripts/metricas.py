@@ -166,7 +166,7 @@ def cmd_tabela(raiz):
         d = analisar(ling, raiz / rel)
         d["boilerplate_regra"] = boilerplate_por_regra(ling, d)
         d["reutilizacao"] = reutilizacao(ling, d)
-        dados[chave] = {"linguagem": ling, "papel": papel, "arquivo": rel, **d}
+        dados[chave] = {"linguagem": ling, "papel": papel, **d, "arquivo": str(rel)}
         preparar_boilerplate(chave, d)
         gravar_auditoria(chave, d["boilerplate_regra"])
     (RESULTADOS / "metricas-codigo.json").write_text(
