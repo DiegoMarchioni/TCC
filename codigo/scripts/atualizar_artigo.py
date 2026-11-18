@@ -33,10 +33,10 @@ RESULTADOS = RAIZ / "resultados"
 LINGS = {"ocaml": "Ocaml", "haskell": "Haskell"}
 CENS = {"arith": "Arith", "state": "State", "exn": "Exn", "output": "Output"}
 IMPLS = {"handlers": "Handlers", "imperativa": "Imperativa", "monadas": "Monadas", "ioref": "Ioref"}
-ROTULO_IMPL = {"handlers": r"\textit{Handlers} (OCaml)", "imperativa": "Imperativa (OCaml)",
-               "monadas": "Mônadas (Haskell)", "ioref": r"\texttt{IORef} (Haskell)"}
-ROTULO_CEN = {"arith": r"\textsc{Arith}", "state": r"\textsc{State}",
-              "exn": r"\textsc{Exn}", "output": r"\textsc{Output}"}
+ROTULO_IMPL = {"handlers": "Handlers (OCaml)", "imperativa": "Imperativa (OCaml)",
+               "monadas": "Mônadas (Haskell)", "ioref": "IORef (Haskell)"}
+ROTULO_CEN = {"arith": "Arith", "state": "State",
+              "exn": "Exn", "output": "Output"}
 CONSTRUTORES = ["Num", "Var", "Add", "Mul", "Div", "Let", "Seq", "Print"]
 
 
@@ -222,7 +222,7 @@ def bloco_ambiente(amb):
     afinidade = (" e afinidade fixada em um núcleo" if amb["taskset"] else "")
     texto = (
         f"A campanha correu em {onde}, com {amb['ncpu']} processadores lógicos, sob "
-        f"{amb['so']}, com OCaml~{amb['ocaml']}+\\textit{{flambda}}, GHC~{amb['ghc']}, "
+        f"{amb['so']}, com OCaml~{amb['ocaml']}+flambda, GHC~{amb['ghc']}, "
         f"Bechamel~{amb['bechamel']} e Criterion~{amb['criterion']}, sementes \\Sementes{{}}, "
         f"corridas estritamente sequenciais{afinidade}. No Bechamel, "
         f"\\texttt{{limit:{amb['limite']}}} e cota de \\CotaS{{}}~segundos, e no Criterion, "

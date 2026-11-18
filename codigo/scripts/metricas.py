@@ -45,10 +45,10 @@ RESULTADOS = RAIZ / "resultados"
 
 IMPLEMENTACOES = [
     # (chave, rótulo na Tabela 1, linguagem, papel, caminho relativo)
-    ("handlers", "\\textit{Handlers} (OCaml)", "ocaml", "mecanismo", "ocaml/effects/interp_effects.ml"),
+    ("handlers", "Handlers (OCaml)", "ocaml", "mecanismo", "ocaml/effects/interp_effects.ml"),
     ("imperativa", "Imperativa (OCaml)", "ocaml", "base", "ocaml/imperative/interp_imp.ml"),
     ("monadas", "Mônadas (Haskell)", "haskell", "mecanismo", "haskell/src/Interp/Monadic.hs"),
-    ("ioref", "\\texttt{IORef} (Haskell)", "haskell", "base", "haskell/src/Interp/IORefBase.hs"),
+    ("ioref", "IORef (Haskell)", "haskell", "base", "haskell/src/Interp/IORefBase.hs"),
 ]
 CONSTRUTORES = ["Num", "Var", "Add", "Mul", "Div", "Let", "Seq", "Print"]
 

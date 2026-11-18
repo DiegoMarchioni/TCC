@@ -328,7 +328,7 @@ não vale para as consequências práticas da escolha. Os estudos existentes tra
 dos fundamentos semânticos, da expressividade ou do custo de execução em
 separado, e nenhum deles reúne sobre um mesmo caso de uso as quatro
 dimensões que governam a decisão (Seção~\ref{sec:lacuna}). E essa decisão
-deixou de ser hipotética: com os \textit{handlers} nativos do OCaml~5, a
+deixou de ser hipotética: com os handlers nativos do OCaml~5, a
 alternativa existe em uma linguagem de uso industrial, e quem a toma hoje o faz
 sem evidência que informe, ao mesmo tempo, custo de execução e custo de
 escrita.
@@ -339,11 +339,11 @@ comparar mônadas e efeitos algébricos em legibilidade, composabilidade, poder
 de abstração e desempenho, sobre um caso de uso único que combine estado
 mutável, exceções e saída. A medição direta não é possível, porque o mecanismo
 não se separa do \textit{runtime} que o hospeda: a versão monádica executa
-sobre o GHC, e a versão com \textit{handlers}, sobre o OCaml. Mede-se então por razões, cada
+sobre o GHC, e a versão com handlers, sobre o OCaml. Mede-se então por razões, cada
 mecanismo contra uma linha de base imperativa na sua própria linguagem, nos
 termos fixados na Seção~\ref{sec:protocolo}. As duas razões são em seguida
 confrontadas, e esse confronto é exploratório: elas assentam sobre bases de
-custo distinto, em \textit{runtimes} distintos, e o desenho não separa as duas
+custo distinto, em runtimes distintos, e o desenho não separa as duas
 coisas.
 
 Pergunta-se qual abordagem acrescenta menos carga estrutural de leitura (QP1),
@@ -364,12 +364,12 @@ principal é o desenho que torna a comparação legítima: o argumento de equiva
 (Seção~\ref{sec:relacao}), o critério de equivalência funcional verificável e
 a suíte de oráculo que o realiza (Seções~\ref{sec:caso-de-uso}
 e~\ref{sec:oraculo}), e a normalização intralinguagem, que separa o que cabe
-ao mecanismo do que cabe ao \textit{runtime} (Seção~\ref{sec:protocolo}). As quatro
+ao mecanismo do que cabe ao runtime (Seção~\ref{sec:protocolo}). As quatro
 implementações, a suíte de oráculo, o quarto efeito e os dois
 \textit{harnesses} estão concluídos, e a suíte passa integralmente.
 %% NOVO (10/11): sintese reescrita com os resultados; revise com as suas palavras.
 Em cada linguagem, o avaliador do mecanismo empata com o da base nas três
-métricas de legibilidade. A diferença de escrita está no \textit{boilerplate}
+métricas de legibilidade. A diferença de escrita está no boilerplate
 e nos pontos de modificação, que só os mecanismos exigiram para o quarto
 efeito. Em execução, a razão entre o mecanismo e a base de cada linguagem
 ficou entre \FaixaRTOcaml{} em tempo e entre \FaixaRAOcaml{} em alocação no
@@ -391,7 +391,7 @@ operações cuja interpretação é deixada em aberto no ponto de uso e fixada e
 outro lugar do programa. As duas abordagens diferem em onde e como essa
 interpretação é fixada. Na pilha de transformadores, ela é fixada
 estaticamente, pelo tipo da computação. Nos efeitos algébricos, ela é fixada
-dinamicamente, por um \textit{handler} instalado sobre um escopo. As quatro
+dinamicamente, por um handler instalado sobre um escopo. As quatro
 dimensões medem as consequências dessa diferença.
 
 \subsection{Mônadas e Transformadores}\label{sec:fund-monadas}
@@ -406,38 +406,38 @@ corresponde ao \texttt{>{}>=}, com os argumentos trocados. É satisfazendo
 aquelas leis que uma instância de \texttt{Monad} preserva o raciocínio
 equacional sob efeitos \cite{wadler:90,wadler:92}.
 
-Ao combinar efeitos, os \textit{monad transformers} \cite{liang:95} impõem
+Ao combinar efeitos, os monad transformers \cite{liang:95} impõem
 uma ordenação estática, visível nos isomorfismos: com o estado externo,
 $\texttt{StateT}\,s\,(\texttt{Except}\,e)\,a \cong s \to (e + (a \times s))$,
 o estado se perde no erro. Com a exceção externa,
 $\texttt{ExceptT}\,e\,(\texttt{State}\,s)\,a \cong s \to ((e + a) \times s)$,
 ele sobrevive. São funções de tipos distintos, não variantes de estilo. Cada
 camada exige ainda operações de elevação, que bibliotecas baseadas em classes
-de tipos (\textit{mtl}) eliminam no ponto de uso ao custo de deslocá-las para
-as instâncias. Adota-se \textit{mtl} por comparar o transformador como ele é
+de tipos (mtl) eliminam no ponto de uso ao custo de deslocá-las para
+as instâncias. Adota-se mtl por comparar o transformador como ele é
 idiomaticamente usado, escolha que reduz de antemão a vantagem que se
-atribuiria aos \textit{handlers} em \textit{boilerplate}.
+atribuiria aos handlers em boilerplate.
 
-\subsection{Efeitos Algébricos e \textit{Handlers}}\label{sec:fund-efeitos}
+\subsection{Efeitos Algébricos e Handlers}\label{sec:fund-efeitos}
 
 Os efeitos computacionais foram estabelecidos como operações algébricas sobre
 uma teoria equacional \cite{plotkin:03}. Cada operação tem assinatura e
 aridade, isto é, o número de continuações que recebe. \texttt{raise} tem
-aridade zero, contrapartida algébrica de o \textit{handler} de exceção
+aridade zero, contrapartida algébrica de o handler de exceção
 descartar a continuação. A ordenação dos efeitos continua existindo, mas muda
 de lugar: deixa de ser fixada no tipo e passa a ser determinada pelo escopo de
-instalação dos \textit{handlers}, o que a torna local e revisável sem alterar
-assinaturas. \textit{Handlers} de efeitos que interagem, porém, continuam não
+instalação dos handlers, o que a torna local e revisável sem alterar
+assinaturas. Handlers de efeitos que interagem, porém, continuam não
 comutando.
 
-Um \textit{handler} \cite{plotkin:09} intercepta operações dentro de um escopo
+Um handler \cite{plotkin:09} intercepta operações dentro de um escopo
 e recebe, a cada uma, a continuação da computação interrompida: retomá-la uma
 vez modela estado e saída, descartá-la modela exceções, e retomá-la várias
 vezes modela não determinismo. Em Koka, um sistema de \textit{effect rows} verifica estaticamente quais
 efeitos uma função realiza \cite{leijen:14}. No OCaml~5,
 um efeito estende o tipo \texttt{Effect.t} e é disparado por \texttt{perform},
-e o \textit{handler} instalado com \texttt{match\_with} trata as operações
-declaradas e repassa as demais ao \textit{handler} externo. As continuações
+e o handler instalado com \texttt{match\_with} trata as operações
+declaradas e repassa as demais ao handler externo. As continuações
 são \textit{one-shot}, restrição que é a contrapartida da implementação por
 segmentos de pilha (Seção~\ref{sec:custo}) e que torna o não determinismo
 inexpressável diretamente.
@@ -445,10 +445,10 @@ inexpressável diretamente.
 \subsection{Relação Formal entre as Abordagens}\label{sec:relacao}
 
 A justiça da comparação apoia-se em três passos. Primeiro, a
-inter-expressividade entre \textit{handlers}, reflexão monádica e controle
+inter-expressividade entre handlers, reflexão monádica e controle
 delimitado foi estabelecida diretamente, com ressalvas para o cenário tipado
 \cite{forster:17}. Segundo, a correspondência foi caracterizada de forma mais
-fina: há uma classe de efeitos algébricos \textit{modulares} em
+fina: há uma classe de efeitos algébricos modulares em
 correspondência com uma classe específica de transformadores
 \cite{schrijvers:19}, e dentro dela a escolha não altera o que pode ser
 expresso, apenas como se expressa e a que custo. Este trabalho mede esse
@@ -458,9 +458,9 @@ apresentação por assinatura e equações, com modelo livre, e corresponde a um
 transformador da classe, respectivamente \texttt{StateT}, \texttt{ExceptT} e
 \texttt{WriterT}, cujas mônadas são $S\to(-\times S)$, $(-+E)$ e
 $(-\times V^*)$. O argumento recai sobre a classe dos efeitos, e não sobre os
-\textit{handlers} desta realização, que mantêm estado e traço fora do escopo
+handlers desta realização, que mantêm estado e traço fora do escopo
 (Seção~\ref{sec:protocolo}). Todos usam a continuação no máximo uma vez, cabendo
-sob as continuações \textit{one-shot} do OCaml~5. Segue-se que, para esses
+sob as continuações one-shot do OCaml~5. Segue-se que, para esses
 três efeitos, os dois mecanismos têm o mesmo alcance expressivo. Fora da
 classe ficam os efeitos escopados, operações primitivas que recebem uma
 subcomputação como argumento. A sintaxe de primeira ordem não os captura, e
@@ -473,14 +473,14 @@ efeitos deste caso de uso é desse tipo.
 
 Os \textit{extensible effects} \cite{kiselyov:13} propuseram-se como
 alternativa aos transformadores por meio de uniões abertas de funtores que
-evitam a rigidez da pilha ordenada. \textit{Handlers} sobre mônadas livres
+evitam a rigidez da pilha ordenada. Handlers sobre mônadas livres
 mostraram a viabilidade do modelo em Haskell sem suporte nativo, já com
 medição de custo \cite{kammar:13}, e comparações posteriores na mesma
 linguagem refinam o quadro \cite{xie:20}. Trabalho recente \cite{joriatti:25}
 percorre a direção inversa e traduz, por regras dirigidas pela sintaxe, código
 com efeitos inferidos para esse mesmo arcabouço, na formulação com mônadas
 \textit{freer} \cite{kiselyov:15}. A
-tradução cobre as operações e não os seus \textit{handlers}, é validada por
+tradução cobre as operações e não os seus handlers, é validada por
 exemplos e não por preservação de semântica, e não mede custo algum, de modo
 que o resíduo ergonômico e de desempenho entre as duas abordagens permanece
 aberto. A existência desses arcabouços suscita a
@@ -488,7 +488,7 @@ pergunta de por que não comparar as duas abordagens na mesma linguagem. A
 escolha, justificada na Seção~\ref{sec:protocolo}, é comparar cada mecanismo
 como ele é efetivamente suportado em produção.
 
-\subsection{O Custo de Execução dos \textit{Handlers}}\label{sec:custo}
+\subsection{O Custo de Execução dos Handlers}\label{sec:custo}
 
 Uma linha de pesquisa intensificada a partir de 2021 dedica-se a reduzir o
 sobrecusto do mecanismo: um compilador otimizador de Eff para OCaml mostrou
@@ -496,13 +496,13 @@ que boa parte dele pode ser eliminada por transformações fonte-a-fonte
 \cite{karachalias:21}, e avaliou-se a compilação \textit{just-in-time} por
 rastreamento \cite{gaissert:25}. Duas consequências decorrem daí. A primeira é
 que parte substancial do sobrecusto é propriedade da implementação, e não do
-mecanismo, de modo que medições obtidas em um \textit{runtime} não se
+mecanismo, de modo que medições obtidas em um runtime não se
 transferem para outro. A
 segunda é que o OCaml~5 ocupa posição particular nesse espectro, por
-implementar \textit{handlers} sobre segmentos de pilha alocados dinamicamente
+implementar handlers sobre segmentos de pilha alocados dinamicamente
 (\textit{fibers}) e não por tradução para continuações
 \cite{sivaramakrishnan:21,ocaml:manual}. As duas propriedades estão ligadas: é
-por serem \textit{one-shot} que as continuações dispensam a cópia do
+por serem one-shot que as continuações dispensam a cópia do
 segmento.
 Ambas reforçam a decisão de reportar razões contra uma base na mesma
 linguagem.
@@ -514,12 +514,12 @@ dimensões que governam a escolha: os de fundamentação estabelecem o mecanismo
 e a sua semântica, sem medir custo \cite{plotkin:03,plotkin:09}. Os de
 expressividade e composição tratam de legibilidade e abstração, sem medição
 \cite{swierstra:08,pretnar:15,lindley:17}. Os de desempenho medem com rigor,
-mas não comparam \textit{handlers} com transformadores monádicos nem avaliam
+mas não comparam handlers com transformadores monádicos nem avaliam
 as demais dimensões \cite{sivaramakrishnan:21,karachalias:21,gaissert:25}.
 Dois grupos chegam mais perto do desenho adotado aqui. As comparações de
-desempenho entre \textit{handlers} e mônadas na mesma linguagem, que incluem
+desempenho entre handlers e mônadas na mesma linguagem, que incluem
 uma versão pura como controle, eliminam o confundimento com o
-\textit{runtime}, mas assentam sobre \textit{microbenchmarks}, e não sobre um
+runtime, mas assentam sobre \textit{microbenchmarks}, e não sobre um
 caso de uso integrado, e não tratam das demais dimensões
 \cite{kammar:13,xie:20}. E o antecedente direto do caso de uso são os interpretadores
 modulares construídos com transformadores \cite{liang:95}, único trabalho
@@ -576,7 +576,7 @@ custo de tornar $n=1$ toda generalização.
 A semântica é fixada independentemente da implementação, de modo que as
 quatro versões sejam comparadas contra uma mesma referência formal, e não
 umas contra as outras, o que deixaria passar qualquer erro comum a duas delas.
-Especifica-se uma relação de transição \textit{small-step} sobre configurações
+Especifica-se uma relação de transição small-step sobre configurações
 que carregam a expressão, o estado $\sigma$ e o traço $\omega$, com a ordem de
 avaliação fixada à esquerda por uma gramática de contextos \cite{felleisen:92}
 cuja decomposição única dá o determinismo. Este garante que a redução de cada
@@ -603,10 +603,10 @@ quatro condições são verificáveis por comparação de valores e de cadeias.
 Todas as métricas são comparadas entre pares da mesma linguagem (efeitos
 contra imperativa em OCaml, mônadas contra \texttt{IORef} em Haskell), pela
 razão empírica da Seção~\ref{sec:metricas-codigo}. QP3 entre linguagens é
-exploratória por motivo próprio: o \textit{boilerplate} é medido em linhas, e
+exploratória por motivo próprio: o boilerplate é medido em linhas, e
 a contagem de linhas responde ao idioma de cada linguagem mesmo depois de
 normalizada. Duas unidades disjuntas: legibilidade conta sobre a função
-\texttt{eval}, \textit{boilerplate} sobre o arquivo menos \texttt{eval}.
+\texttt{eval}, boilerplate sobre o arquivo menos \texttt{eval}.
 
 \textbf{Legibilidade (QP1).} Três métricas estruturais, todas
 \textit{proxies} e não medidas diretas: a LOC efetiva de \texttt{eval}, o
@@ -634,11 +634,11 @@ deliberada por interagir com o efeito de exceção, e a inserção é medida nas
 quatro implementações, inclusive nas bases, que dão escala.
 
 \textbf{Poder de abstração (QP3).} Avaliado por duas contagens. A primeira é
-o volume de \textit{boilerplate}: as linhas fora de \texttt{eval} sem marcador
+o volume de boilerplate: as linhas fora de \texttt{eval} sem marcador
 da semântica de um efeito, como a operação sobre a tabela, o resultado de erro
 ou a emissão, classificadas mecanicamente sobre os \textit{tokens} do
 compilador por regra fixada no protocolo publicado. A segunda são as
-instâncias de reutilização, isto é, o emprego de um mesmo \textit{handler} ou
+instâncias de reutilização, isto é, o emprego de um mesmo handler ou
 camada em mais de um ponto de instalação sem reescrita. Com um único caso de uso essa contagem discrimina pouco, e a
 resposta a QP3 apoia-se também na análise qualitativa da
 Seção~\ref{sec:oraculo}.
@@ -656,44 +656,44 @@ mecanismo sobre ela.
 A equivalência testada
 pela suíte de oráculo é pré-condição da medição: os
 \textit{benchmarks} só são executados depois de ela passar nas quatro
-implementações, e cada \textit{harness} confere ainda, sobre a própria carga,
+implementações, e cada harness confere ainda, sobre a própria carga,
 que mecanismo e base produzem a mesma soma, os mesmos erros e o mesmo traço.
 
-Os \textit{harnesses} usam Criterion \cite{criterion:08} em Haskell e
-Bechamel \cite{bechamel:21} em OCaml~5.2.1 com \textit{flambda}, com
+Os harnesses usam Criterion \cite{criterion:08} em Haskell e
+Bechamel \cite{bechamel:21} em OCaml~5.2.1 com flambda, com
 \textit{flags} idênticas para mecanismo e base: \texttt{-O3} no OCaml e
 \texttt{-O2} no Haskell. Cada medição é a inclinação da regressão do tempo
 sobre o número de execuções da carga, com intervalo de 95\% por
 \textit{bootstrap}, e é refeita se o $R^2$ ficar abaixo de 0,95. A ordem entre
 mecanismo e base alterna entre cenários. São quatro cenários, de 10.000
-expressões cada. A instalação dos \textit{handlers} é por expressão avaliada:
+expressões cada. A instalação dos handlers é por expressão avaliada:
 o de exceção precisa sê-lo, sob pena de a primeira divisão por zero encerrar a
 carga. Os de estado e de saída poderiam ser instalados uma vez por carga, mas
 os três são instalados juntos, o que triplica a criação de segmentos de
 pilha. Esse custo aparece no tempo, e não na alocação: o OCaml~5
 aloca os segmentos fora do \textit{heap} do coletor \cite{sivaramakrishnan:21},
 e a alocação registra só os fechamentos e registros de cada instalação. Ela é
-contada diretamente, em palavras do \textit{heap} menor entre duas coletas
+contada diretamente, em palavras do heap menor entre duas coletas
 forçadas, convertidas em bytes, porque a regressão do Bechamel, cujo contador
 só avança a cada coleta menor, subestimava a base em até
 \ViesAlocMax\%. %% AFIRMACAO:vies-regressao-alocacao
-No Haskell, é a que o Criterion apura do \textit{runtime}. \textsc{Arith},
+No Haskell, é a que o Criterion apura do runtime. Arith,
 sem \texttt{Var},
 \texttt{Let} ou \texttt{Print}, não realiza operação de efeito alguma, mas
-instala os \textit{handlers} 10.000 vezes: no OCaml, mede o custo de
-\textit{estar} sob o mecanismo, e não o de realizar efeitos. No Haskell, em que
+instala os handlers 10.000 vezes: no OCaml, mede o custo de
+estar sob o mecanismo, e não o de realizar efeitos. No Haskell, em que
 cada vinculação de \texttt{eval} atravessa a pilha, executada uma vez por
-expressão, mede o custo do \textit{bind}. \textsc{State} tem
+expressão, mede o custo do \textit{bind}. State tem
 500 variáveis e duas leituras por expressão, precedidas de um prefixo de
 \texttt{Let} de 500 níveis, avaliado uma vez por execução da carga.
-\textsc{Exn} inclui 20\% de divisões por zero. \textsc{Output} acumula os
+Exn inclui 20\% de divisões por zero. Output acumula os
 valores emitidos em vez de escrevê-los, para não medir o subsistema de E/S. As
-árvores têm profundidade~2 em \textsc{Output} e~3 em \textsc{Arith} e
-\textsc{Exn}: os cenários diferem também em tamanho de expressão.
+árvores têm profundidade~2 em Output e~3 em Arith e
+Exn: os cenários diferem também em tamanho de expressão.
 
 As cargas são geradas fora da região medida, e o resultado é forçado nas duas
 versões do Haskell e envolvido em \texttt{Sys.opaque\_identity} nas duas do
-OCaml, para que nem a \textit{strictness} nem o \textit{flambda} tratem
+OCaml, para que nem a \textit{strictness} nem o flambda tratem
 numerador e denominador de forma assimétrica. O ambiente nunca é reinicializado
 dentro da região cronometrada, porque reiniciá-lo ali não faria o custo
 cancelar-se na razão, e sim diluí-la: $(M+R)/(B+R)$ tende a~1 conforme cresce o
@@ -702,19 +702,19 @@ pois o prefixo de \texttt{Let} revincula as 500 variáveis a cada execução. No
 Haskell, é recriado na preparação que o Criterion mantém fora da medição.
 
 A principal ameaça à validade é o confundimento entre o mecanismo e o
-\textit{runtime}: GHC e OCaml têm modelos de coleta de lixo e otimização
+runtime: GHC e OCaml têm modelos de coleta de lixo e otimização
 distintos, e comparar tempos absolutos seria comparar duas variáveis ao mesmo
 tempo. Para mitigar, cada abordagem é normalizada contra uma base imperativa
 na sua própria linguagem. Em Haskell, a base é um \texttt{IORef} com o mesmo
 \texttt{Map~String~Int} da versão monádica, para que a razão isole o mecanismo
 e não a estrutura de dados. Uma ressalva é devida na comparação entre as razões:
 sendo o sobrecusto aproximadamente aditivo, a razão vale
-$1+\Delta/T_{\mathrm{base}}$, e uma base mais cara a \textit{deflaciona},
-como a do Haskell em \textsc{State}, único cenário que toca o ambiente. As
+$1+\Delta/T_{\mathrm{base}}$, e uma base mais cara a deflaciona,
+como a do Haskell em State, único cenário que toca o ambiente. As
 três sementes geram cargas distintas, e a dispersão entre elas mede
 insensibilidade à carga sorteada. Três sorteios sobre um caso de uso não
 constituem amostragem de uma população de programas. O estado e o traço
-residem fora do \textit{handler}, de modo que o sobrecusto medido é o do
+residem fora do handler, de modo que o sobrecusto medido é o do
 mecanismo nesta realização. Comparam-se OCaml~5 e Haskell, e não dois
 arcabouços em uma mesma linguagem, por serem essas as formas em que cada
 mecanismo é suportado em produção. A alternativa confundiria a maturidade de
@@ -734,14 +734,14 @@ acompanha o repositório público
 e as instruções para reproduzir cada número deste texto. Três artefatos precisam ser idênticos nos dois
 lados: o gerador de cargas, as mensagens de erro canônicas e a tabela de casos
 do oráculo. As mensagens e a tabela do oráculo são definidas em um
-arquivo neutro, o que torna o critério (iv) verificável também \textit{entre}
+arquivo neutro, o que torna o critério (iv) verificável também entre
 as linguagens. O gerador é replicado à mão, e o arquivo guarda o
 \textit{hash} FNV-1a de 64 bits de cada uma das doze cargas (quatro cenários,
 três sementes), conferido pelas duas réplicas e por uma terceira, em Python:
 divergência em qualquer expressão é acusada. O gerador, um congruencial
 linear de semente explícita, é próprio, e não o da biblioteca de cada
 linguagem, que faria Haskell e OCaml avaliarem árvores diferentes e confundiria
-a carga com o \textit{runtime}.
+a carga com o runtime.
 
 \subsection{Versão Monádica e Linhas de Base}\label{sec:impl-monadica}
 
@@ -762,7 +762,7 @@ reduz-se à substituição de acessos diretos à tabela e de \texttt{raise} por
 operações de efeito. A base do Haskell usa um \texttt{IORef} contendo o mesmo
 \texttt{Map String Int} da versão monádica, com erros por \texttt{throwIO}.
 Sendo a estrutura idêntica, a razão entre as duas isola o custo do mecanismo,
-e não o da representação do ambiente. Nas três versões sem \textit{handlers},
+e não o da representação do ambiente. Nas três versões sem handlers,
 a emissão passa por uma referência a função que a suíte substitui temporariamente, o que dispensa
 capturar \texttt{stdout}: a captura é sensível ao \textit{buffering} e
 observaria a renderização do traço, e não o traço $\omega$.
@@ -771,25 +771,25 @@ observaria a renderização do traço, e não o traço $\omega$.
 
 Três decisões merecem registro. Primeiro, \texttt{Get} devolve \texttt{int
 option}, e não \texttt{int}: a política de erro para variável não vinculada é
-decidida no avaliador, e o \textit{handler} de estado permanece ignorante da
+decidida no avaliador, e o handler de estado permanece ignorante da
 semântica de erro. Segundo, a ordem
 de avaliação dos operandos é fixada com \texttt{let} explícitos, pois o OCaml
 não especifica a dos argumentos de uma aplicação e o critério (iii) poderia
 falhar de forma dependente do compilador. Terceiro, o efeito de exceção
 descarta a continuação e o de estado a retoma, distinção que é a fonte da
-expressividade dos \textit{handlers}. Aqui os dois comutam, caso particular da
+expressividade dos handlers. Aqui os dois comutam, caso particular da
 ressalva da Seção~\ref{sec:fund-efeitos}: o estado reside em uma
-\texttt{Hashtbl} externa ao \textit{handler}, de modo que abortar não o perde,
+\texttt{Hashtbl} externa ao handler, de modo que abortar não o perde,
 e \texttt{run\_state} é polimórfico no tipo de resposta, ao passo que
 \texttt{run\_exn} o fixa. Os dois efeitos não interagem. Descartar exigiu,
 porém, encerrar a continuação com \texttt{discontinue}: apenas abandoná-la
-retém o seu segmento de pilha, fora do \textit{heap}, e em um experimento
+retém o seu segmento de pilha, fora do heap, e em um experimento
 publicado com o código dois milhões de erros levaram a memória residente a
-cerca de 1,2~GB, contra 6~MB com \texttt{discontinue}. Por fim, o \textit{handler} de
+cerca de 1,2~GB, contra 6~MB com \texttt{discontinue}. Por fim, o handler de
 \texttt{Output} é fornecido em duas versões, uma que emite e outra que acumula
 os valores, usada pela suíte de oráculo. É uma manifestação concreta da
 propriedade avaliada: trocar a interpretação de um efeito exigiu apenas outro
-\textit{handler}, sem alterar uma linha do avaliador. Na campanha, porém, as
+handler, sem alterar uma linha do avaliador. Na campanha, porém, as
 quatro versões emitem pela mesma referência a função, de modo que a assimetria
 registrada adiante vale para a suíte e não para o caminho medido.
 
@@ -815,10 +815,10 @@ pilha monádica for invertida. Cada um transforma uma decisão sutil em verifica
 automática, e a trava foi testada: as oito mutações que revertem essas
 decisões nas implementações são todas acusadas pela suíte.
 A observação do traço é feita sem modificar os avaliadores: na versão com
-efeitos, por um \textit{handler} alternativo de \texttt{Output}, e, nas demais,
+efeitos, por um handler alternativo de \texttt{Output}, e, nas demais,
 substituindo a referência a função de emissão. Essa assimetria é, ela
 própria, um dado qualitativo para QP3, pois só as versões sem
-\textit{handlers} exigiram um ponto de indireção inserido de antemão.
+handlers exigiram um ponto de indireção inserido de antemão.
 
 %% NOVO (10/11): paragrafo redigido com a ferramenta a partir do patch do
 %% quarto efeito (codigo/quarto-efeito/); revise com as suas palavras.
@@ -826,11 +826,11 @@ O quarto efeito, \texttt{Input}, foi inserido nas quatro versões em ramo
 separado, publicado como \textit{patch}, para medir a composabilidade (QP2). A
 operação lê de um fluxo de entrada, e o esgotamento do fluxo produz erro, numa
 interação deliberada com o efeito de exceção. A suíte, estendida com os casos
-do novo efeito, passa sobre o ramo. Na versão com \textit{handlers}, a operação e
-o seu \textit{handler} são declarações novas, mas as composições que instalam
-os \textit{handlers} tiveram de mudar. Na monádica, o tipo da pilha ganhou uma
+do novo efeito, passa sobre o ramo. Na versão com handlers, a operação e
+o seu handler são declarações novas, mas as composições que instalam
+os handlers tiveram de mudar. Na monádica, o tipo da pilha ganhou uma
 camada \texttt{StateT}, o executor passou a executá-la e a leitura exigiu dois
-\texttt{lift} explícitos, porque as classes do \textit{mtl} alcançam uma só
+\texttt{lift} explícitos, porque as classes do mtl alcançam uma só
 camada de estado por pilha. As bases absorveram o efeito com uma função nova
 cada.
 
@@ -853,30 +853,30 @@ efetivo, inverteu-se. A normalização neutraliza o estilo de formatação, mas 
 idioma de cada linguagem só deixa de interferir quando a comparação fica dentro
 de uma mesma linguagem. Daí as decisões da Seção~\ref{sec:metricas}. A Tabela~\ref{tab:metricas}
 reúne as métricas de legibilidade (QP1), sobre \texttt{eval}, o
-\textit{boilerplate} (QP3), sobre o restante do arquivo, e os pontos de
+boilerplate (QP3), sobre o restante do arquivo, e os pontos de
 modificação do quarto efeito (QP2).
 
 \begin{table}[ht]
   \centering
   \caption{Métricas de código após normalização: LOC, operações de efeito e
-           aninhamento de \texttt{eval}, \textit{boilerplate} do restante do
+           aninhamento de \texttt{eval}, boilerplate do restante do
            arquivo, pontos de modificação e adições puras do quarto efeito,
            excluídos o construtor novo e o seu braço em \texttt{eval}.}
   \label{tab:metricas}
   \footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.1}
   \begin{tabular}{@{}lcccccc@{}}
     \toprule
-    & \multicolumn{4}{c}{\textbf{Legibilidade e \textit{boilerplate}}}
+    & \multicolumn{4}{c}{\textbf{Legibilidade e boilerplate}}
       & \multicolumn{2}{c}{\textbf{Quarto efeito}} \\
     \cmidrule(lr){2-5}\cmidrule(lr){6-7}
     \textbf{Versão} & \textbf{LOC} & \textbf{Oper.} & \textbf{Anin.}
-      & \textbf{\textit{Boilerpl.}} & \textbf{Pontos} & \textbf{Adições} \\
+      & \textbf{Boilerpl.} & \textbf{Pontos} & \textbf{Adições} \\
     \midrule
 %%%% <<GERADO:tabela-metricas>>
-    \textit{Handlers} (OCaml)   & \LocEvalHandlers & \OperHandlers & \AninHandlers & \BoilerHandlers & \PontosHandlers & \AdicoesHandlers \\
+    Handlers (OCaml)            & \LocEvalHandlers & \OperHandlers & \AninHandlers & \BoilerHandlers & \PontosHandlers & \AdicoesHandlers \\
     Imperativa (OCaml)          & \LocEvalImperativa & \OperImperativa & \AninImperativa & \BoilerImperativa & \PontosImperativa & \AdicoesImperativa \\
     Mônadas (Haskell)           & \LocEvalMonadas & \OperMonadas & \AninMonadas & \BoilerMonadas & \PontosMonadas & \AdicoesMonadas \\
-    \texttt{IORef} (Haskell)    & \LocEvalIoref & \OperIoref & \AninIoref & \BoilerIoref & \PontosIoref & \AdicoesIoref \\
+    IORef (Haskell)             & \LocEvalIoref & \OperIoref & \AninIoref & \BoilerIoref & \PontosIoref & \AdicoesIoref \\
 %%%% <</GERADO:tabela-metricas>>
     \bottomrule
   \end{tabular}
@@ -893,8 +893,8 @@ pois cada operação direta da base deu lugar a exatamente uma operação de
 efeito: \texttt{Hashtbl.find\_opt} a \texttt{perform (Get x)},
 \texttt{raise} a \texttt{perform (Fail m)} e \texttt{readIORef} a
 \texttt{get}. O que distingue o mecanismo está fora do avaliador. No OCaml, a
-versão com \textit{handlers} soma \BoilerHandlers{} linhas de
-\textit{boilerplate}, contra \BoilerImperativa{} da base. %% AFIRMACAO:boiler-ocaml-maior
+versão com handlers soma \BoilerHandlers{} linhas de
+boilerplate, contra \BoilerImperativa{} da base. %% AFIRMACAO:boiler-ocaml-maior
 São registros de \texttt{match\_with}, casos que repassam as operações
 alheias, retomadas e composições, e \BoilerHandlersOraculo{} dessas linhas
 servem só à suíte de oráculo. No Haskell, quase tudo fora de \texttt{eval} é cabeçalho e
@@ -904,22 +904,22 @@ executor, contra o tipo da exceção, a sua instância e a captura na
 base. %% AFIRMACAO:boiler-haskell-menor
 
 Em composabilidade, só os mecanismos exigiram pontos de modificação para o
-quarto efeito: \PontosHandlers{} nos \textit{handlers}, as duas composições, e
+quarto efeito: \PontosHandlers{} nos handlers, as duas composições, e
 \PontosMonadas{} nas mônadas, o tipo da pilha e o executor. As bases o
 absorveram só com adições. %% AFIRMACAO:pontos-mecanismos-bases
 Nelas o efeito é ambiente, e um efeito novo é uma referência nova. Nos
 mecanismos ele precisa ser instalado, e o ponto de instalação é declaração
-preexistente. Só a versão com \textit{handlers} registra reutilização, com
-\ReusoHandlers{} instâncias: os \textit{handlers} de estado e de exceção são
+preexistente. Só a versão com handlers registra reutilização, com
+\ReusoHandlers{} instâncias: os handlers de estado e de exceção são
 instalados nas duas composições. %% AFIRMACAO:reuso-so-handlers
-É a contrapartida do seu \textit{boilerplate}, porque eles são recombinados
+É a contrapartida do seu boilerplate, porque eles são recombinados
 para trocar a interpretação da saída, o que as demais versões resolveram com a
 referência a função inserida de antemão.
 
 \subsection{Desempenho}\label{sec:medicao}
 
 %%%% <<GERADO:ambiente>>
-A campanha correu em um Intel Xeon @ 2,10~GHz em máquina virtual de nuvem, com 4 processadores lógicos, sob Ubuntu 24.04.5 LTS, com OCaml~5.2.1+\textit{flambda}, GHC~9.4.7, Bechamel~0.5.0 e Criterion~1.6.1.0, sementes \Sementes{}, corridas estritamente sequenciais e afinidade fixada em um núcleo. No Bechamel, \texttt{limit:5000} e cota de \CotaS{}~segundos, e no Criterion, \Reamostras{} reamostragens e a regressão \texttt{allocated:iters}. Em máquina virtual compartilhada, o ruído de outros hóspedes soma-se ao da medição. As razões, tomadas na mesma sessão e em ordem alternada, o atenuam, e a replicação em máquina dedicada fica indicada.
+A campanha correu em um Intel Xeon @ 2,10~GHz em máquina virtual de nuvem, com 4 processadores lógicos, sob Ubuntu 24.04.5 LTS, com OCaml~5.2.1+flambda, GHC~9.4.7, Bechamel~0.5.0 e Criterion~1.6.1.0, sementes \Sementes{}, corridas estritamente sequenciais e afinidade fixada em um núcleo. No Bechamel, \texttt{limit:5000} e cota de \CotaS{}~segundos, e no Criterion, \Reamostras{} reamostragens e a regressão \texttt{allocated:iters}. Em máquina virtual compartilhada, o ruído de outros hóspedes soma-se ao da medição. As razões, tomadas na mesma sessão e em ordem alternada, o atenuam, e a replicação em máquina dedicada fica indicada.
 %%%% <</GERADO:ambiente>>
 
 \begin{table}[ht]
@@ -932,7 +932,7 @@ A campanha correu em um Intel Xeon @ 2,10~GHz em máquina virtual de nuvem, com 
   \footnotesize\setlength{\tabcolsep}{3.4pt}\renewcommand{\arraystretch}{1.05}
   \begin{tabular}{@{}l*{12}{r}@{}}
     \toprule
-    & \multicolumn{6}{c}{\textbf{OCaml: \textit{handlers} sobre imperativa}}
+    & \multicolumn{6}{c}{\textbf{OCaml: handlers sobre imperativa}}
       & \multicolumn{6}{c}{\textbf{Haskell: mônadas sobre \texttt{IORef}}} \\
     \cmidrule(lr){2-7}\cmidrule(l){8-13}
     & \multicolumn{3}{c}{Tempo (ns)} & \multicolumn{3}{c}{Alocação (bytes)}
@@ -942,10 +942,10 @@ A campanha correu em um Intel Xeon @ 2,10~GHz em máquina virtual de nuvem, com 
       & base & $\Delta$ & razão & base & $\Delta$ & razão \\
     \midrule
 %%%% <<GERADO:tabela-desempenho>>
-    \textsc{Arith}   & \BaseNsOcamlArith & \DeltaNsOcamlArith & \RTOcamlArith & \BaseByOcamlArith & \DeltaByOcamlArith & \RAOcamlArith & \BaseNsHaskellArith & \DeltaNsHaskellArith & \RTHaskellArith & \BaseByHaskellArith & \DeltaByHaskellArith & \RAHaskellArith \\
-    \textsc{State}   & \BaseNsOcamlState & \DeltaNsOcamlState & \RTOcamlState & \BaseByOcamlState & \DeltaByOcamlState & \RAOcamlState & \BaseNsHaskellState & \DeltaNsHaskellState & \RTHaskellState & \BaseByHaskellState & \DeltaByHaskellState & \RAHaskellState \\
-    \textsc{Exn}     & \BaseNsOcamlExn & \DeltaNsOcamlExn & \RTOcamlExn & \BaseByOcamlExn & \DeltaByOcamlExn & \RAOcamlExn & \BaseNsHaskellExn & \DeltaNsHaskellExn & \RTHaskellExn & \BaseByHaskellExn & \DeltaByHaskellExn & \RAHaskellExn \\
-    \textsc{Output}  & \BaseNsOcamlOutput & \DeltaNsOcamlOutput & \RTOcamlOutput & \BaseByOcamlOutput & \DeltaByOcamlOutput & \RAOcamlOutput & \BaseNsHaskellOutput & \DeltaNsHaskellOutput & \RTHaskellOutput & \BaseByHaskellOutput & \DeltaByHaskellOutput & \RAHaskellOutput \\
+    Arith            & \BaseNsOcamlArith & \DeltaNsOcamlArith & \RTOcamlArith & \BaseByOcamlArith & \DeltaByOcamlArith & \RAOcamlArith & \BaseNsHaskellArith & \DeltaNsHaskellArith & \RTHaskellArith & \BaseByHaskellArith & \DeltaByHaskellArith & \RAHaskellArith \\
+    State            & \BaseNsOcamlState & \DeltaNsOcamlState & \RTOcamlState & \BaseByOcamlState & \DeltaByOcamlState & \RAOcamlState & \BaseNsHaskellState & \DeltaNsHaskellState & \RTHaskellState & \BaseByHaskellState & \DeltaByHaskellState & \RAHaskellState \\
+    Exn              & \BaseNsOcamlExn & \DeltaNsOcamlExn & \RTOcamlExn & \BaseByOcamlExn & \DeltaByOcamlExn & \RAOcamlExn & \BaseNsHaskellExn & \DeltaNsHaskellExn & \RTHaskellExn & \BaseByHaskellExn & \DeltaByHaskellExn & \RAHaskellExn \\
+    Output           & \BaseNsOcamlOutput & \DeltaNsOcamlOutput & \RTOcamlOutput & \BaseByOcamlOutput & \DeltaByOcamlOutput & \RAOcamlOutput & \BaseNsHaskellOutput & \DeltaNsHaskellOutput & \RTHaskellOutput & \BaseByHaskellOutput & \DeltaByHaskellOutput & \RAHaskellOutput \\
 %%%% <</GERADO:tabela-desempenho>>
     \bottomrule
   \end{tabular}
@@ -958,7 +958,7 @@ O menor $R^2$ foi \RdoisMinOcaml{} no Bechamel e \RdoisMinHaskell{} no
 Criterion. \FraseRepeticoes{} A alocação praticamente não variou entre
 sementes, como se espera de uma grandeza determinística. Nenhum
 intervalo de 95\% da razão de tempo inclui~1 no OCaml. %% AFIRMACAO:ocaml-acima-de-1
-No Haskell, só o de \textsc{Arith} o exclui. %% AFIRMACAO:haskell-ic-so-arith-exclui-1
+No Haskell, só o de Arith o exclui. %% AFIRMACAO:haskell-ic-so-arith-exclui-1
 Um resultado não previsto veio de uma corrida subdimensionada, com cota de
 \SensCotaS{}~s e \SensLimite{} amostras. Nenhuma das suas medições teve $R^2$
 abaixo de 0,95, %% AFIRMACAO:sensibilidade-r2-ok
@@ -971,21 +971,21 @@ O $R^2$, portanto, não basta para validar a configuração de amostragem.
 A resposta a QP4 se apoia em duas medições. Uma terceira leitura, que a
 tabela parece sugerir, não se sustenta.
 
-A primeira é o controle do OCaml. Em \textsc{Arith} não ocorre operação de
-efeito alguma, e todo o excedente é instalação de \textit{handlers}:
+A primeira é o controle do OCaml. Em Arith não ocorre operação de
+efeito alguma, e todo o excedente é instalação de handlers:
 \DeltaNsOcamlArith{}~ns por expressão, o menor $\Delta$ dos quatro
 cenários. %% AFIRMACAO:ocaml-delta-arith-menor
-As operações de \textsc{State} e de \textsc{Output} elevam o total a
+As operações de State e de Output elevam o total a
 \DeltaNsOcamlState{} e \DeltaNsOcamlOutput{}~ns. Esse número separa o custo
-de \textit{estar} sob o mecanismo do custo de usá-lo. Com escopos curtos, como
+de estar sob o mecanismo do custo de usá-lo. Com escopos curtos, como
 os daqui, a instalação domina. Com um escopo que cobrisse muito trabalho, ela
 se diluiria. No Haskell, o maior excedente, de
-\DeltaNsHaskellArith{}~ns, também está em \textsc{Arith}, %% AFIRMACAO:haskell-maior-delta-arith
+\DeltaNsHaskellArith{}~ns, também está em Arith, %% AFIRMACAO:haskell-maior-delta-arith
 a carga com mais vinculações por expressão.
 
 A segunda é a alocação. A razão do OCaml, entre \FaixaRAOcaml{}, parece uma
 ordem de grandeza acima da do Haskell, entre \FaixaRAHaskell{}, mas os
-excedentes em \textsc{Arith} são próximos, de \DeltaByOcamlArith{} e
+excedentes em Arith são próximos, de \DeltaByOcamlArith{} e
 \DeltaByHaskellArith{} bytes por expressão. %% AFIRMACAO:delta-bytes-proximos
 A diferença está na base: a imperativa do OCaml aloca \BaseByOcamlArith{}
 bytes por expressão, só o resultado, contra \BaseByHaskellArith{} da base em
@@ -994,21 +994,21 @@ bytes por expressão, só o resultado, contra \BaseByHaskellArith{} da base em
 quase não aloca torna enorme qualquer razão de alocação.
 
 A leitura que não se sustenta é a comparação direta das razões, entre
-\FaixaRTOcaml{} para os \textit{handlers} e entre \FaixaRTHaskell{} para as
+\FaixaRTOcaml{} para os handlers e entre \FaixaRTHaskell{} para as
 mônadas. %% AFIRMACAO:haskell-perto-de-1
-As bases diferem em custo (em \textsc{State}, \BaseNsHaskellState{}~ns por
+As bases diferem em custo (em State, \BaseNsHaskellState{}~ns por
 expressão com \texttt{Map}, contra \BaseNsOcamlState{} com
 \texttt{Hashtbl}), %% AFIRMACAO:haskell-base-state-cara
-e os \textit{runtimes} diferem em otimização. O que a tabela sustenta é a forma do
+e os runtimes diferem em otimização. O que a tabela sustenta é a forma do
 custo. No OCaml, ele é fixo por instalação e por operação, visível mesmo sem efeito.
 No Haskell, é proporcional às vinculações e diluído pelo compilador a ponto de
 três dos quatro intervalos incluírem~1. A expectativa do TCC~I
-\cite{marchioni:tcc1}, de sobrecusto abaixo de 1,5 vez nos \textit{handlers} e
+\cite{marchioni:tcc1}, de sobrecusto abaixo de 1,5 vez nos handlers e
 acima de 2 nas mônadas, não se confirmou em nenhuma das duas metades. %% AFIRMACAO:h4-ocaml-refutada %% AFIRMACAO:h4-haskell-refutada
 
 Quanto a QP1 a QP3, o avaliador do mecanismo é idêntico ao da base pelos três
-\textit{proxies}, e o custo de escrita está na infraestrutura. Nos
-\textit{handlers}, ele se concentra nas composições, é localizado e pago uma
+proxies, e o custo de escrita está na infraestrutura. Nos
+handlers, ele se concentra nas composições, é localizado e pago uma
 vez. Nas mônadas, recai sobre o tipo da pilha e cresce com ela, como mostrou a
 segunda camada de estado.
 
@@ -1020,22 +1020,22 @@ O trabalho deixa quatro contribuições. O argumento de equivalência expressiva
 deixa como diferença genuína só a ergonomia e o custo, e o critério de
 equivalência funcional se realiza na suíte de oráculo. O gerador replicado vem
 com teste de conformidade e com casos que travam quatro decisões semânticas, e
-a normalização intralinguagem separa o mecanismo do \textit{runtime}.
+a normalização intralinguagem separa o mecanismo do runtime.
 
 \medskip
 \noindent\textbf{Os resultados frente à literatura.} As grandezas mais
 citadas da literatura medem regimes diferentes do medido aqui. Do trabalho que introduziu o mecanismo, o
-sobrecusto de cerca de 1\% refere-se a programas que \textit{não} usam
-\textit{handlers}, e as desacelerações de 6,7 a 12,3~vezes, a recursão
-não-\textit{tail} envolvida em \textit{handler} \cite{sivaramakrishnan:21}.
+sobrecusto de cerca de 1\% refere-se a programas que não usam
+handlers, e as desacelerações de 6,7 a 12,3~vezes, a recursão
+não-\textit{tail} envolvida em handler \cite{sivaramakrishnan:21}.
 Nenhuma é a razão sobre um caso de uso integrado, e as obtidas aqui ficam
 abaixo daquelas desacelerações. %% AFIRMACAO:ocaml-abaixo-literatura
 A mesma fonte reporta cerca de 23~ns para alocar uma \textit{fiber} e trocar
 de pilha, da mesma ordem dos \DeltaNsOcamlArith{}~ns que a instalação de três
-\textit{handlers} custou aqui. %% AFIRMACAO:ocaml-instalacao-mesma-ordem-fonte
+handlers custou aqui. %% AFIRMACAO:ocaml-instalacao-mesma-ordem-fonte
 Em Haskell, a
 literatura intralinguagem compara a mônada de estado e a pilha do
-\textit{mtl} a uma versão pura em \textit{microbenchmarks} e encontra razões
+mtl a uma versão pura em microbenchmarks e encontra razões
 entre 1,0 e 1,3 \cite{kammar:13,xie:20}. As daqui ficam no limite inferior
 dessa faixa ou abaixo dele, %% AFIRMACAO:haskell-limite-inferior-literatura
 como se espera de uma base que não é pura, mas executa em \texttt{IO} e
@@ -1057,19 +1057,19 @@ validade de conclusão.
 
 \medskip
 \noindent\textbf{Trabalhos futuros.} Três caminhos decorrem das limitações. O
-primeiro é remover o confundimento com o \textit{runtime}, comparando
-\textit{handlers} e transformadores dentro de uma única linguagem
+primeiro é remover o confundimento com o runtime, comparando
+handlers e transformadores dentro de uma única linguagem
 \cite{xie:20} sobre este mesmo caso de uso: a comparação passaria de
 exploratória a direta, ao custo de medir bibliotecas em vez do suporte nativo.
 O segundo é estender o caso de uso aos padrões que ele não cobre
 (concorrência, não determinismo e efeitos escopados), sendo o não
 determinismo o mais discriminante, por exigir retomada múltipla da
 continuação, que o OCaml~5 não oferece. O terceiro é incorporar a segurança
-estática de efeitos como quinta dimensão, confrontando os \textit{effect rows}
+estática de efeitos como quinta dimensão, confrontando os effect rows
 de Koka \cite{leijen:14} com a ausência de verificação no OCaml~5 e com as
 restrições de classe da pilha monádica. Em paralelo, a legibilidade percebida
 pede um estudo com participantes, único instrumento capaz de validar os
-\textit{proxies} estruturais usados aqui.
+proxies estruturais usados aqui.
 
 %% ============================================================
 %% CONFERIR (Arts. 6o a 8o do Regulamento): o Art. 7o exige declarar (I) a
@@ -1093,7 +1093,7 @@ parágrafo da introdução, e na redação preliminar dos trechos que reportam e
 resultados (síntese da Seção~\ref{sec:intro} e
 Seções~\ref{sec:oraculo}, \ref{sec:resultados} e~\ref{sec:consideracoes}),
 revisada pelo autor. Por fim, gerou o código-fonte publicado no repositório
-(implementações, suítes de teste, \textit{harnesses} e scripts de métricas),
+(implementações, suítes de teste, harnesses e scripts de métricas),
 revisado\DeclaracaoExecucao. O conteúdo técnico, os resultados e
 a redação final são de responsabilidade do autor.
 

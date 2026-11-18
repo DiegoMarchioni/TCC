@@ -38,8 +38,8 @@ from collections import defaultdict
 from pathlib import Path
 
 CENARIOS = ["arith", "state", "exn", "output"]
-ROTULOS = {"arith": r"\textsc{Arith}", "state": r"\textsc{State}",
-           "exn": r"\textsc{Exn}", "output": r"\textsc{Output}"}
+ROTULOS = {"arith": "Arith", "state": "State",
+           "exn": "Exn", "output": "Output"}
 BYTES_POR_PALAVRA = 8
 
 
