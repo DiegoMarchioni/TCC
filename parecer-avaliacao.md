@@ -4,6 +4,19 @@ Avaliação feita com a skill `academic-paper-review` (`.claude/skills/academic-
 
 > **Limite deste parecer.** Ele foi escrito pelo mesmo assistente de IA que ajudou a produzir o código, a campanha e parte do texto. Um avaliador que participou do trabalho tende a não enxergar os próprios pontos cegos. Use-o como ensaio da banca, e não como substituto da leitura do orientador.
 
+## Correções já aplicadas (commit `c231ce0`)
+
+| Item | O que mudou no artigo |
+|---|---|
+| F1 | Seção 6.3: "as razões de tempo do OCaml valem para a instalação por expressão" |
+| F2 | Seção 6.1: o empate decorre em parte do desenho, que deu às bases a estrutura dos mecanismos |
+| F4 | Seção 6.2: o intervalo é conservador, [M_inf/B_sup, M_sup/B_inf], e envolve as três sementes |
+| Contribuições | Introdução: incluído o gerador replicado, como nas Conclusões (agora são quatro nos dois lugares) |
+| Lacuna | Introdução: "Os estudos existentes" virou "Os estudos revisados", como na Seção 3.2 |
+| Páginas | Para continuar em 16, saíram uma frase de status ("estão concluídos…") e parte da abertura da Seção 6.1 |
+
+Continuam com você: os resumos (F3), a versão da IA e os dados do orientador. A citação do effect-handlers-bench ficou de fora, porque o artigo está no limite de páginas.
+
 ## Dados do artigo
 - **Autores:** Diego Marchioni, com orientação do Prof. Marco Rodrigo (PUC Minas)
 - **Tipo:** TCC II, formato SBC
