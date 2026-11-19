@@ -1,4 +1,4 @@
-# Skills do Claude usadas na apresentação
+# Skills do Claude usadas no trabalho
 
 Skills de projeto: o Claude Code carrega sozinho as pastas daqui
 (`.claude/skills/<nome>/SKILL.md`) quando o repositório é aberto. Também dá
@@ -7,11 +7,12 @@ para usá-las no claude.ai, compactando cada pasta em `.zip` e enviando em
 
 | Pasta | O que faz | Origem | Versão | Licença |
 |---|---|---|---|---|
+| `academic-paper-review/` | Revisão estruturada de artigo, no padrão de revisor de conferência: resumo, pontos fortes, fraquezas, avaliação da metodologia (notas de 1 a 5), perguntas aos autores, posição na literatura e recomendação | [bytedance/deer-flow](https://github.com/bytedance/deer-flow), pasta `skills/public/academic-paper-review` | commit `585abb9` | MIT (`LICENSE`) |
 | `academic-pptx/` | Regras de conteúdo e estrutura para apresentações acadêmicas: títulos de ação (cada título é a conclusão do slide), teste do "deck fantasma", um gráfico por slide de resultado, citações no slide e um slide de referências, terminar nas conclusões | [Gabberflast/academic-pptx-skill](https://github.com/Gabberflast/academic-pptx-skill) (1,6 mil estrelas em 16/11/2026) | commit `9f2b703` | MIT (`LICENSE`) |
 | `beamer/` | Slides acadêmicos em LaTeX Beamer: tema Madrid, XeLaTeX, sem animações de revelar, no máximo dois blocos coloridos por slide, tabelas `booktabs`, gráficos `pgfplots`, código com `listings`, slide de referências e slides de reserva, e inclui revisão visual do PDF | [Noi1r/beamer-skill](https://github.com/Noi1r/beamer-skill), pasta `beamer/` (374 estrelas em 16/11/2026) | commit `f3d62c0` | MIT (`LICENSE`) |
 | `pptx/` | A parte técnica: gerar o `.pptx` com `pptxgenjs`, validar o arquivo e conferir as imagens de cada slide | [anthropics/skills](https://github.com/anthropics/skills), pasta `skills/pptx` | commit `1780c5e` | Apache 2.0 (`LICENSE.txt`) |
 
-As três foram copiadas sem modificação. Da beamer-skill veio só a pasta da skill, com a licença e o README. A pasta de exemplos do repositório original, que traz PDFs de artigos de terceiros, ficou de fora. A academic-pptx foi feita para ser
+As quatro foram copiadas sem modificação. Da beamer-skill veio só a pasta da skill, com a licença e o README. A pasta de exemplos do repositório original, que traz PDFs de artigos de terceiros, ficou de fora. A academic-pptx foi feita para ser
 usada junto com a pptx: a primeira decide o conteúdo, a segunda constrói o
 arquivo.
 
