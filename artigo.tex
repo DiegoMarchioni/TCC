@@ -324,7 +324,7 @@ por \textit{handlers} escopados \cite{plotkin:09}.
 \medskip
 \noindent\textbf{Problema e justificativa.} A relação teórica entre os dois
 mecanismos está bem estabelecida \cite{schrijvers:19,forster:17}, mas o mesmo
-não vale para as consequências práticas da escolha. Os estudos existentes tratam
+não vale para as consequências práticas da escolha. Os estudos revisados tratam
 dos fundamentos semânticos, da expressividade ou do custo de execução em
 separado, e nenhum deles reúne sobre um mesmo caso de uso as quatro
 dimensões que governam a decisão (Seção~\ref{sec:lacuna}). E essa decisão
@@ -363,10 +363,9 @@ primeiros são instrumentais, e os dois últimos são de avaliação.
 principal é o desenho que torna a comparação legítima: o argumento de equivalência expressiva
 (Seção~\ref{sec:relacao}), o critério de equivalência funcional verificável e
 a suíte de oráculo que o realiza (Seções~\ref{sec:caso-de-uso}
-e~\ref{sec:oraculo}), e a normalização intralinguagem, que separa o que cabe
-ao mecanismo do que cabe ao runtime (Seção~\ref{sec:protocolo}). As quatro
-implementações, a suíte de oráculo, o quarto efeito e os dois
-\textit{harnesses} estão concluídos, e a suíte passa integralmente.
+e~\ref{sec:oraculo}), o gerador de cargas replicado com teste de
+conformidade (Seção~\ref{sec:impl}) e a normalização intralinguagem, que separa o que cabe
+ao mecanismo do que cabe ao runtime (Seção~\ref{sec:protocolo}).
 %% NOVO (10/11): sintese reescrita com os resultados; revise com as suas palavras.
 Em cada linguagem, o avaliador do mecanismo empata com o da base nas três
 métricas de legibilidade. A diferença de escrita está no boilerplate
@@ -849,12 +848,9 @@ Seção~\ref{sec:discussao} interpreta os números das duas.
 A normalização por formatadores é condição de validade destas contagens, e a
 razão é empírica: uma contagem preliminar de LOC sobre excertos ilustrativos
 apontava a versão com efeitos como a mais enxuta e, refeita sobre o código
-efetivo, inverteu-se. A normalização neutraliza o estilo de formatação, mas o
-idioma de cada linguagem só deixa de interferir quando a comparação fica dentro
-de uma mesma linguagem. Daí as decisões da Seção~\ref{sec:metricas}. A Tabela~\ref{tab:metricas}
-reúne as métricas de legibilidade (QP1), sobre \texttt{eval}, o
-boilerplate (QP3), sobre o restante do arquivo, e os pontos de
-modificação do quarto efeito (QP2).
+efetivo, inverteu-se: o idioma de cada linguagem só deixa de interferir dentro
+de uma mesma linguagem (Seção~\ref{sec:metricas}). A Tabela~\ref{tab:metricas}
+reúne legibilidade (QP1), boilerplate (QP3) e pontos de modificação (QP2).
 
 \begin{table}[ht]
   \centering
@@ -892,7 +888,9 @@ também construtor a construtor, %% AFIRMACAO:metricas-identicas
 pois cada operação direta da base deu lugar a exatamente uma operação de
 efeito: \texttt{Hashtbl.find\_opt} a \texttt{perform (Get x)},
 \texttt{raise} a \texttt{perform (Fail m)} e \texttt{readIORef} a
-\texttt{get}. O que distingue o mecanismo está fora do avaliador. No OCaml, a
+\texttt{get}. O empate decorre em parte do desenho, que deu às bases a
+estrutura dos mecanismos (Seção~\ref{sec:impl-monadica}): o mecanismo cabe sem
+alterar a forma do avaliador, o que não implica que bases independentes a teriam. O que distingue o mecanismo está fora do avaliador. No OCaml, a
 versão com handlers soma \BoilerHandlers{} linhas de
 boilerplate, contra \BoilerImperativa{} da base. %% AFIRMACAO:boiler-ocaml-maior
 São registros de \texttt{match\_with}, casos que repassam as operações
@@ -956,8 +954,9 @@ A campanha correu em um Intel Xeon @ 2,10~GHz em máquina virtual de nuvem, com 
 %% geradas, e cada frase marcada com AFIRMACAO e conferida pelo script.
 O menor $R^2$ foi \RdoisMinOcaml{} no Bechamel e \RdoisMinHaskell{} no
 Criterion. \FraseRepeticoes{} A alocação praticamente não variou entre
-sementes, como se espera de uma grandeza determinística. Nenhum
-intervalo de 95\% da razão de tempo inclui~1 no OCaml. %% AFIRMACAO:ocaml-acima-de-1
+sementes, como se espera de uma grandeza determinística. O intervalo da razão
+é conservador, $[M_{\inf}/B_{\sup},\, M_{\sup}/B_{\inf}]$, e o reportado
+envolve as três sementes. Nenhum inclui~1 no OCaml. %% AFIRMACAO:ocaml-acima-de-1
 No Haskell, só o de Arith o exclui. %% AFIRMACAO:haskell-ic-so-arith-exclui-1
 Um resultado não previsto veio de uma corrida subdimensionada, com cota de
 \SensCotaS{}~s e \SensLimite{} amostras. Nenhuma das suas medições teve $R^2$
@@ -979,7 +978,7 @@ As operações de State e de Output elevam o total a
 \DeltaNsOcamlState{} e \DeltaNsOcamlOutput{}~ns. Esse número separa o custo
 de estar sob o mecanismo do custo de usá-lo. Com escopos curtos, como
 os daqui, a instalação domina. Com um escopo que cobrisse muito trabalho, ela
-se diluiria. No Haskell, o maior excedente, de
+se diluiria: as razões de tempo do OCaml valem para a instalação por expressão. No Haskell, o maior excedente, de
 \DeltaNsHaskellArith{}~ns, também está em Arith, %% AFIRMACAO:haskell-maior-delta-arith
 a carga com mais vinculações por expressão.
 
